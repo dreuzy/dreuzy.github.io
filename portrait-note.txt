@@ -1,0 +1,1 @@
+Portrait source: user-provided academic portrait. The live homepage currently uses the GitHub profile image; this placeholder can be replaced with the original binary portrait in a later asset update.
