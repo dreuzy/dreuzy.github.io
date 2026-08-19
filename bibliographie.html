@@ -16,6 +16,7 @@
       <a href="projets.html">Projets</a>
       <a href="equipe.html">Équipe</a>
       <a class="active" href="publications.html">Publications</a>
+      <a href="logiciels.html">Logiciels</a>
       <a href="cv.html">CV</a>
     </nav>
   </div>
@@ -48,6 +49,20 @@
     'bibliographie-payload-04.txt',
     'bibliographie-payload-05.txt'
   ];
+  const normalize = value => (value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/\s+/g, ' ').trim();
+  const isHeading = element => /^H[1-6]$/.test(element?.tagName || '');
+  const headingLevel = element => Number((element?.tagName || 'H6').slice(1));
+  const removeSection = heading => {
+    const level = headingLevel(heading);
+    let node = heading.nextElementSibling;
+    while (node) {
+      if (isHeading(node) && headingLevel(node) <= level) break;
+      const next = node.nextElementSibling;
+      node.remove();
+      node = next;
+    }
+    heading.remove();
+  };
   try {
     const parts = await Promise.all(files.map(async file => {
       const response = await fetch(file);
@@ -62,6 +77,53 @@
 
     host.innerHTML = fragment;
 
+    [...host.querySelectorAll('h2,h3,h4,h5,h6')].forEach(heading => {
+      const title = normalize(heading.textContent);
+      if (title.includes('abandon') || title.includes('en preparation')) removeSection(heading);
+    });
+
+    if (!normalize(host.textContent).includes('pyage: an extensible toolkit for lumped-parameter modeling of tracer-derived groundwater ages')) {
+      const headings = [...host.querySelectorAll('h2,h3,h4,h5,h6')];
+      let submittedHeading = headings.find(heading => normalize(heading.textContent).includes('soumis'));
+      if (!submittedHeading) {
+        const articleHeading = host.querySelector('#articles-dans-des-revues-a-comite-de-lecture');
+        if (articleHeading) {
+          submittedHeading = document.createElement('h3');
+          submittedHeading.textContent = 'Articles soumis';
+          articleHeading.insertAdjacentElement('afterend', submittedHeading);
+        }
+      }
+      if (submittedHeading) {
+        let list = submittedHeading.nextElementSibling;
+        while (list && !['OL','UL'].includes(list.tagName) && !isHeading(list)) list = list.nextElementSibling;
+        if (!list || isHeading(list)) {
+          list = document.createElement('ol');
+          submittedHeading.insertAdjacentElement('afterend', list);
+        }
+        const item = document.createElement('li');
+        item.innerHTML = 'J.-R. de Dreuzy, S. Leray, J. Marçais (2026), PyAge: an extensible toolkit for lumped-parameter modeling of tracer-derived groundwater ages. Soumis à <span class="smallcaps">Geoscientific Model Development</span>.';
+        list.prepend(item);
+      }
+    }
+
+    [...host.querySelectorAll('strong,b')].forEach(element => {
+      if (normalize(element.textContent).includes('dreuzy')) {
+        const replacement = document.createDocumentFragment();
+        while (element.firstChild) replacement.appendChild(element.firstChild);
+        element.replaceWith(replacement);
+      }
+    });
+
+    const walker = document.createTreeWalker(host, NodeFilter.SHOW_TEXT);
+    const textNodes = [];
+    while (walker.nextNode()) textNodes.push(walker.currentNode);
+    textNodes.forEach(node => {
+      node.nodeValue = node.nodeValue
+        .replace(/under review for/gi, 'article en révision pour')
+        .replace(/under review/gi, 'article en révision')
+        .replace(/in review/gi, 'article en révision');
+    });
+
     const requiredSections = [
       'articles-dans-des-revues-a-comite-de-lecture',
       'chapitre-douvrage',
@@ -70,14 +132,10 @@
       'proceedings-non-references-dans-web-of-knowledge',
       'abstracts-de-colloques'
     ];
-    if (!requiredSections.every(id => host.querySelector(`#${id}`))) {
-      throw new Error('bibliographie incomplète');
-    }
+    if (!requiredSections.every(id => host.querySelector(`#${id}`))) throw new Error('bibliographie incomplète');
 
     host.setAttribute('aria-busy', 'false');
-    if (location.hash) {
-      setTimeout(() => document.getElementById(location.hash.slice(1))?.scrollIntoView(), 0);
-    }
+    if (location.hash) setTimeout(() => document.getElementById(location.hash.slice(1))?.scrollIntoView(), 0);
   } catch (error) {
     host.setAttribute('aria-busy', 'false');
     host.innerHTML = '<p>La bibliographie n’a pas pu être chargée. Merci de recharger la page dans un navigateur récent.</p>';
