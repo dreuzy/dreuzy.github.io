@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 420"><rect width="900" height="420" fill="#ffffff"/>
+<text x="40" y="42" font-family="Arial" font-size="20" font-weight="700" fill="#17324a">Ressources en eau dans un environnement changeant</text>
+<line x1="90" y1="340" x2="840" y2="340" stroke="#9eb4c2" stroke-width="2"/>
+<line x1="90" y1="90" x2="90" y2="340" stroke="#9eb4c2" stroke-width="2"/>
+<path d="M95 305 C170 298, 230 285, 290 290 C350 274, 420 265, 480 250 C550 238, 610 212, 675 195 C735 170, 790 145, 835 118" fill="none" stroke="#17324a" stroke-width="4"/>
+<path d="M95 318 C170 313, 230 300, 290 307 C350 290, 420 282, 480 270 C550 260, 610 240, 675 226 C735 205, 790 182, 835 158" fill="none" stroke="#497a9c" stroke-width="3" stroke-dasharray="8 6"/>
+<text x="82" y="365" font-family="Arial" font-size="12" fill="#536573">1975</text>
+<text x="800" y="365" font-family="Arial" font-size="12" fill="#536573">2100</text>
+<text x="18" y="105" font-family="Arial" font-size="12" fill="#536573" transform="rotate(-90 18,105)">jours d’étiage / intermittence</text>
+<text x="590" y="105" font-family="Arial" font-size="14" fill="#17324a">climat · usages · gestion</text>
+</svg>
