@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 420"><rect width="900" height="420" fill="#ffffff"/>
+<text x="40" y="42" font-family="Arial" font-size="20" font-weight="700" fill="#17324a">Chaire Eaux & Territoires — eau et territoires en changement</text>
+<circle cx="170" cy="190" r="78" fill="#eef4f7" stroke="#497a9c"/><text x="125" y="184" font-family="Arial" font-size="15" font-weight="700" fill="#17324a">Climat</text><text x="118" y="207" font-family="Arial" font-size="13" fill="#536573">sécheresses · étiages</text>
+<circle cx="450" cy="190" r="78" fill="#f7f9fb" stroke="#9eb4c2"/><text x="410" y="184" font-family="Arial" font-size="15" font-weight="700" fill="#17324a">Ressources</text><text x="395" y="207" font-family="Arial" font-size="13" fill="#536573">surface · souterrain</text>
+<circle cx="730" cy="190" r="78" fill="#eef4f7" stroke="#497a9c"/><text x="695" y="184" font-family="Arial" font-size="15" font-weight="700" fill="#17324a">Territoires</text><text x="675" y="207" font-family="Arial" font-size="13" fill="#536573">usages · infrastructures</text>
+<path d="M248 190 H372 M528 190 H652" stroke="#17324a" stroke-width="3"/>
+<text x="250" y="330" font-family="Arial" font-size="14" fill="#536573">modèles · scénarios · co-construction avec les acteurs de l’eau</text>
+</svg>

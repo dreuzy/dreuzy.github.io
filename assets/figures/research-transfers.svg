@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 420"><rect width="900" height="420" fill="#ffffff"/>
+<text x="40" y="42" font-family="Arial" font-size="20" font-weight="700" fill="#17324a">Temps de transfert, qualité de l’eau & réactivité</text>
+<path d="M70 165 Q210 80 350 165 T630 165" fill="#eef4f7" stroke="#9eb4c2" stroke-width="2"/>
+<path d="M70 165 Q210 250 350 165 T630 165" fill="#f8fafb" stroke="#9eb4c2" stroke-width="2"/>
+<path d="M150 145 C220 185, 260 225, 325 240 C410 258, 505 225, 585 170" fill="none" stroke="#497a9c" stroke-width="4"/>
+<path d="M175 135 C240 160, 300 175, 365 180 C455 190, 520 175, 600 160" fill="none" stroke="#17324a" stroke-width="3" stroke-dasharray="8 6"/>
+<text x="95" y="285" font-family="Arial" font-size="13" fill="#536573">lignes d’écoulement</text>
+<text x="375" y="280" font-family="Arial" font-size="13" fill="#536573">zone réactive</text>
+<rect x="675" y="85" width="170" height="120" rx="8" fill="#f7f9fb" stroke="#d9e2e8"/>
+<path d="M695 180 C720 150, 735 130, 755 145 C780 165, 795 120, 825 105" fill="none" stroke="#17324a" stroke-width="3"/>
+<text x="700" y="100" font-family="Arial" font-size="12" fill="#536573">distribution des âges</text>
+<rect x="675" y="235" width="170" height="120" rx="8" fill="#f7f9fb" stroke="#d9e2e8"/>
+<path d="M695 330 L720 315 L745 320 L770 285 L795 270 L825 255" fill="none" stroke="#497a9c" stroke-width="3"/>
+<text x="700" y="250" font-family="Arial" font-size="12" fill="#536573">nitrates / dénitrification</text>
+</svg>

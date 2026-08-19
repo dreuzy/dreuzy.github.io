@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 420"><rect width="900" height="420" fill="#ffffff"/>
+<text x="40" y="42" font-family="Arial" font-size="20" font-weight="700" fill="#17324a">Empreinte Eau & Eau Sentinelle</text>
+<g font-family="Arial" font-size="13" fill="#17324a">
+<rect x="45" y="150" width="110" height="70" rx="8" fill="#f7f9fb" stroke="#9eb4c2"/><text x="70" y="190">Usages</text>
+<rect x="185" y="150" width="120" height="70" rx="8" fill="#eef4f7" stroke="#497a9c"/><text x="207" y="182">Transferts</text><text x="199" y="202">transformations</text>
+<rect x="335" y="150" width="115" height="70" rx="8" fill="#f7f9fb" stroke="#9eb4c2"/><text x="360" y="190">Expositions</text>
+<rect x="480" y="150" width="110" height="70" rx="8" fill="#eef4f7" stroke="#497a9c"/><text x="505" y="190">Effets</text>
+<rect x="620" y="150" width="115" height="70" rx="8" fill="#f7f9fb" stroke="#9eb4c2"/><text x="642" y="190">Indicateurs</text>
+<rect x="765" y="150" width="105" height="70" rx="8" fill="#eef4f7" stroke="#497a9c"/><text x="785" y="190">Scénarios</text>
+</g>
+<path d="M155 185 H185 M305 185 H335 M450 185 H480 M590 185 H620 M735 185 H765" stroke="#17324a" stroke-width="2"/>
+<rect x="235" y="275" width="180" height="60" rx="10" fill="#eef4f7" stroke="#497a9c"/><text x="275" y="310" font-family="Arial" font-size="16" font-weight="700" fill="#17324a">Empreinte Eau</text>
+<rect x="485" y="275" width="180" height="60" rx="10" fill="#f7f9fb" stroke="#17324a"/><text x="530" y="310" font-family="Arial" font-size="16" font-weight="700" fill="#17324a">Eau Sentinelle</text>
+</svg>
