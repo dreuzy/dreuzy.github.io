@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 420"><rect width="900" height="420" fill="#ffffff"/>
+<text x="40" y="42" font-family="Arial" font-size="20" font-weight="700" fill="#17324a">HydroModPy — du bassin versant au déploiement régional</text>
+<g font-family="Arial" font-size="15" fill="#17324a">
+<rect x="55" y="145" width="155" height="90" rx="10" fill="#f7f9fb" stroke="#9eb4c2"/><text x="88" y="182">Données</text><text x="72" y="205" font-size="12" fill="#536573">DEM · débits · géologie</text>
+<rect x="270" y="145" width="170" height="90" rx="10" fill="#eef4f7" stroke="#497a9c"/><text x="305" y="182">HydroModPy</text><text x="295" y="205" font-size="12" fill="#536573">construction automatique</text>
+<rect x="500" y="145" width="155" height="90" rx="10" fill="#f7f9fb" stroke="#9eb4c2"/><text x="535" y="182">Calibration</text><text x="523" y="205" font-size="12" fill="#536573">modèles & incertitudes</text>
+<rect x="715" y="145" width="135" height="90" rx="10" fill="#eef4f7" stroke="#497a9c"/><text x="736" y="182">Déploiement</text><text x="735" y="205" font-size="12" fill="#536573">multi-sites</text>
+</g>
+<path d="M210 190 H270 M440 190 H500 M655 190 H715" stroke="#17324a" stroke-width="3" marker-end="url(#a)"/>
+<defs><marker id="a" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#17324a"/></marker></defs>
+<text x="260" y="310" font-family="Arial" font-size="15" fill="#536573">modèles fondés sur les processus · parcimonie · reproductibilité</text>
+</svg>
