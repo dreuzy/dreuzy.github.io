@@ -1,1 +1,89 @@
-<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Bibliographie complète — Jean-Raynald de Dreuzy</title><link rel="stylesheet" href="styles.css"></head><body><header class="site-header"><div class="inner"><a class="brand-link" href="index.html">Jean-Raynald de Dreuzy</a><nav class="nav-links"><a href="index.html">Accueil</a><a href="recherche.html">Recherche</a><a href="projets.html">Projets</a><a href="equipe.html">Équipe</a><a class="active" href="publications.html">Publications</a><a href="cv.html">CV</a></nav></div></header><main class="preview-content bibliography-page"><h1>Bibliographie complète</h1><p class="lead">Publications, chapitres, rapports, proceedings et abstracts de colloques. Les titres disposant d’un lien sont directement cliquables.</p><nav class="bib-toc"><strong>Sommaire</strong><ul><li><a href="#articles-dans-des-revues-a-comite-de-lecture">Articles dans des revues à comité de lecture</a></li><li><a href="#chapitre-douvrage">Chapitre d’ouvrage</a></li><li><a href="#rapports-et-autres-publications">Rapports et autres publications</a></li><li><a href="#proceedings-references-dans-web-of-knowledge">Proceedings référencés dans Web of Knowledge</a></li><li><a href="#proceedings-non-references-dans-web-of-knowledge">Proceedings non référencés dans Web of Knowledge</a></li><li><a href="#abstracts-de-colloques">Abstracts de colloques</a></li></ul></nav><div id="bibliography-content"><p>Chargement de la bibliographie…</p></div><p class="backlink"><a href="publications.html">← Retour aux publications sélectionnées</a></p></main><footer class="preview-footer"><div class="inner">Jean-Raynald de Dreuzy · CNRS · Géosciences Rennes · ENS Rennes</div></footer><script>(async()=>{const host=document.getElementById('bibliography-content');const files=['bibliographie-payload-01.txt','bibliographie-payload-02.txt','bibliographie-payload-03.txt','bibliographie-payload-04.txt','bibliographie-payload-05.txt'];try{const parts=await Promise.all(files.map(f=>fetch(f).then(r=>{if(!r.ok)throw new Error(f);return r.text()})));const b64=parts.join('').replace(/\s+/g,'');const bytes=Uint8Array.from(atob(b64),c=>c.charCodeAt(0));if(!('DecompressionStream' in window))throw new Error('gzip non pris en charge');const stream=new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'));const text=await new Response(stream).text();const doc=new DOMParser().parseFromString(text,'text/html');const main=doc.querySelector('.bibliography-page');const nodes=[...(main?.children||[])];const start=nodes.findIndex(n=>n.tagName==='H2');const end=nodes.findIndex(n=>n.classList?.contains('backlink'));if(start<0)throw new Error('contenu bibliographique introuvable');host.innerHTML=nodes.slice(start,end<0?undefined:end).map(n=>n.outerHTML).join('');if(location.hash){setTimeout(()=>document.getElementById(location.hash.slice(1))?.scrollIntoView(),0)}}catch(e){host.innerHTML='<p>La bibliographie n’a pas pu être chargée. Merci de recharger la page dans un navigateur récent.</p>'}})();</script></body></html>
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bibliographie complète — Jean-Raynald de Dreuzy</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="inner">
+    <a class="brand-link" href="index.html">Jean-Raynald de Dreuzy</a>
+    <nav class="nav-links">
+      <a href="index.html">Accueil</a>
+      <a href="recherche.html">Recherche</a>
+      <a href="projets.html">Projets</a>
+      <a href="equipe.html">Équipe</a>
+      <a class="active" href="publications.html">Publications</a>
+      <a href="cv.html">CV</a>
+    </nav>
+  </div>
+</header>
+<main class="preview-content bibliography-page">
+  <h1>Bibliographie complète</h1>
+  <p class="lead">Publications, chapitres, rapports, proceedings et abstracts de colloques. Les titres disposant d’un lien sont directement cliquables.</p>
+  <nav class="bib-toc" aria-label="Sommaire de la bibliographie">
+    <strong>Sommaire</strong>
+    <ul>
+      <li><a href="#articles-dans-des-revues-a-comite-de-lecture"><strong>Articles dans des revues à comité de lecture</strong></a></li>
+      <li><a href="#chapitre-douvrage">Chapitre d’ouvrage</a></li>
+      <li><a href="#rapports-et-autres-publications">Rapports et autres publications</a></li>
+      <li><a href="#proceedings-references-dans-web-of-knowledge">Proceedings référencés dans Web of Knowledge</a></li>
+      <li><a href="#proceedings-non-references-dans-web-of-knowledge">Proceedings non référencés dans Web of Knowledge</a></li>
+      <li><a href="#abstracts-de-colloques">Abstracts de colloques</a></li>
+    </ul>
+  </nav>
+  <div id="bibliography-content" aria-live="polite" aria-busy="true"><p>Chargement de la bibliographie…</p></div>
+  <p class="backlink"><a href="publications.html">← Retour aux publications sélectionnées</a></p>
+</main>
+<footer class="preview-footer"><div class="inner">Jean-Raynald de Dreuzy · CNRS · Géosciences Rennes · ENS Rennes</div></footer>
+<script>
+(async () => {
+  const host = document.getElementById('bibliography-content');
+  const files = [
+    'bibliographie-payload-01.txt',
+    'bibliographie-payload-02.txt',
+    'bibliographie-payload-03.txt',
+    'bibliographie-payload-04.txt',
+    'bibliographie-payload-05.txt'
+  ];
+  try {
+    const parts = await Promise.all(files.map(async file => {
+      const response = await fetch(file);
+      if (!response.ok) throw new Error(file);
+      return response.text();
+    }));
+    const b64 = parts.join('').replace(/\s+/g, '');
+    const bytes = Uint8Array.from(atob(b64), character => character.charCodeAt(0));
+    if (!('DecompressionStream' in window)) throw new Error('gzip non pris en charge');
+    const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'));
+    const fragment = await new Response(stream).text();
+
+    host.innerHTML = fragment;
+
+    const requiredSections = [
+      'articles-dans-des-revues-a-comite-de-lecture',
+      'chapitre-douvrage',
+      'rapports-et-autres-publications',
+      'proceedings-references-dans-web-of-knowledge',
+      'proceedings-non-references-dans-web-of-knowledge',
+      'abstracts-de-colloques'
+    ];
+    if (!requiredSections.every(id => host.querySelector(`#${id}`))) {
+      throw new Error('bibliographie incomplète');
+    }
+
+    host.setAttribute('aria-busy', 'false');
+    if (location.hash) {
+      setTimeout(() => document.getElementById(location.hash.slice(1))?.scrollIntoView(), 0);
+    }
+  } catch (error) {
+    host.setAttribute('aria-busy', 'false');
+    host.innerHTML = '<p>La bibliographie n’a pas pu être chargée. Merci de recharger la page dans un navigateur récent.</p>';
+    console.error(error);
+  }
+})();
+</script>
+</body>
+</html>
