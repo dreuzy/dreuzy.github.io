@@ -63,6 +63,68 @@
     }
     heading.remove();
   };
+  const sectionNodes = heading => {
+    const nodes = [];
+    const level = headingLevel(heading);
+    let node = heading.nextElementSibling;
+    while (node) {
+      if (isHeading(node) && headingLevel(node) <= level) break;
+      nodes.push(node);
+      node = node.nextElementSibling;
+    }
+    return nodes;
+  };
+  const replaceOlWithUl = ol => {
+    const ul = document.createElement('ul');
+    ul.className = `${ol.className || ''} bib-unnumbered`.trim();
+    [...ol.attributes].forEach(attr => {
+      if (attr.name !== 'class') ul.setAttribute(attr.name, attr.value);
+    });
+    while (ol.firstChild) ul.appendChild(ol.firstChild);
+    ol.replaceWith(ul);
+    return ul;
+  };
+  const makeSectionUnnumbered = heading => {
+    sectionNodes(heading).forEach(node => {
+      if (node.tagName === 'OL') replaceOlWithUl(node);
+      node.querySelectorAll?.('ol').forEach(replaceOlWithUl);
+      if (node.tagName === 'UL') node.classList.add('bib-unnumbered');
+      node.querySelectorAll?.('ul').forEach(list => list.classList.add('bib-unnumbered'));
+      if (node.matches?.('p')) node.innerHTML = node.innerHTML.replace(/^\s*\d+\.\s*/, '');
+    });
+  };
+  const unwrap = element => {
+    const fragment = document.createDocumentFragment();
+    while (element.firstChild) fragment.appendChild(element.firstChild);
+    element.replaceWith(fragment);
+  };
+  const escapeRegExp = value => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const wrapJournal = (root, journal) => {
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    const nodes = [];
+    while (walker.nextNode()) {
+      const node = walker.currentNode;
+      const parent = node.parentElement;
+      if (!parent || parent.closest('.smallcaps') || parent.closest('a') || parent.closest('h1,h2,h3,h4,h5,h6')) continue;
+      if (new RegExp(escapeRegExp(journal), 'i').test(node.nodeValue || '')) nodes.push(node);
+    }
+    nodes.forEach(node => {
+      const regex = new RegExp(`(${escapeRegExp(journal)})`, 'gi');
+      const pieces = (node.nodeValue || '').split(regex);
+      if (pieces.length < 2) return;
+      const fragment = document.createDocumentFragment();
+      pieces.forEach(piece => {
+        if (!piece) return;
+        if (new RegExp(`^${escapeRegExp(journal)}$`, 'i').test(piece)) {
+          const span = document.createElement('span');
+          span.className = 'smallcaps';
+          span.textContent = piece;
+          fragment.appendChild(span);
+        } else fragment.appendChild(document.createTextNode(piece));
+      });
+      node.replaceWith(fragment);
+    });
+  };
   try {
     const parts = await Promise.all(files.map(async file => {
       const response = await fetch(file);
@@ -74,7 +136,6 @@
     if (!('DecompressionStream' in window)) throw new Error('gzip non pris en charge');
     const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'));
     const fragment = await new Response(stream).text();
-
     host.innerHTML = fragment;
 
     [...host.querySelectorAll('h2,h3,h4,h5,h6')].forEach(heading => {
@@ -82,37 +143,30 @@
       if (title.includes('abandon') || title.includes('en preparation')) removeSection(heading);
     });
 
-    if (!normalize(host.textContent).includes('pyage: an extensible toolkit for lumped-parameter modeling of tracer-derived groundwater ages')) {
-      const headings = [...host.querySelectorAll('h2,h3,h4,h5,h6')];
-      let submittedHeading = headings.find(heading => normalize(heading.textContent).includes('soumis'));
-      if (!submittedHeading) {
-        const articleHeading = host.querySelector('#articles-dans-des-revues-a-comite-de-lecture');
-        if (articleHeading) {
-          submittedHeading = document.createElement('h3');
-          submittedHeading.textContent = 'Articles soumis';
-          articleHeading.insertAdjacentElement('afterend', submittedHeading);
-        }
-      }
-      if (submittedHeading) {
-        let list = submittedHeading.nextElementSibling;
-        while (list && !['OL','UL'].includes(list.tagName) && !isHeading(list)) list = list.nextElementSibling;
-        if (!list || isHeading(list)) {
-          list = document.createElement('ol');
-          submittedHeading.insertAdjacentElement('afterend', list);
-        }
-        const item = document.createElement('li');
-        item.innerHTML = 'J.-R. de Dreuzy, S. Leray, J. Marçais (2026), PyAge: an extensible toolkit for lumped-parameter modeling of tracer-derived groundwater ages. Soumis à <span class="smallcaps">Geoscientific Model Development</span>.';
-        list.prepend(item);
+    let headings = [...host.querySelectorAll('h2,h3,h4,h5,h6')];
+    let submittedHeading = headings.find(heading => normalize(heading.textContent).includes('soumis'));
+    if (!submittedHeading) {
+      const articleHeading = host.querySelector('#articles-dans-des-revues-a-comite-de-lecture');
+      if (articleHeading) {
+        submittedHeading = document.createElement('h3');
+        submittedHeading.textContent = 'Soumis';
+        articleHeading.insertAdjacentElement('afterend', submittedHeading);
       }
     }
 
-    [...host.querySelectorAll('strong,b')].forEach(element => {
-      if (normalize(element.textContent).includes('dreuzy')) {
-        const replacement = document.createDocumentFragment();
-        while (element.firstChild) replacement.appendChild(element.firstChild);
-        element.replaceWith(replacement);
-      }
-    });
+    if (!normalize(host.textContent).includes('pyage: an extensible toolkit for lumped-parameter modeling of tracer-derived groundwater ages') && submittedHeading) {
+      let list = submittedHeading.nextElementSibling;
+      while (list && !['OL','UL'].includes(list.tagName) && !isHeading(list)) list = list.nextElementSibling;
+      if (!list || isHeading(list)) {
+        list = document.createElement('ul');
+        list.className = 'bib-unnumbered';
+        submittedHeading.insertAdjacentElement('afterend', list);
+      } else if (list.tagName === 'OL') list = replaceOlWithUl(list);
+      else list.classList.add('bib-unnumbered');
+      const item = document.createElement('li');
+      item.innerHTML = 'J.-R. de Dreuzy, S. Leray, J. Marçais (2026), PyAge: an extensible toolkit for lumped-parameter modeling of tracer-derived groundwater ages. Soumis à <span class="smallcaps">Geoscientific Model Development</span>.';
+      list.prepend(item);
+    }
 
     const walker = document.createTreeWalker(host, NodeFilter.SHOW_TEXT);
     const textNodes = [];
@@ -121,8 +175,39 @@
       node.nodeValue = node.nodeValue
         .replace(/under review for/gi, 'article en révision pour')
         .replace(/under review/gi, 'article en révision')
-        .replace(/in review/gi, 'article en révision');
+        .replace(/in review/gi, 'en révision');
     });
+
+    headings = [...host.querySelectorAll('h2,h3,h4,h5,h6')];
+    headings.forEach(heading => {
+      const title = normalize(heading.textContent);
+      if (title.includes('soumis')) heading.textContent = 'Soumis';
+      else if (title === 'in review' || title.includes('en revision') || title.includes('article en revision')) heading.textContent = 'En révision';
+      else if (title.includes('articles publies') || title === 'publies') heading.textContent = 'Publiés';
+    });
+
+    headings = [...host.querySelectorAll('h2,h3,h4,h5,h6')];
+    headings.filter(h => ['soumis','en revision'].includes(normalize(h.textContent))).forEach(makeSectionUnnumbered);
+
+    host.querySelectorAll('li strong, li b, p strong, p b').forEach(unwrap);
+
+    const journalNames = new Set([...host.querySelectorAll('.smallcaps')].map(el => el.textContent.trim()).filter(Boolean));
+    [
+      'Hydrology and Earth System Sciences','Hydrological Processes','Journal of Hydrology','Journal of Hydrology: Regional Studies',
+      'Water Resources Research','Science of the Total Environment','Proceedings of the National Academy of Sciences',
+      'Proceedings of the National Academy of Sciences of the United States of America','Geoscientific Model Development',
+      'Nature Sustainability','Advances in Water Resources','Computers & Geosciences','Computers and Geosciences','Groundwater',
+      'Journal of Geophysical Research: Solid Earth','Sustainability Science','Limnology and Oceanography: Methods',
+      'Soil Biology and Biochemistry','Applied Geochemistry','Hydrogeology Journal','Vadose Zone Journal','Geothermics',
+      'Earth-Science Reviews','Environmental Modelling & Software','Environmental Modelling and Software','Journal of Computational Physics',
+      'IEEE Transactions on Automatic Control','Ecological Modelling','Transport in Porous Media','Geochimica et Cosmochimica Acta',
+      'Ecosystems','International Journal of Coal Geology','Biology and Fertility of Soils','Applied Soil Ecology',
+      'Journal of Contaminant Hydrology','Regional Environmental Change','Groundwater for Sustainable Development','Physical Review E',
+      'SIAM Journal on Scientific Computing','Numerical and Analytical Methods in Geomechanics','Applicable Analysis','Géologues',
+      'Techniques Sciences Méthodes'
+    ].forEach(name => journalNames.add(name));
+    const referenceRoots = [...host.querySelectorAll('li,p')];
+    [...journalNames].sort((a,b) => b.length - a.length).forEach(journal => referenceRoots.forEach(root => wrapJournal(root, journal)));
 
     const requiredSections = [
       'articles-dans-des-revues-a-comite-de-lecture',
