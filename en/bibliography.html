@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Full bibliography — Jean-Raynald de Dreuzy</title>
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="inner">
+    <a class="brand-link" href="index.html">Jean-Raynald de Dreuzy</a>
+    <nav class="nav-links">
+      <a href="index.html">Home</a><a href="research.html">Research</a><a href="projects.html">Projects</a><a href="team.html">Team</a><a class="active" href="publications.html">Publications</a><a href="software.html">Software</a><a href="cv.html">CV</a><a href="../bibliographie.html">FR</a><strong>EN</strong>
+    </nav>
+  </div>
+</header>
+<main class="preview-content bibliography-page">
+  <h1>Full bibliography</h1>
+  <p class="lead">Journal articles, book chapters, reports, proceedings and conference abstracts. Titles with links are directly clickable.</p>
+  <nav class="bib-toc" aria-label="Bibliography table of contents">
+    <strong>Contents</strong>
+    <ul>
+      <li><a href="#articles-dans-des-revues-a-comite-de-lecture"><strong>Peer-reviewed journal articles</strong></a></li>
+      <li><a href="#chapitre-douvrage">Book chapter</a></li>
+      <li><a href="#rapports-et-autres-publications">Reports and other publications</a></li>
+      <li><a href="#proceedings-references-dans-web-of-knowledge">Proceedings indexed in Web of Knowledge</a></li>
+      <li><a href="#proceedings-non-references-dans-web-of-knowledge">Proceedings not indexed in Web of Knowledge</a></li>
+      <li><a href="#abstracts-de-colloques">Conference abstracts</a></li>
+    </ul>
+  </nav>
+  <div id="bibliography-content" aria-live="polite" aria-busy="true"><p>Loading bibliography…</p></div>
+  <p class="backlink"><a href="publications.html">← Back to selected publications</a></p>
+</main>
+<footer class="preview-footer"><div class="inner">Jean-Raynald de Dreuzy · CNRS · Géosciences Rennes · ENS Rennes</div></footer>
+<script>
+(async () => {
+  const host = document.getElementById('bibliography-content');
+  const files = ['../bibliographie-payload-01.txt','../bibliographie-payload-02.txt','../bibliographie-payload-03.txt','../bibliographie-payload-04.txt','../bibliographie-payload-05.txt'];
+  const normalize = value => (value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/\s+/g, ' ').trim();
+  const isHeading = element => /^H[1-6]$/.test(element?.tagName || '');
+  const headingLevel = element => Number((element?.tagName || 'H6').slice(1));
+  const removeSection = heading => { const level = headingLevel(heading); let node = heading.nextElementSibling; while (node) { if (isHeading(node) && headingLevel(node) <= level) break; const next = node.nextElementSibling; node.remove(); node = next; } heading.remove(); };
+  const sectionNodes = heading => { const nodes = []; const level = headingLevel(heading); let node = heading.nextElementSibling; while (node) { if (isHeading(node) && headingLevel(node) <= level) break; nodes.push(node); node = node.nextElementSibling; } return nodes; };
+  const replaceOlWithUl = ol => { const ul = document.createElement('ul'); ul.className = `${ol.className || ''} bib-unnumbered`.trim(); [...ol.attributes].forEach(attr => { if (attr.name !== 'class') ul.setAttribute(attr.name, attr.value); }); while (ol.firstChild) ul.appendChild(ol.firstChild); ol.replaceWith(ul); return ul; };
+  const makeSectionUnnumbered = heading => sectionNodes(heading).forEach(node => { if (node.tagName === 'OL') replaceOlWithUl(node); node.querySelectorAll?.('ol').forEach(replaceOlWithUl); if (node.tagName === 'UL') node.classList.add('bib-unnumbered'); node.querySelectorAll?.('ul').forEach(list => list.classList.add('bib-unnumbered')); if (node.matches?.('p')) node.innerHTML = node.innerHTML.replace(/^\s*\d+\.\s*/, ''); });
+  const unwrap = element => { const fragment = document.createDocumentFragment(); while (element.firstChild) fragment.appendChild(element.firstChild); element.replaceWith(fragment); };
+  try {
+    const parts = await Promise.all(files.map(async file => { const response = await fetch(file); if (!response.ok) throw new Error(file); return response.text(); }));
+    const b64 = parts.join('').replace(/\s+/g, '');
+    const bytes = Uint8Array.from(atob(b64), character => character.charCodeAt(0));
+    if (!('DecompressionStream' in window)) throw new Error('gzip unsupported');
+    const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'));
+    host.innerHTML = await new Response(stream).text();
+
+    [...host.querySelectorAll('h2,h3,h4,h5,h6')].forEach(heading => { const title = normalize(heading.textContent); if (title.includes('abandon') || title.includes('en preparation') || title.includes('abandoned') || title.includes('in preparation')) removeSection(heading); });
+
+    const sectionTitles = {
+      'articles-dans-des-revues-a-comite-de-lecture':'Peer-reviewed journal articles',
+      'chapitre-douvrage':'Book chapter',
+      'rapports-et-autres-publications':'Reports and other publications',
+      'proceedings-references-dans-web-of-knowledge':'Proceedings indexed in Web of Knowledge',
+      'proceedings-non-references-dans-web-of-knowledge':'Proceedings not indexed in Web of Knowledge',
+      'abstracts-de-colloques':'Conference abstracts'
+    };
+    Object.entries(sectionTitles).forEach(([id,title]) => { const el = host.querySelector(`#${id}`); if (el) el.textContent = title; });
+
+    let headings = [...host.querySelectorAll('h2,h3,h4,h5,h6')];
+    let submittedHeading = headings.find(h => normalize(h.textContent).includes('soumis') || normalize(h.textContent).includes('submitted'));
+    if (!submittedHeading) { const articleHeading = host.querySelector('#articles-dans-des-revues-a-comite-de-lecture'); if (articleHeading) { submittedHeading = document.createElement('h3'); submittedHeading.textContent = 'Submitted'; articleHeading.insertAdjacentElement('afterend', submittedHeading); } }
+    if (!normalize(host.textContent).includes('pyage: an extensible toolkit for lumped-parameter modeling of tracer-derived groundwater ages') && submittedHeading) {
+      let list = submittedHeading.nextElementSibling; while (list && !['OL','UL'].includes(list.tagName) && !isHeading(list)) list = list.nextElementSibling;
+      if (!list || isHeading(list)) { list = document.createElement('ul'); list.className = 'bib-unnumbered'; submittedHeading.insertAdjacentElement('afterend', list); } else if (list.tagName === 'OL') list = replaceOlWithUl(list); else list.classList.add('bib-unnumbered');
+      const item = document.createElement('li'); item.innerHTML = 'J.-R. de Dreuzy, S. Leray, J. Marçais (2026), PyAge: an extensible toolkit for lumped-parameter modeling of tracer-derived groundwater ages. Submitted to <span class="smallcaps">Geoscientific Model Development</span>.'; list.prepend(item);
+    }
+
+    const walker = document.createTreeWalker(host, NodeFilter.SHOW_TEXT); const textNodes = []; while (walker.nextNode()) textNodes.push(walker.currentNode);
+    textNodes.forEach(node => { node.nodeValue = node.nodeValue.replace(/article en révision pour/gi,'under review for').replace(/article en révision/gi,'under review').replace(/en révision/gi,'under review').replace(/soumis à/gi,'submitted to').replace(/soumis/gi,'submitted'); });
+
+    headings = [...host.querySelectorAll('h2,h3,h4,h5,h6')];
+    headings.forEach(heading => { const title = normalize(heading.textContent); if (title.includes('soumis') || title.includes('submitted')) heading.textContent = 'Submitted'; else if (title === 'in review' || title.includes('en revision') || title.includes('under review')) heading.textContent = 'Under review'; else if (title.includes('articles publies') || title === 'publies' || title === 'published') heading.textContent = 'Published'; });
+    headings = [...host.querySelectorAll('h2,h3,h4,h5,h6')]; headings.filter(h => ['submitted','under review'].includes(normalize(h.textContent))).forEach(makeSectionUnnumbered);
+    host.querySelectorAll('li strong, li b, p strong, p b').forEach(unwrap);
+    host.setAttribute('aria-busy','false');
+    if (location.hash) setTimeout(() => document.getElementById(location.hash.slice(1))?.scrollIntoView(), 0);
+  } catch (error) {
+    host.setAttribute('aria-busy','false'); host.innerHTML = '<p>The bibliography could not be loaded. Please reload this page in a recent browser.</p>'; console.error(error);
+  }
+})();
+</script>
+</body>
+</html>
