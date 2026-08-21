@@ -1,0 +1,77 @@
+{
+  "site": "https://dreuzy.github.io",
+  "default_language": "fr",
+  "navigation": [
+    "home",
+    "research",
+    "projects",
+    "team",
+    "publications",
+    "software",
+    "cv"
+  ],
+  "pages": [
+    {
+      "id": "home",
+      "fr": "index.html",
+      "en": "en/index.html",
+      "navigation": true
+    },
+    {
+      "id": "research",
+      "fr": "recherche.html",
+      "en": "en/research.html",
+      "navigation": true
+    },
+    {
+      "id": "projects",
+      "fr": "projets.html",
+      "en": "en/projects.html",
+      "navigation": true
+    },
+    {
+      "id": "team",
+      "fr": "equipe.html",
+      "en": "en/team.html",
+      "navigation": true
+    },
+    {
+      "id": "publications",
+      "fr": "publications.html",
+      "en": "en/publications.html",
+      "navigation": true
+    },
+    {
+      "id": "software",
+      "fr": "logiciels.html",
+      "en": "en/software.html",
+      "navigation": true
+    },
+    {
+      "id": "cv",
+      "fr": "cv.html",
+      "en": "en/cv.html",
+      "navigation": true
+    },
+    {
+      "id": "masters",
+      "fr": "masters.html",
+      "en": "en/masters.html",
+      "navigation": false
+    },
+    {
+      "id": "bibliography",
+      "fr": "bibliographie.html",
+      "en": "en/bibliography.html",
+      "navigation": false
+    },
+    {
+      "id": "about-redirect",
+      "fr": "a-propos.html",
+      "en": "en/about.html",
+      "navigation": false,
+      "redirect": true,
+      "target": "cv"
+    }
+  ]
+}
