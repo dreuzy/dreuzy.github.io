@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://dreuzy.github.io/sitemap.xml
