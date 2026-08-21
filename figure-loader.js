@@ -1,8 +1,10 @@
 document.addEventListener('DOMContentLoaded', () => {
   const figures = document.querySelectorAll('img[data-b64-name][data-b64-parts]');
   figures.forEach(async (img) => {
-    const name = img.dataset.b64Name;
-    const count = Number(img.dataset.b64Parts || 0);
+    const requestedName = img.dataset.b64Name;
+    const restoreApprovedHydroModPy = requestedName === 'hydromodpy-v2';
+    const name = restoreApprovedHydroModPy ? 'hydromodpy-approvedq100' : requestedName;
+    const count = restoreApprovedHydroModPy ? 8 : Number(img.dataset.b64Parts || 0);
     if (!name || !count) return;
     try {
       const requests = Array.from({ length: count }, (_, i) => {
