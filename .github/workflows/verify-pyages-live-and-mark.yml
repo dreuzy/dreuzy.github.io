@@ -1,0 +1,66 @@
+name: Verify live PyAges image and mark
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/verify-pyages-live-and-mark.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  verify:
+    name: Verify deployed PyAges image and write marker
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Wait for public deployment and verify image
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected="54bbf9d165c92d15f6fe890ac6aecea2eff65dfc467b0e5b7e51326602745b50"
+          ok=0
+          for i in $(seq 1 36); do
+            echo "Attempt $i/36"
+            if curl -fsSL -H 'Cache-Control: no-cache' "https://dreuzy.github.io/assets/pyages-groundwater-age-v2.webp?verify=${GITHUB_SHA}-${i}" -o /tmp/pyages.webp; then
+              actual=$(sha256sum /tmp/pyages.webp | awk '{print $1}')
+              size=$(stat -c%s /tmp/pyages.webp)
+              echo "size=$size sha256=$actual"
+              if [ "$actual" = "$expected" ] && [ "$size" = "58538" ]; then
+                ok=1
+                break
+              fi
+            fi
+            sleep 5
+          done
+          test "$ok" = "1"
+          file /tmp/pyages.webp
+
+          curl -fsSL -H 'Cache-Control: no-cache' "https://dreuzy.github.io/pyages.html?verify=${GITHUB_SHA}" -o /tmp/fr.html
+          curl -fsSL -H 'Cache-Control: no-cache' "https://dreuzy.github.io/en/pyages.html?verify=${GITHUB_SHA}" -o /tmp/en.html
+          grep -F 'src="assets/pyages-groundwater-age-v2.webp"' /tmp/fr.html
+          grep -F 'src="../assets/pyages-groundwater-age-v2.webp"' /tmp/en.html
+
+      - name: Write success marker
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > assets/pyages-live-verified.txt <<'EOF'
+          PyAges live image verified
+          SHA256: 54bbf9d165c92d15f6fe890ac6aecea2eff65dfc467b0e5b7e51326602745b50
+          Size: 58538 bytes
+          French page: /pyages.html
+          English page: /en/pyages.html
+          Asset: /assets/pyages-groundwater-age-v2.webp
+          EOF
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/pyages-live-verified.txt
+          git commit -m "Mark live PyAges image verification"
+          git push
