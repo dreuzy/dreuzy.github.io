@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PyAges — Jean-Raynald de Dreuzy</title>
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="inner">
+    <a class="brand-link" href="index.html">Jean-Raynald de Dreuzy</a>
+    <nav class="nav-links"><a href="index.html">Home</a><a href="research.html">Research</a><a href="projects.html">Projects</a><a href="team.html">Team</a><a href="publications.html">Publications</a><a class="active" href="software.html">Software</a><a href="cv.html">CV</a><a href="../pyages.html">FR</a><strong>EN</strong></nav>
+  </div>
+</header>
+<main class="preview-content">
+  <div class="meta-line">Scientific software · Python · Groundwater ages</div>
+  <h1>PyAges</h1>
+  <p class="lead">PyAges is an open-source Python environment for modelling and interpreting groundwater ages from environmental tracers and lumped-parameter models (LPMs).</p>
+  <div class="notice">The public name of the software is <strong>PyAges</strong>. The Python distribution, import name and command-line interface use the technical identifier <code>pyages</code>.</div>
+  <div class="software-links"><a href="https://github.com/dreuzy/PyAges">GitHub code</a><a href="https://github.com/dreuzy/PyAges/releases/tag/1.0">Release 1.0</a><a href="https://pyage-gw.readthedocs.io/en/stable/">Documentation</a><a href="https://pypi.org/project/pyages/">PyPI</a><a href="https://doi.org/10.5281/zenodo.22150863">Zenodo</a></div>
+
+  <section class="section-block">
+    <h2>Principle</h2>
+    <p>Environmental tracers record the history of exchanges between the atmosphere, recharge and groundwater. PyAges links tracer input histories to observed groundwater concentrations through transit-time distributions. These distributions are represented by LPMs and integrated by convolution to simulate expected tracer concentrations.</p>
+    <p>The software architecture separates tracers, transit-time distributions, convolution operators and calibration methods. This makes it possible to combine different tracers and models while retaining reproducible and extensible workflows.</p>
+  </section>
+
+  <section class="section-block">
+    <h2>Calibration and uncertainty</h2>
+    <p>PyAges supports deterministic fitting as well as Bayesian calibration, including Metropolis–Hastings. The aim is not only to identify an optimal parameter combination, but also to explore parameter uncertainty, correlations and model identifiability limits.</p>
+    <p>This is particularly useful when several parameter sets produce similar model responses, or when observations cannot independently constrain all parameters of a transit-time model.</p>
+  </section>
+
+  <section class="section-block">
+    <h2>Validation and reproducibility</h2>
+    <p>The repository brings together the scientific core of the software, runnable examples, regression tests and validation cases. The campaigns used for the article are preserved separately so that published results can be linked precisely to the code and data that produced them.</p>
+    <p>The scientific version archived for the article is version <strong>1.0</strong>, deposited on Zenodo. Development continues through separate maintenance releases without modifying this reference archive.</p>
+  </section>
+
+  <section class="section-block">
+    <h2>Use</h2>
+    <p>PyAges is distributed through PyPI. After installation, the library is imported as <code>pyages</code>, and a command-line interface with the same name is available to check the installation, list models and tracers, and run configured workflows.</p>
+    <div class="notice"><code>python -m pip install pyages</code></div>
+  </section>
+
+  <section class="section-block">
+    <h2>Article and citation</h2>
+    <p>J.-R. de Dreuzy, S. Leray & J. Marçais (2026), software and manuscript submitted to <span class="smallcaps">Geoscientific Model Development</span>.</p>
+    <p>The scientific archive for version 1.0 is available on Zenodo under DOI <a href="https://doi.org/10.5281/zenodo.22150863">10.5281/zenodo.22150863</a>.</p>
+  </section>
+
+  <p class="backlink"><a href="software.html">← Back to software</a></p>
+</main>
+<footer class="preview-footer"><div class="inner">Jean-Raynald de Dreuzy · CNRS · Géosciences Rennes · ENS Rennes</div></footer>
+</body>
+</html>
