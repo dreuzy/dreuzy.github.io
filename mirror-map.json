@@ -48,6 +48,12 @@
       "navigation": true
     },
     {
+      "id": "pyages",
+      "fr": "pyages.html",
+      "en": "en/pyages.html",
+      "navigation": true
+    },
+    {
       "id": "cv",
       "fr": "cv.html",
       "en": "en/cv.html",
