@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const restoreApprovedHydroModPy = requestedName === 'hydromodpy-v2';
     const name = restoreApprovedHydroModPy ? 'hydromodpy-approvedq100' : requestedName;
     const count = restoreApprovedHydroModPy ? 8 : Number(img.dataset.b64Parts || 0);
+    const mime = img.dataset.b64Mime || 'image/webp';
     if (!name || !count) return;
     try {
       const requests = Array.from({ length: count }, (_, i) => {
@@ -15,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
       });
       const data = (await Promise.all(requests)).join('').replace(/\s+/g, '');
-      const src = `data:image/webp;base64,${data}`;
+      const src = `data:${mime};base64,${data}`;
       img.src = src;
       img.classList.add('generated-figure-loaded');
       const link = img.closest('a.generated-figure-link');
