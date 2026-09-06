@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   mirror:
-    name: Verify FR/EN page parity
+    name: Verify FR/EN page parity and local links
     runs-on: ubuntu-latest
     steps:
       - name: Check out the site
@@ -22,3 +22,5 @@ jobs:
           python-version: "3.12"
       - name: Validate the bilingual mirror
         run: python scripts/check_bilingual_mirror.py
+      - name: Validate local links and resources
+        run: python scripts/check_local_links.py
