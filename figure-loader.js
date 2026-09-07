@@ -30,6 +30,51 @@ document.addEventListener('DOMContentLoaded', () => {
   const figureImages = document.querySelectorAll('.figure-panel img');
   if (!figureImages.length) return;
 
+  if (!document.getElementById('figure-lightbox-style')) {
+    const style = document.createElement('style');
+    style.id = 'figure-lightbox-style';
+    style.textContent = `
+      .zoomable-image { cursor: zoom-in; }
+      .image-lightbox {
+        position: fixed;
+        inset: 0;
+        z-index: 10000;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 4rem 2rem 2rem;
+        background: rgba(8, 18, 28, 0.84);
+      }
+      .image-lightbox.is-open { display: flex; }
+      .image-lightbox .lightbox-image {
+        display: block;
+        width: auto;
+        height: auto;
+        max-width: calc(100vw - 3rem);
+        max-height: calc(100vh - 5rem);
+        object-fit: contain;
+        background: #fff;
+        box-shadow: 0 12px 48px rgba(0, 0, 0, 0.35);
+      }
+      .image-lightbox .lightbox-close {
+        position: absolute;
+        top: 1rem;
+        right: 1.25rem;
+        width: 46px;
+        height: 46px;
+        border: 0;
+        border-radius: 50%;
+        background: #fff;
+        color: #17324a;
+        font-size: 2rem;
+        line-height: 1;
+        cursor: pointer;
+      }
+      body.lightbox-open { overflow: hidden; }
+    `;
+    document.head.appendChild(style);
+  }
+
   const lightbox = document.createElement('div');
   lightbox.className = 'image-lightbox';
   lightbox.setAttribute('aria-hidden', 'true');
