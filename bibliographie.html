@@ -139,6 +139,11 @@
     const fragment = await new Response(stream).text();
     host.innerHTML = fragment;
 
+    const unwantedTitle = 'towards a more comprehensive representation of hydrosystems in water footprint assessments';
+    host.querySelectorAll('li,p').forEach(entry => {
+      if (normalize(entry.textContent).includes(unwantedTitle)) entry.remove();
+    });
+
     [...host.querySelectorAll('h2,h3,h4,h5,h6')].forEach(heading => {
       const title = normalize(heading.textContent);
       if (title.includes('abandon') || title.includes('en preparation')) removeSection(heading);
