@@ -26,7 +26,6 @@ jobs:
           title = "Sentinel water fingerprint: capturing hydrosystem dynamics for adaptive water management"
           full_authors = "M. Ricau, R. Abhervé, H. Budzinski, C. Casenave, A. Chaumot, F. Courant, V. Dupraz, G. Fernandes, H. Fenet, E. Gomez, P. Gonzalez, G. Imfeld, J. Jaunat, G. Junqua, C. Kane, S. Lardy-Fontan, T. Le Borgne, B. Lopez, J. M.F. Martins, J. Molénat, S. Payraudeau, A. Togola, J. Tournebize, J.-R. de Dreuzy"
 
-          # Selected publications — French
           p = Path("publications.html")
           s = p.read_text(encoding="utf-8")
           if title not in s:
@@ -34,10 +33,8 @@ jobs:
               entry = '<div class="pub-entry"><div class="pub-title">' + title + '</div><div class="pub-meta">M. Ricau et al. (2026) · soumis à <span class="smallcaps">WIREs Water</span></div></div>'
               if marker not in s:
                   raise SystemExit("French selected-publications marker not found")
-              s = s.replace(marker, marker + entry, 1)
-              p.write_text(s, encoding="utf-8")
+              p.write_text(s.replace(marker, marker + entry, 1), encoding="utf-8")
 
-          # Selected publications — English
           p = Path("en/publications.html")
           s = p.read_text(encoding="utf-8")
           if title not in s:
@@ -45,8 +42,7 @@ jobs:
               entry = '    <div class="pub-entry"><div class="pub-title">' + title + '</div><div class="pub-meta">M. Ricau et al. (2026) · submitted to <span class="smallcaps">WIREs Water</span></div></div>\n'
               if marker not in s:
                   raise SystemExit("English selected-publications marker not found")
-              s = s.replace(marker, marker + entry, 1)
-              p.write_text(s, encoding="utf-8")
+              p.write_text(s.replace(marker, marker + entry, 1), encoding="utf-8")
 
           def inject_bibliography(path, status):
               p = Path(path)
@@ -57,28 +53,28 @@ jobs:
               if marker not in s:
                   raise SystemExit(f"Bibliography marker not found in {path}")
               reference = full_authors + ' (2026), ' + title + '. ' + status + ' <span class="smallcaps">WIREs Water</span>.'
-              block = f'''    if (!normalize(host.textContent).includes('{title.lower()}') && submittedHeading) {{
-      let list = submittedHeading.nextElementSibling;
-      while (list && !['OL','UL'].includes(list.tagName) && !isHeading(list)) list = list.nextElementSibling;
-      if (!list || isHeading(list)) {{
-        list = document.createElement('ul');
-        list.className = 'bib-unnumbered';
-        submittedHeading.insertAdjacentElement('afterend', list);
-      }} else if (list.tagName === 'OL') list = replaceOlWithUl(list);
-      else list.classList.add('bib-unnumbered');
-      const item = document.createElement('li');
-      item.innerHTML = '{reference}';
-      list.prepend(item);
-    }}
-
-'''
-              s = s.replace(marker, block + marker, 1)
-              p.write_text(s, encoding="utf-8")
+              lines = [
+                  "    if (!normalize(host.textContent).includes('" + title.lower() + "') && submittedHeading) {",
+                  "      let list = submittedHeading.nextElementSibling;",
+                  "      while (list && !['OL','UL'].includes(list.tagName) && !isHeading(list)) list = list.nextElementSibling;",
+                  "      if (!list || isHeading(list)) {",
+                  "        list = document.createElement('ul');",
+                  "        list.className = 'bib-unnumbered';",
+                  "        submittedHeading.insertAdjacentElement('afterend', list);",
+                  "      } else if (list.tagName === 'OL') list = replaceOlWithUl(list);",
+                  "      else list.classList.add('bib-unnumbered');",
+                  "      const item = document.createElement('li');",
+                  "      item.innerHTML = '" + reference + "';",
+                  "      list.prepend(item);",
+                  "    }",
+                  "",
+              ]
+              block = "\n".join(lines) + "\n"
+              p.write_text(s.replace(marker, block + marker, 1), encoding="utf-8")
 
           inject_bibliography("bibliographie.html", "Soumis à")
           inject_bibliography("en/bibliography.html", "Submitted to")
 
-          # Sanity checks
           for path in ["publications.html", "en/publications.html", "bibliographie.html", "en/bibliography.html"]:
               text = Path(path).read_text(encoding="utf-8")
               if title not in text or "WIREs Water" not in text:
