@@ -1,66 +1,32 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Projects — Jean-Raynald de Dreuzy</title>
-  <link rel="stylesheet" href="../styles.css">
-  <script src="figure-loader.js" defer></script>
-</head>
-<body>
-<header class="site-header">
-  <div class="inner">
-    <a class="brand-link" href="index.html">Jean-Raynald de Dreuzy</a>
-    <nav class="nav-links"><a href="index.html">Home</a><a href="research.html">Research</a><a class="active" href="projects.html">Projects</a><a href="team.html">Team</a><a href="publications.html">Publications</a><a href="software.html">Software</a><a href="cv.html">CV</a><a href="../projets.html">FR</a><strong>EN</strong></nav>
-  </div>
-</header>
-<main class="preview-content">
-  <h1>Projects</h1>
-  <p class="lead">Our research is structured around collaborative projects that connect process understanding, model development and water-management challenges.</p>
+<dialog id="image-lightbox" class="image-lightbox">
+  <button class="lightbox-close" type="button" aria-label="Fermer">×</button>
+  <img id="lightbox-image" src="" alt="">
+</dialog>
 
-  <section class="project-row">
-    <div>
-      <div class="meta-line">ANR PRCI · 2026–2030</div>
-      <h2>FutureFlow</h2>
-      <p><strong>Scientific coordination: Jean-Raynald de Dreuzy &amp; Clément Roques · University of Neuchâtel</strong></p>
-      <p>FutureFlow develops a multi-model, multi-fidelity approach to better represent groundwater contributions to headwater-catchment dynamics.</p>
-      <p>We aim to select the appropriate level of model fidelity for the dominant processes, available data and simulation objectives, then deploy these approaches across a large number of European catchments.</p>
-      <p><strong>Participants</strong> — Arnaud Blouin, Benoît Combemale, Alexandre Boisson, Florence Habets, Oliver Schilling…</p>
-      <p><strong>Institutions</strong> — CNRS / University of Rennes · University of Neuchâtel · BRGM · ENS-PSL · University of Basel / Eawag</p>
-      <p><strong>Funding</strong> — ANR PRCI France–Switzerland</p>
-    </div>
-    <figure class="figure-panel actual-figure generated-figure"><a class="generated-figure-link" href="#"><img src="../assets/figures/futureflow-framework.webp" data-b64-name="futureflow-illustration" data-b64-parts="3" alt="FutureFlow multi-fidelity framework, from conceptual 1D model to integrated surface-subsurface model"></a><figcaption>FutureFlow: progression from low- to medium- and high-fidelity models according to processes, data and simulation objectives.</figcaption></figure>
-  </section>
+<script>
+  const lightbox = document.getElementById('image-lightbox');
+  const lightboxImage = document.getElementById('lightbox-image');
+  const closeButton = lightbox.querySelector('.lightbox-close');
 
-  <section class="project-row">
-    <div>
-      <div class="meta-line">PEPR OneWater · PC4 · 2022–2031</div>
-      <h2>Water Footprint &amp; Sentinel Water</h2>
-      <p><strong>Scientific coordination: Jean-Raynald de Dreuzy &amp; Hélène Budzinski · University of Bordeaux</strong></p>
-      <p>We investigate how socio-hydrological systems transform, attenuate, delay or reveal pressures on water, linking water uses, transfers, exposure, observed effects and indicators.</p>
-      <p>Phase 2 brings together four complementary projects — AMONT, HOLI-AQUA, SEREINE and SPeCtre — and a broad scientific and stakeholder community.</p>
-      <p><strong>Funding</strong> — France 2030 · PEPR OneWater – Eau Bien Commun · ANR</p>
-    </div>
-    <figure class="figure-panel actual-figure generated-figure"><a class="generated-figure-link" href="#"><img src="../assets/figures/onewater.svg" data-b64-name="onewater-sentinel" data-b64-parts="4" alt="Sentinel Water: multidimensional observation of a hydrosystem using physical, chemical, biological, isotopic and molecular signals"></a><figcaption>Sentinel Water: a multidimensional view of hydrosystems through physical, chemical, biological, isotopic and molecular signals.</figcaption></figure>
-  </section>
+  document.querySelectorAll('.figure-panel img').forEach(img => {
+    img.classList.add('zoomable-image');
 
-  <section class="project-row">
-    <div>
-      <div class="meta-line">University of Rennes Foundation · 2019–2028</div>
-      <h2>Chaire Eaux &amp; Territoires</h2>
-      <p><strong>Co-chairs: Luc Aquilina &amp; Jean-Raynald de Dreuzy · University of Rennes / CNRS</strong></p>
-      <p>Working with water managers and local authorities, we investigate how water resources respond to climate change and changing demands, connecting surface water, groundwater, water quality and water-supply systems.</p>
-      <p><strong>Funding</strong> — Eau du Bassin Rennais · Rennes Métropole (2019–2028) · SMG Eau 35 (2024–2028)</p>
-    </div>
-    <div class="figure-panel"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 420" style="width:100%;height:auto;display:block"><rect width="900" height="420" fill="#ffffff"/><text x="40" y="42" font-family="Arial" font-size="20" font-weight="700" fill="#17324a">Chaire Eaux &amp; Territoires — eau et territoires en changement</text><circle cx="170" cy="190" r="78" fill="#eef4f7" stroke="#497a9c"/><text x="125" y="184" font-family="Arial" font-size="15" font-weight="700" fill="#17324a">Climat</text><text x="118" y="207" font-family="Arial" font-size="13" fill="#536573">sécheresses · étiages</text><circle cx="450" cy="190" r="78" fill="#f7f9fb" stroke="#9eb4c2"/><text x="410" y="184" font-family="Arial" font-size="15" font-weight="700" fill="#17324a">Ressources</text><text x="395" y="207" font-family="Arial" font-size="13" fill="#536573">surface · souterrain</text><circle cx="730" cy="190" r="78" fill="#eef4f7" stroke="#497a9c"/><text x="695" y="184" font-family="Arial" font-size="15" font-weight="700" fill="#17324a">Territoires</text><text x="675" y="207" font-family="Arial" font-size="13" fill="#536573">usages · infrastructures</text><path d="M248 190 H372 M528 190 H652" stroke="#17324a" stroke-width="3"/><text x="250" y="330" font-family="Arial" font-size="14" fill="#536573">modèles · scénarios · co-construction avec les acteurs de l’eau</text></svg></div>
-  </section>
+    img.addEventListener('click', event => {
+      event.preventDefault();
 
-  <section class="section-block">
-    <h2>Other projects</h2>
-    <div class="secondary-project"><strong>SHALCC</strong> — 36 months<br><em>SHALlow groundwater resources under Climate Change</em><br>Coordination: Nicolas Massei · University of Rouen Normandy</div>
-    <div class="secondary-project"><strong>NIRECAS</strong> — 2025–2027<br><em>Nitrate recovery capacity of aquifers</em><br>Flore Sergeant · Marie Skłodowska-Curie Postdoctoral Fellowship</div>
-  </section>
-</main>
-<footer class="preview-footer"><div class="inner">Jean-Raynald de Dreuzy · CNRS · Géosciences Rennes · ENS Rennes</div></footer>
-</body>
-</html>
+      lightboxImage.src = img.currentSrc || img.src;
+      lightboxImage.alt = img.alt || '';
+      lightbox.showModal();
+    });
+  });
+
+  closeButton.addEventListener('click', () => {
+    lightbox.close();
+  });
+
+  lightbox.addEventListener('click', event => {
+    if (event.target === lightbox) {
+      lightbox.close();
+    }
+  });
+</script>
