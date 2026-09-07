@@ -1,0 +1,6 @@
+PyAges live image verified
+SHA256: 54bbf9d165c92d15f6fe890ac6aecea2eff65dfc467b0e5b7e51326602745b50
+Size: 58538 bytes
+French page: /pyages.html
+English page: /en/pyages.html
+Asset: /assets/pyages-groundwater-age-v2.webp
