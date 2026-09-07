@@ -74,6 +74,20 @@
       const item = document.createElement('li'); item.innerHTML = 'J.-R. de Dreuzy, S. Leray, J. Marçais (2026), PyAge: an extensible toolkit for lumped-parameter modeling of tracer-derived groundwater ages. Submitted to <span class="smallcaps">Geoscientific Model Development</span>.'; list.prepend(item);
     }
 
+    if (!normalize(host.textContent).includes('sentinel water fingerprint: capturing hydrosystem dynamics for adaptive water management') && submittedHeading) {
+      let list = submittedHeading.nextElementSibling;
+      while (list && !['OL','UL'].includes(list.tagName) && !isHeading(list)) list = list.nextElementSibling;
+      if (!list || isHeading(list)) {
+        list = document.createElement('ul');
+        list.className = 'bib-unnumbered';
+        submittedHeading.insertAdjacentElement('afterend', list);
+      } else if (list.tagName === 'OL') list = replaceOlWithUl(list);
+      else list.classList.add('bib-unnumbered');
+      const item = document.createElement('li');
+      item.innerHTML = 'M. Ricau, R. Abhervé, H. Budzinski, C. Casenave, A. Chaumot, F. Courant, V. Dupraz, G. Fernandes, H. Fenet, E. Gomez, P. Gonzalez, G. Imfeld, J. Jaunat, G. Junqua, C. Kane, S. Lardy-Fontan, T. Le Borgne, B. Lopez, J. M.F. Martins, J. Molénat, S. Payraudeau, A. Togola, J. Tournebize, J.-R. de Dreuzy (2026), Sentinel water fingerprint: capturing hydrosystem dynamics for adaptive water management. Submitted to <span class="smallcaps">WIREs Water</span>.';
+      list.prepend(item);
+    }
+
     const walker = document.createTreeWalker(host, NodeFilter.SHOW_TEXT); const textNodes = []; while (walker.nextNode()) textNodes.push(walker.currentNode);
     textNodes.forEach(node => { node.nodeValue = node.nodeValue.replace(/article en révision pour/gi,'under review for').replace(/article en révision/gi,'under review').replace(/en révision/gi,'under review').replace(/soumis à/gi,'submitted to').replace(/soumis/gi,'submitted'); });
 
