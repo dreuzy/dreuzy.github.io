@@ -26,4 +26,56 @@ document.addEventListener('DOMContentLoaded', () => {
       img.classList.add('generated-figure-error');
     }
   });
+
+  const figureImages = document.querySelectorAll('.figure-panel img');
+  if (!figureImages.length) return;
+
+  const lightbox = document.createElement('div');
+  lightbox.className = 'image-lightbox';
+  lightbox.setAttribute('aria-hidden', 'true');
+  lightbox.innerHTML = `
+    <button class="lightbox-close" type="button" aria-label="Fermer l’image agrandie">×</button>
+    <img class="lightbox-image" src="" alt="">
+  `;
+  document.body.appendChild(lightbox);
+
+  const lightboxImage = lightbox.querySelector('.lightbox-image');
+  const closeButton = lightbox.querySelector('.lightbox-close');
+
+  const openLightbox = (img) => {
+    lightboxImage.src = img.currentSrc || img.src;
+    lightboxImage.alt = img.alt || '';
+    lightbox.classList.add('is-open');
+    lightbox.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('lightbox-open');
+    closeButton.focus();
+  };
+
+  const closeLightbox = () => {
+    lightbox.classList.remove('is-open');
+    lightbox.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('lightbox-open');
+    lightboxImage.src = '';
+  };
+
+  figureImages.forEach((img) => {
+    img.classList.add('zoomable-image');
+    img.addEventListener('click', (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      openLightbox(img);
+    });
+  });
+
+  closeButton.addEventListener('click', closeLightbox);
+
+  lightbox.addEventListener('click', (event) => {
+    if (event.target === lightbox) closeLightbox();
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && lightbox.classList.contains('is-open')) {
+      closeLightbox();
+    }
+  });
 });
