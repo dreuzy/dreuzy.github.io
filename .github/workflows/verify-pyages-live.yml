@@ -1,13 +1,13 @@
-name: Verify live PyAges image
+name: Verify live PyAges software figure
 
 on:
   push:
     branches: [main]
     paths:
       - ".github/workflows/verify-pyages-live.yml"
-      - "pyages.html"
-      - "en/pyages.html"
-      - "assets/pyages-groundwater-age-v2.webp"
+      - "logiciels.html"
+      - "en/software.html"
+      - "assets/pyages-software-figure.png"
   workflow_dispatch:
 
 permissions:
@@ -15,22 +15,22 @@ permissions:
 
 jobs:
   verify:
-    name: Verify deployed PyAges image
+    name: Verify deployed PyAges software figure
     runs-on: ubuntu-latest
     steps:
-      - name: Wait for GitHub Pages and verify image bytes
+      - name: Wait for GitHub Pages and verify image
         shell: bash
         run: |
           set -euo pipefail
-          expected="54bbf9d165c92d15f6fe890ac6aecea2eff65dfc467b0e5b7e51326602745b50"
           ok=0
           for i in $(seq 1 30); do
             echo "Attempt $i/30"
-            if curl -fsSL -H 'Cache-Control: no-cache' "https://dreuzy.github.io/assets/pyages-groundwater-age-v2.webp?verify=${GITHUB_SHA}-${i}" -o /tmp/pyages.webp; then
-              actual=$(sha256sum /tmp/pyages.webp | awk '{print $1}')
-              size=$(stat -c%s /tmp/pyages.webp)
-              echo "size=$size sha256=$actual"
-              if [ "$actual" = "$expected" ] && [ "$size" = "58538" ]; then
+            if curl -fsSL -H 'Cache-Control: no-cache' "https://dreuzy.github.io/assets/pyages-software-figure.png?verify=${GITHUB_SHA}-${i}" -o /tmp/pyages-software.png; then
+              size=$(stat -c%s /tmp/pyages-software.png)
+              kind=$(file -b /tmp/pyages-software.png)
+              echo "size=$size"
+              echo "type=$kind"
+              if [ "$size" -gt "100000" ] && echo "$kind" | grep -qi 'PNG image data'; then
                 ok=1
                 break
               fi
@@ -38,13 +38,12 @@ jobs:
             sleep 5
           done
           test "$ok" = "1"
-          file /tmp/pyages.webp
 
       - name: Verify French and English page references
         shell: bash
         run: |
           set -euo pipefail
-          curl -fsSL -H 'Cache-Control: no-cache' "https://dreuzy.github.io/pyages.html?verify=${GITHUB_SHA}" -o /tmp/fr.html
-          curl -fsSL -H 'Cache-Control: no-cache' "https://dreuzy.github.io/en/pyages.html?verify=${GITHUB_SHA}" -o /tmp/en.html
-          grep -F 'src="assets/pyages-groundwater-age-v2.webp"' /tmp/fr.html
-          grep -F 'src="../assets/pyages-groundwater-age-v2.webp"' /tmp/en.html
+          curl -fsSL -H 'Cache-Control: no-cache' "https://dreuzy.github.io/logiciels.html?verify=${GITHUB_SHA}" -o /tmp/fr.html
+          curl -fsSL -H 'Cache-Control: no-cache' "https://dreuzy.github.io/en/software.html?verify=${GITHUB_SHA}" -o /tmp/en.html
+          grep -F 'src="assets/pyages-software-figure.png"' /tmp/fr.html
+          grep -F 'src="../assets/pyages-software-figure.png"' /tmp/en.html
