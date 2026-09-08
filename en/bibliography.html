@@ -70,6 +70,14 @@
       if (normalize(entry.textContent).includes(unwantedTitle)) entry.remove();
     });
 
+    const inPreparationTitles = [
+      'groundwater flow contributions to streamflows predicted by a hydrogeomorphological wetness index: insights from synthetic experiments',
+      'an integrated double-continuum approach for simulating coupled vertical richards flows and lateral boussinesq flows'
+    ];
+    host.querySelectorAll('li,p').forEach(entry => {
+      if (inPreparationTitles.some(title => normalize(entry.textContent).includes(title))) entry.remove();
+    });
+
     [...host.querySelectorAll('h2,h3,h4,h5,h6')].forEach(heading => { const title = normalize(heading.textContent); if (title.includes('abandon') || title.includes('en preparation') || title.includes('abandoned') || title.includes('in preparation')) removeSection(heading); });
 
     const sectionTitles = {
@@ -85,6 +93,21 @@
     let headings = [...host.querySelectorAll('h2,h3,h4,h5,h6')];
     let submittedHeading = headings.find(h => normalize(h.textContent).includes('soumis') || normalize(h.textContent).includes('submitted'));
     if (!submittedHeading) { const articleHeading = host.querySelector('#articles-dans-des-revues-a-comite-de-lecture'); if (articleHeading) { submittedHeading = document.createElement('h3'); submittedHeading.textContent = 'Submitted'; articleHeading.insertAdjacentElement('afterend', submittedHeading); } }
+
+    if (submittedHeading) {
+      const inPreparationHeading = document.createElement('h3');
+      inPreparationHeading.textContent = 'In preparation';
+      const inPreparationList = document.createElement('ul');
+      inPreparationList.className = 'bib-unnumbered';
+      const marcaisItem = document.createElement('li');
+      marcaisItem.innerHTML = 'J. Marçais, J.-R. de Dreuzy, H. V. Gupta, Groundwater flow contributions to streamflows predicted by a hydrogeomorphological wetness index: insights from synthetic experiments. In preparation for <span class="smallcaps">Comptes Rendus Géoscience — Sciences de la Planète</span>.';
+      const brennerItem = document.createElement('li');
+      brennerItem.innerHTML = 'K. Brenner, Y. Qiang, J. Marçais, J.-R. de Dreuzy, An Integrated Double-Continuum Approach for Simulating Coupled Vertical Richards Flows and Lateral Boussinesq Flows. In preparation for <span class="smallcaps">Advances in Water Resources</span>.';
+      inPreparationList.append(marcaisItem, brennerItem);
+      submittedHeading.insertAdjacentElement('beforebegin', inPreparationHeading);
+      inPreparationHeading.insertAdjacentElement('afterend', inPreparationList);
+    }
+
     if (!normalize(host.textContent).includes('pyage: an extensible toolkit for lumped-parameter modeling of tracer-derived groundwater ages') && submittedHeading) {
       let list = submittedHeading.nextElementSibling; while (list && !['OL','UL'].includes(list.tagName) && !isHeading(list)) list = list.nextElementSibling;
       if (!list || isHeading(list)) { list = document.createElement('ul'); list.className = 'bib-unnumbered'; submittedHeading.insertAdjacentElement('afterend', list); } else if (list.tagName === 'OL') list = replaceOlWithUl(list); else list.classList.add('bib-unnumbered');
@@ -109,8 +132,8 @@
     textNodes.forEach(node => { node.nodeValue = node.nodeValue.replace(/article en révision pour/gi,'under review for').replace(/article en révision/gi,'under review').replace(/en révision/gi,'under review').replace(/soumis à/gi,'submitted to').replace(/soumis/gi,'submitted'); });
 
     headings = [...host.querySelectorAll('h2,h3,h4,h5,h6')];
-    headings.forEach(heading => { const title = normalize(heading.textContent); if (title.includes('soumis') || title.includes('submitted')) heading.textContent = 'Submitted'; else if (title === 'in review' || title.includes('en revision') || title.includes('under review')) heading.textContent = 'Under review'; else if (title.includes('articles publies') || title === 'publies' || title === 'published') heading.textContent = 'Published'; });
-    headings = [...host.querySelectorAll('h2,h3,h4,h5,h6')]; headings.filter(h => ['submitted','under review'].includes(normalize(h.textContent))).forEach(makeSectionUnnumbered);
+    headings.forEach(heading => { const title = normalize(heading.textContent); if (title.includes('in preparation')) heading.textContent = 'In preparation'; else if (title.includes('soumis') || title.includes('submitted')) heading.textContent = 'Submitted'; else if (title === 'in review' || title.includes('en revision') || title.includes('under review')) heading.textContent = 'Under review'; else if (title.includes('articles publies') || title === 'publies' || title === 'published') heading.textContent = 'Published'; });
+    headings = [...host.querySelectorAll('h2,h3,h4,h5,h6')]; headings.filter(h => ['in preparation','submitted','under review'].includes(normalize(h.textContent))).forEach(makeSectionUnnumbered);
     host.querySelectorAll('li strong, li b, p strong, p b').forEach(unwrap);
     host.setAttribute('aria-busy','false');
     if (location.hash) setTimeout(() => document.getElementById(location.hash.slice(1))?.scrollIntoView(), 0);
