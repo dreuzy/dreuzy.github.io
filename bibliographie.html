@@ -156,6 +156,14 @@
       if (normalize(entry.textContent).includes(unwantedTitle)) entry.remove();
     });
 
+    const inPreparationTitles = [
+      'groundwater flow contributions to streamflows predicted by a hydrogeomorphological wetness index: insights from synthetic experiments',
+      'an integrated double-continuum approach for simulating coupled vertical richards flows and lateral boussinesq flows'
+    ];
+    host.querySelectorAll('li,p').forEach(entry => {
+      if (inPreparationTitles.some(title => normalize(entry.textContent).includes(title))) entry.remove();
+    });
+
     [...host.querySelectorAll('h2,h3,h4,h5,h6')].forEach(heading => {
       const title = normalize(heading.textContent);
       if (title.includes('abandon') || title.includes('en preparation')) removeSection(heading);
@@ -170,6 +178,20 @@
         submittedHeading.textContent = 'Soumis';
         articleHeading.insertAdjacentElement('afterend', submittedHeading);
       }
+    }
+
+    if (submittedHeading) {
+      const inPreparationHeading = document.createElement('h3');
+      inPreparationHeading.textContent = 'En préparation';
+      const inPreparationList = document.createElement('ul');
+      inPreparationList.className = 'bib-unnumbered';
+      const marcaisItem = document.createElement('li');
+      marcaisItem.innerHTML = 'J. Marçais, J.-R. de Dreuzy, H. V. Gupta, Groundwater flow contributions to streamflows predicted by a hydrogeomorphological wetness index: insights from synthetic experiments. En préparation pour <span class="smallcaps">Comptes Rendus Géoscience — Sciences de la Planète</span>.';
+      const brennerItem = document.createElement('li');
+      brennerItem.innerHTML = 'K. Brenner, Y. Qiang, J. Marçais, J.-R. de Dreuzy, An Integrated Double-Continuum Approach for Simulating Coupled Vertical Richards Flows and Lateral Boussinesq Flows. En préparation pour <span class="smallcaps">Advances in Water Resources</span>.';
+      inPreparationList.append(marcaisItem, brennerItem);
+      submittedHeading.insertAdjacentElement('beforebegin', inPreparationHeading);
+      inPreparationHeading.insertAdjacentElement('afterend', inPreparationList);
     }
 
     if (!normalize(host.textContent).includes('pyage: an extensible toolkit for lumped-parameter modeling of tracer-derived groundwater ages') && submittedHeading) {
@@ -213,13 +235,14 @@
     headings = [...host.querySelectorAll('h2,h3,h4,h5,h6')];
     headings.forEach(heading => {
       const title = normalize(heading.textContent);
-      if (title.includes('soumis')) heading.textContent = 'Soumis';
+      if (title.includes('en preparation')) heading.textContent = 'En préparation';
+      else if (title.includes('soumis')) heading.textContent = 'Soumis';
       else if (title === 'in review' || title.includes('en revision') || title.includes('article en revision')) heading.textContent = 'En révision';
       else if (title.includes('articles publies') || title === 'publies') heading.textContent = 'Publiés';
     });
 
     headings = [...host.querySelectorAll('h2,h3,h4,h5,h6')];
-    headings.filter(h => ['soumis','en revision'].includes(normalize(h.textContent))).forEach(makeSectionUnnumbered);
+    headings.filter(h => ['en preparation','soumis','en revision'].includes(normalize(h.textContent))).forEach(makeSectionUnnumbered);
 
     host.querySelectorAll('li strong, li b, p strong, p b').forEach(unwrap);
 
@@ -228,7 +251,7 @@
       'Hydrology and Earth System Sciences','Hydrological Processes','Journal of Hydrology','Journal of Hydrology: Regional Studies',
       'Water Resources Research','Science of the Total Environment','Proceedings of the National Academy of Sciences',
       'Proceedings of the National Academy of Sciences of the United States of America','Geoscientific Model Development',
-      'Nature Sustainability','Advances in Water Resources','Computers & Geosciences','Computers and Geosciences','Groundwater',
+      'Nature Sustainability','Advances in Water Resources','Comptes Rendus Géoscience — Sciences de la Planète','Computers & Geosciences','Computers and Geosciences','Groundwater',
       'Journal of Geophysical Research: Solid Earth','Sustainability Science','Limnology and Oceanography: Methods',
       'Soil Biology and Biochemistry','Applied Geochemistry','Hydrogeology Journal','Vadose Zone Journal','Geothermics',
       'Earth-Science Reviews','Environmental Modelling & Software','Environmental Modelling and Software','Journal of Computational Physics',
