@@ -70,6 +70,11 @@
       if (normalize(entry.textContent).includes(unwantedTitle)) entry.remove();
     });
 
+    const hydroModPyTitle = 'technical note: hydromodpy';
+    host.querySelectorAll('li,p').forEach(entry => {
+      if (normalize(entry.textContent).includes(hydroModPyTitle)) entry.remove();
+    });
+
     const inPreparationTitles = [
       'groundwater flow contributions to streamflows predicted by a hydrogeomorphological wetness index: insights from synthetic experiments',
       'an integrated double-continuum approach for simulating coupled vertical richards flows and lateral boussinesq flows'
@@ -133,7 +138,22 @@
 
     headings = [...host.querySelectorAll('h2,h3,h4,h5,h6')];
     headings.forEach(heading => { const title = normalize(heading.textContent); if (title.includes('in preparation')) heading.textContent = 'In preparation'; else if (title.includes('soumis') || title.includes('submitted')) heading.textContent = 'Submitted'; else if (title === 'in review' || title.includes('en revision') || title.includes('under review')) heading.textContent = 'Under review'; else if (title.includes('articles publies') || title === 'publies' || title === 'published') heading.textContent = 'Published'; });
-    headings = [...host.querySelectorAll('h2,h3,h4,h5,h6')]; headings.filter(h => ['in preparation','submitted','under review'].includes(normalize(h.textContent))).forEach(makeSectionUnnumbered);
+
+    headings = [...host.querySelectorAll('h2,h3,h4,h5,h6')];
+    let publishedHeading = headings.find(heading => normalize(heading.textContent) === 'published');
+    if (publishedHeading) {
+      let publishedList = publishedHeading.nextElementSibling;
+      while (publishedList && !['OL','UL'].includes(publishedList.tagName) && !isHeading(publishedList)) publishedList = publishedList.nextElementSibling;
+      if (!publishedList || isHeading(publishedList)) {
+        publishedList = document.createElement('ol');
+        publishedHeading.insertAdjacentElement('afterend', publishedList);
+      }
+      const hydroModPyItem = document.createElement('li');
+      hydroModPyItem.innerHTML = 'A. Gauvain, R. Abhervé, B. Boivin, C. Roques, M. Le Mesnil, A. Coche, T. Babey, J. Marçais, C. Bouchez, S. Leray, E. Marti, E. Bresciani, R. Figueroa, M. Pélissier, L. Guillaumot, T. Touzeau, I. Issolah, E. Maugan, R. S. Bagagnan, C. Vautier, J. Sallou, J. Bourcier, B. Combemale, P. Brunner, L. Longuevergne, L. Aquilina, J.-R. de Dreuzy (2026), <a href="https://hess.copernicus.org/articles/30/5571/2026/" target="_blank" rel="noopener">Technical note: HydroModPy (v1.0) – a Python toolbox for deploying catchment-scale shallow groundwater models</a>. <span class="smallcaps">Hydrology and Earth System Sciences</span>, 30, 5571.';
+      publishedList.prepend(hydroModPyItem);
+    }
+
+    headings.filter(h => ['in preparation','submitted','under review'].includes(normalize(h.textContent))).forEach(makeSectionUnnumbered);
     host.querySelectorAll('li strong, li b, p strong, p b').forEach(unwrap);
     host.setAttribute('aria-busy','false');
     if (location.hash) setTimeout(() => document.getElementById(location.hash.slice(1))?.scrollIntoView(), 0);
