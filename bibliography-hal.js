@@ -33,14 +33,6 @@
     return (afterYear?.[1] || text).trim();
   };
 
-  const halSearchUrl = title => {
-    const params = new URLSearchParams({
-      authFullName_s: 'Jean-Raynald de Dreuzy',
-      q: title ? `"${title}"` : '*'
-    });
-    return `https://hal.science/search/index/?${params.toString()}`;
-  };
-
   const halData = (async () => {
     try {
       const params = new URLSearchParams({
@@ -82,13 +74,15 @@
       const doi = doiFromEntry(entry);
       const exact = (doi && byDoi.get(doi)) || byTitle.get(normalize(title));
 
-      const link = document.createElement('a');
-      link.className = 'hal-link';
-      link.href = exact || halSearchUrl(title);
-      link.target = '_blank';
-      link.rel = 'noopener';
-      link.textContent = '[HAL]';
-      entry.append(document.createTextNode(' '), link);
+      if (exact) {
+        const link = document.createElement('a');
+        link.className = 'hal-link';
+        link.href = exact;
+        link.target = '_blank';
+        link.rel = 'noopener';
+        link.textContent = '[HAL]';
+        entry.append(document.createTextNode(' '), link);
+      }
       delete entry.dataset.halPending;
     });
   };
