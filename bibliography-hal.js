@@ -66,9 +66,9 @@
     const { byDoi, byTitle } = await halData;
 
     host.querySelectorAll('li, p').forEach(entry => {
-      if (entry.querySelector('.hal-link') || entry.dataset.halPending === '1') return;
+      if (entry.dataset.halChecked === '1' || entry.querySelector('.hal-link')) return;
       if (!entry.textContent.trim()) return;
-      entry.dataset.halPending = '1';
+      entry.dataset.halChecked = '1';
 
       const title = titleFromEntry(entry);
       const doi = doiFromEntry(entry);
@@ -83,11 +83,10 @@
         link.textContent = '[HAL]';
         entry.append(document.createTextNode(' '), link);
       }
-      delete entry.dataset.halPending;
     });
   };
 
   const observer = new MutationObserver(() => addHalLinks());
-  observer.observe(host, { attributes: true, childList: true, subtree: true });
+  observer.observe(host, { childList: true, subtree: true });
   addHalLinks();
 })();
