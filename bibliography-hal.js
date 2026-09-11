@@ -41,31 +41,33 @@
     return `https://hal.science/search/index/?${params.toString()}`;
   };
 
-  const halData = fetch('https://api.archives-ouvertes.fr/search/', {
-    method: 'GET'
-  }).then(async () => {
-    const params = new URLSearchParams({
-      q: 'authFullName_s:"Jean-Raynald de Dreuzy"',
-      fl: 'title_s,uri_s,doiId_s',
-      rows: '1000',
-      wt: 'json'
-    });
-    const response = await fetch(`https://api.archives-ouvertes.fr/search/?${params.toString()}`);
-    if (!response.ok) throw new Error(`HAL HTTP ${response.status}`);
-    const docs = (await response.json())?.response?.docs || [];
+  const halData = (async () => {
+    try {
+      const params = new URLSearchParams({
+        q: 'authFullName_s:"Jean-Raynald de Dreuzy"',
+        fl: 'title_s,uri_s,doiId_s',
+        rows: '1000',
+        wt: 'json'
+      });
+      const response = await fetch(`https://api.archives-ouvertes.fr/search/?${params.toString()}`);
+      if (!response.ok) throw new Error(`HAL HTTP ${response.status}`);
+      const docs = (await response.json())?.response?.docs || [];
 
-    const byDoi = new Map();
-    const byTitle = new Map();
-    docs.forEach(doc => {
-      const uri = doc.uri_s;
-      if (!uri) return;
-      const titles = Array.isArray(doc.title_s) ? doc.title_s : [doc.title_s];
-      titles.filter(Boolean).forEach(title => byTitle.set(normalize(title), uri));
-      const dois = Array.isArray(doc.doiId_s) ? doc.doiId_s : [doc.doiId_s];
-      dois.filter(Boolean).forEach(doi => byDoi.set(String(doi).toLowerCase(), uri));
-    });
-    return { byDoi, byTitle };
-  }).catch(() => ({ byDoi: new Map(), byTitle: new Map() }));
+      const byDoi = new Map();
+      const byTitle = new Map();
+      docs.forEach(doc => {
+        const uri = doc.uri_s;
+        if (!uri) return;
+        const titles = Array.isArray(doc.title_s) ? doc.title_s : [doc.title_s];
+        titles.filter(Boolean).forEach(title => byTitle.set(normalize(title), uri));
+        const dois = Array.isArray(doc.doiId_s) ? doc.doiId_s : [doc.doiId_s];
+        dois.filter(Boolean).forEach(doi => byDoi.set(String(doi).toLowerCase(), uri));
+      });
+      return { byDoi, byTitle };
+    } catch (error) {
+      return { byDoi: new Map(), byTitle: new Map() };
+    }
+  })();
 
   const addHalLinks = async () => {
     if (host.getAttribute('aria-busy') !== 'false') return;
