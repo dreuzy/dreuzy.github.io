@@ -33,16 +33,16 @@
     return (afterYear?.[1] || text).trim();
   };
 
-  const halData = (async () => {
+  const enrichWithHal = async () => {
     try {
       const params = new URLSearchParams({
         q: 'authFullName_s:"Jean-Raynald de Dreuzy"',
         fl: 'title_s,uri_s,doiId_s',
-        rows: '1000',
+        rows: '500',
         wt: 'json'
       });
       const response = await fetch(`https://api.archives-ouvertes.fr/search/?${params.toString()}`);
-      if (!response.ok) throw new Error(`HAL HTTP ${response.status}`);
+      if (!response.ok) return;
       const docs = (await response.json())?.response?.docs || [];
 
       const byDoi = new Map();
@@ -55,26 +55,14 @@
         const dois = Array.isArray(doc.doiId_s) ? doc.doiId_s : [doc.doiId_s];
         dois.filter(Boolean).forEach(doi => byDoi.set(String(doi).toLowerCase(), uri));
       });
-      return { byDoi, byTitle };
-    } catch (error) {
-      return { byDoi: new Map(), byTitle: new Map() };
-    }
-  })();
 
-  const addHalLinks = async () => {
-    if (host.getAttribute('aria-busy') !== 'false') return;
-    const { byDoi, byTitle } = await halData;
+      host.querySelectorAll('li, p').forEach(entry => {
+        if (entry.querySelector('.hal-link') || !entry.textContent.trim()) return;
+        const title = titleFromEntry(entry);
+        const doi = doiFromEntry(entry);
+        const exact = (doi && byDoi.get(doi)) || byTitle.get(normalize(title));
+        if (!exact) return;
 
-    host.querySelectorAll('li, p').forEach(entry => {
-      if (entry.dataset.halChecked === '1' || entry.querySelector('.hal-link')) return;
-      if (!entry.textContent.trim()) return;
-      entry.dataset.halChecked = '1';
-
-      const title = titleFromEntry(entry);
-      const doi = doiFromEntry(entry);
-      const exact = (doi && byDoi.get(doi)) || byTitle.get(normalize(title));
-
-      if (exact) {
         const link = document.createElement('a');
         link.className = 'hal-link';
         link.href = exact;
@@ -82,11 +70,26 @@
         link.rel = 'noopener';
         link.textContent = '[HAL]';
         entry.append(document.createTextNode(' '), link);
-      }
-    });
+      });
+    } catch (_) {
+      // HAL is optional: bibliography remains fully usable if the service is unavailable.
+    }
   };
 
-  const observer = new MutationObserver(() => addHalLinks());
-  observer.observe(host, { childList: true, subtree: true });
-  addHalLinks();
+  const scheduleEnrichment = () => {
+    const run = () => setTimeout(enrichWithHal, 600);
+    if ('requestIdleCallback' in window) requestIdleCallback(run, { timeout: 1500 });
+    else run();
+  };
+
+  if (host.getAttribute('aria-busy') === 'false') {
+    scheduleEnrichment();
+  } else {
+    const readyObserver = new MutationObserver(() => {
+      if (host.getAttribute('aria-busy') !== 'false') return;
+      readyObserver.disconnect();
+      scheduleEnrichment();
+    });
+    readyObserver.observe(host, { attributes: true, attributeFilter: ['aria-busy'] });
+  }
 })();
