@@ -8,6 +8,7 @@
     "team",
     "publications",
     "software",
+    "science-society",
     "cv"
   ],
   "pages": [
@@ -45,6 +46,12 @@
       "id": "software",
       "fr": "logiciels.html",
       "en": "en/software.html",
+      "navigation": true
+    },
+    {
+      "id": "science-society",
+      "fr": "science-societe.html",
+      "en": "en/science-society.html",
       "navigation": true
     },
     {
