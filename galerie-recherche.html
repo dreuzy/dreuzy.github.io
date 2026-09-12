@@ -4,156 +4,128 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Galerie de figures — Jean-Raynald de Dreuzy</title>
-  <meta name="description" content="Galerie de figures scientifiques liées aux recherches actuelles et passées de Jean-Raynald de Dreuzy.">
+  <meta name="description" content="Galerie de figures scientifiques originales issues des recherches actuelles et passées de Jean-Raynald de Dreuzy.">
   <meta name="robots" content="noindex,follow">
   <link rel="stylesheet" href="styles.css">
+  <style>
+    .figure-gallery-intro{max-width:900px}
+    .figure-gallery-nav{display:flex;flex-wrap:wrap;gap:.55rem 1.1rem;margin:1.8rem 0 3rem;padding:1rem 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+    .figure-gallery-nav a{font-weight:700;text-decoration:none;font-size:.92rem}
+    .figure-stream{margin-top:1.5rem}
+    .figure-story{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(260px,.75fr);gap:3rem;align-items:center;margin:0;padding:2.6rem 0;border-top:1px solid var(--line)}
+    .figure-story:nth-child(even){grid-template-columns:minmax(260px,.75fr) minmax(0,1.55fr)}
+    .figure-story:nth-child(even) .figure-story-visual{order:2}
+    .figure-story:nth-child(even) .figure-story-copy{order:1}
+    .figure-story-visual{display:block;background:#fbfcfd;padding:1rem;text-decoration:none}
+    .figure-story-visual img{display:block;width:100%;max-height:520px;object-fit:contain;margin:auto}
+    .figure-story-copy h3{font-size:1.35rem;margin:0 0 .65rem}
+    .figure-story-copy p{margin:.45rem 0;color:#536573}
+    .figure-source{font-size:.82rem!important;color:#7a8791!important;margin-top:.9rem!important}
+    .gallery-section{padding-top:3.5rem;margin-top:1rem}
+    .gallery-section>h2{border-top:3px solid var(--navy);padding-top:1rem;margin-bottom:.4rem}
+    .gallery-principle{background:var(--softblue);padding:1.15rem 1.3rem;margin:2.5rem 0 0;color:#40525e;font-size:.93rem}
+    @media(max-width:850px){.figure-story,.figure-story:nth-child(even){grid-template-columns:1fr;gap:1.2rem}.figure-story:nth-child(even) .figure-story-visual,.figure-story:nth-child(even) .figure-story-copy{order:initial}}
+  </style>
 </head>
 <body>
-<header class="site-header">
-  <div class="inner">
-    <a class="brand-link" href="index.html">Jean-Raynald de Dreuzy</a>
-    <nav class="nav-links">
-      <a href="index.html">Accueil</a>
-      <a href="recherche.html">Recherche</a>
-      <a href="projets.html">Projets</a>
-      <a href="equipe.html">Équipe</a>
-      <a href="publications.html">Publications</a>
-      <a href="logiciels.html">Logiciels</a>
-      <a href="science-societe.html">Science &amp; société</a>
-      <a href="cv.html">CV</a>
-      <span><strong>FR</strong> | <a href="en/research-figures.html">EN</a></span>
-    </nav>
-  </div>
-</header>
+<header class="site-header"><div class="inner"><a class="brand-link" href="index.html">Jean-Raynald de Dreuzy</a><nav class="nav-links"><a href="index.html">Accueil</a><a href="recherche.html">Recherche</a><a href="projets.html">Projets</a><a href="equipe.html">Équipe</a><a href="publications.html">Publications</a><a href="logiciels.html">Logiciels</a><a href="science-societe.html">Science &amp; société</a><a href="cv.html">CV</a><span><strong>FR</strong> | <a href="en/research-figures.html">EN</a></span></nav></div></header>
 <main class="preview-content gallery-page">
-  <div class="kicker">Page annexe</div>
+  <div class="kicker">Page annexe de la rubrique Recherche</div>
   <h1>Galerie de figures</h1>
-  <p class="lead">Une sélection de figures issues de publications et de travaux de recherche, complétée par quelques illustrations de synthèse pour rendre visibles des recherches plus anciennes. L’organisation reprend les cinq grands axes de la page Recherche.</p>
+  <p class="lead figure-gallery-intro">Une sélection de figures récupérées dans les publications et présentations scientifiques correspondant aux principaux axes de recherche. La galerie n’utilise pas d’illustrations générées ou reconstruites pour le site.</p>
 
-  <div class="cross-links">
+  <nav class="figure-gallery-nav" aria-label="Catégories de la galerie">
     <a href="#gallery-shallow">Aquifères peu profonds</a>
     <a href="#gallery-transit">Temps de transfert &amp; réactivité</a>
     <a href="#gallery-change">Ressources en eau</a>
     <a href="#gallery-modelling">Modélisation</a>
     <a href="#gallery-fractured">Milieux fracturés</a>
-  </div>
+  </nav>
 
-  <section class="section-block" id="gallery-shallow">
+  <section class="gallery-section" id="gallery-shallow">
     <h2>Aquifères peu profonds et bassins versants de tête</h2>
-    <p class="small">Des circulations à l’échelle du versant au déploiement régional des méthodes de calibration.</p>
-    <div class="research-gallery">
-      <figure class="gallery-card gallery-card-wide">
-        <a href="https://hess.copernicus.org/articles/27/3221/2023/" target="_blank" rel="noopener"><img src="https://hess.copernicus.org/articles/27/3221/2023/hess-27-3221-2023-f01-thumb.png" alt="Workflow de calibration des propriétés hydrauliques à partir du réseau hydrographique observé" loading="eager" decoding="async"></a>
-        <figcaption><strong>Calibrer les propriétés hydrauliques à partir du réseau hydrographique.</strong><span>Workflow reliant topographie, modèle d’écoulement souterrain, zones de suintement et réseau observé.</span><small>Abhervé et al., HESS, 2023, Fig. 1 · CC BY 4.0.</small></figcaption>
+    <p class="small">Des observations spatiales du réseau hydrographique à l’estimation des propriétés hydrauliques des aquifères peu profonds.</p>
+    <div class="figure-stream">
+      <figure class="figure-story">
+        <a class="figure-story-visual" href="https://hess.copernicus.org/articles/27/3221/2023/" target="_blank" rel="noopener"><img src="https://hess.copernicus.org/articles/27/3221/2023/hess-27-3221-2023-f01-thumb.png" alt="Workflow de calibration des propriétés hydrauliques à partir du réseau hydrographique observé" loading="eager" decoding="async"></a>
+        <figcaption class="figure-story-copy"><h3>Calibrer les propriétés hydrauliques à partir du réseau hydrographique</h3><p>Le réseau simulé issu du modèle d’écoulement est comparé au réseau observé pour contraindre les propriétés hydrauliques à l’échelle du bassin versant.</p><p class="figure-source">Abhervé et al., <em>Hydrology and Earth System Sciences</em>, 2023, Fig. 1 · CC BY 4.0.</p></figcaption>
       </figure>
-
-      <figure class="gallery-card gallery-card-wide">
-        <a href="https://hess.copernicus.org/articles/27/3221/2023/" target="_blank" rel="noopener"><img src="https://hess.copernicus.org/articles/27/3221/2023/hess-27-3221-2023-f02-thumb.png" alt="Métriques de calibration et modèle conceptuel des interactions nappe-réseau hydrographique" loading="lazy" decoding="async"></a>
-        <figcaption><strong>Comparer réseau observé et réseau simulé.</strong><span>Définition des distances de calibration et représentation du modèle d’écoulement et des zones de suintement.</span><small>Abhervé et al., HESS, 2023, Fig. 2 · CC BY 4.0.</small></figcaption>
+      <figure class="figure-story">
+        <a class="figure-story-visual" href="https://hess.copernicus.org/articles/27/3221/2023/" target="_blank" rel="noopener"><img src="https://hess.copernicus.org/articles/27/3221/2023/hess-27-3221-2023-f02-thumb.png" alt="Métriques de calibration et modèle conceptuel nappe-réseau hydrographique" loading="lazy" decoding="async"></a>
+        <figcaption class="figure-story-copy"><h3>Comparer réseaux observé et simulé</h3><p>La distance entre les réseaux et la distribution spatiale des zones de suintement fournissent des métriques de calibration directement liées aux interactions nappe–rivière.</p><p class="figure-source">Abhervé et al., <em>Hydrology and Earth System Sciences</em>, 2023, Fig. 2 · CC BY 4.0.</p></figcaption>
       </figure>
-
-      <figure class="gallery-card">
-        <a href="https://hess.copernicus.org/articles/27/3221/2023/" target="_blank" rel="noopener"><img src="https://hess.copernicus.org/articles/27/3221/2023/hess-27-3221-2023-f03-thumb.png" alt="Localisation des bassins pilotes et contexte géologique" loading="lazy" decoding="async"></a>
-        <figcaption><strong>Déployer la méthode sur des bassins contrastés.</strong><span>Les bassins pilotes de Bretagne et Normandie et leurs principaux contextes lithologiques.</span><small>Abhervé et al., HESS, 2023, Fig. 3 · CC BY 4.0.</small></figcaption>
-      </figure>
-
-      <figure class="gallery-card gallery-card-wide">
-        <a href="assets/figures/gallery-pleine-fougeres-flowpaths.svg" target="_blank" rel="noopener"><img src="assets/figures/gallery-pleine-fougeres-flowpaths.svg" alt="Circulations souterraines à l’échelle du versant à Pleine-Fougères" loading="lazy" decoding="async"></a>
-        <figcaption><strong>Des circulations organisées à l’échelle du versant.</strong><span>La topographie et les zones d’exutoire structurent des lignes de flux essentiellement limitées aux versants.</span><small>Illustration de synthèse d’après Kolbe et al. (2016), bassin de Pleine-Fougères.</small></figcaption>
+      <figure class="figure-story">
+        <a class="figure-story-visual" href="https://hess.copernicus.org/articles/27/3221/2023/" target="_blank" rel="noopener"><img src="https://hess.copernicus.org/articles/27/3221/2023/hess-27-3221-2023-f03-thumb.png" alt="Bassins pilotes et contextes géologiques de Bretagne et Normandie" loading="lazy" decoding="async"></a>
+        <figcaption class="figure-story-copy"><h3>Changer d’échelle et de contexte géologique</h3><p>Les bassins pilotes de Bretagne et de Normandie permettent de tester la transférabilité de l’approche dans des contextes lithologiques contrastés.</p><p class="figure-source">Abhervé et al., <em>Hydrology and Earth System Sciences</em>, 2023, Fig. 3 · CC BY 4.0.</p></figcaption>
       </figure>
     </div>
   </section>
 
-  <section class="section-block" id="gallery-transit">
+  <section class="gallery-section" id="gallery-transit">
     <h2>Temps de transfert, qualité de l’eau et réactivité</h2>
-    <p class="small">Des distributions de temps de transit aux zones réactives et à l’interprétation des traceurs.</p>
-    <div class="research-gallery">
-      <figure class="gallery-card gallery-card-wide">
-        <a href="assets/figures/gallery-ploemeur-transit-times.svg" target="_blank" rel="noopener"><img src="assets/figures/gallery-ploemeur-transit-times.svg" alt="Évolution des distributions de temps de transfert sous pompage à Ploemeur" loading="lazy" decoding="async"></a>
-        <figcaption><strong>Le pompage réorganise les temps de transfert.</strong><span>Sur le site de Ploemeur, la mise en production modifie rapidement puis stabilise les distributions de temps de transit.</span><small>Illustration de synthèse d’après Leray et al. (2014).</small></figcaption>
+    <p class="small">Comment l’organisation verticale de l’aquifère, les temps de transfert et les zones réactives contrôlent-ils la qualité de l’eau ?</p>
+    <div class="figure-stream">
+      <figure class="figure-story">
+        <a class="figure-story-visual" href="https://www.pnas.org/doi/10.1073/pnas.1816892116" target="_blank" rel="noopener"><img src="https://www.pnas.org/cms/10.1073/pnas.1816892116/asset/1e02ddee-95be-40b1-9b46-747cbb3a00b5/assets/graphic/pnas.1816892116fig01.jpeg" alt="Cadre conceptuel de stratification verticale de la réactivité dans les eaux souterraines" loading="lazy" decoding="async"></a>
+        <figcaption class="figure-story-copy"><h3>Stratifier la réactivité en profondeur</h3><p>Le cadre conceptuel distingue les organisations verticales de la réactivité et montre pourquoi la position des horizons réactifs importe autant que leur intensité.</p><p class="figure-source">Kolbe et al., <em>Proceedings of the National Academy of Sciences</em>, 2019, Fig. 1.</p></figcaption>
       </figure>
-
-      <figure class="gallery-card gallery-card-wide">
-        <a href="https://doi.org/10.1073/pnas.1816892116" target="_blank" rel="noopener"><img src="assets/figures/reactivity-stratification-2019.webp" alt="Stratification verticale de la réactivité et de la dénitrification dans un aquifère" loading="lazy" decoding="async"></a>
-        <figcaption><strong>La réactivité est fortement stratifiée.</strong><span>La localisation verticale des horizons réactifs contrôle l’élimination des nitrates dans les eaux souterraines.</span><small>Kolbe et al., PNAS, 2019.</small></figcaption>
+      <figure class="figure-story">
+        <a class="figure-story-visual" href="https://www.pnas.org/doi/10.1073/pnas.1816892116" target="_blank" rel="noopener"><img src="https://www.pnas.org/cms/10.1073/pnas.1816892116/asset/54a91a88-035e-4c85-9573-5fd3f4c4e485/assets/graphic/pnas.1816892116fig02.jpeg" alt="Résultats sur la stratification de la réactivité et l’élimination des nitrates" loading="lazy" decoding="async"></a>
+        <figcaption class="figure-story-copy"><h3>Relier structure de l’aquifère et élimination des nitrates</h3><p>Les observations et les modèles mettent en évidence le rôle déterminant de la distribution verticale des zones réactives dans le devenir des nitrates.</p><p class="figure-source">Kolbe et al., <em>Proceedings of the National Academy of Sciences</em>, 2019, Fig. 2.</p></figcaption>
       </figure>
-
-      <figure class="gallery-card gallery-card-wide">
-        <a href="assets/pyages-software-figure.png" target="_blank" rel="noopener"><img src="assets/pyages-software-figure.png" alt="PyAges : des traceurs environnementaux aux âges des eaux souterraines" loading="lazy" decoding="async"></a>
-        <figcaption><strong>Des traceurs aux âges des eaux souterraines.</strong><span>PyAges relie chronologies d’entrée, distributions de temps de transit, observations et calibration.</span><small>PyAges, figure scientifique du logiciel.</small></figcaption>
+      <figure class="figure-story">
+        <a class="figure-story-visual" href="https://www.pnas.org/doi/10.1073/pnas.1816892116" target="_blank" rel="noopener"><img src="https://www.pnas.org/cms/10.1073/pnas.1816892116/asset/c3bd4828-ae38-41c6-8bd8-f19c50d03ec8/assets/graphic/pnas.1816892116fig03.jpeg" alt="Conséquences de la stratification de la réactivité sur l’élimination des nitrates" loading="lazy" decoding="async"></a>
+        <figcaption class="figure-story-copy"><h3>Passer de la réactivité locale au fonctionnement du bassin</h3><p>La distribution de la réactivité dans le sous-sol modifie la part de nitrate éliminée avant que les eaux souterraines ne rejoignent les cours d’eau.</p><p class="figure-source">Kolbe et al., <em>Proceedings of the National Academy of Sciences</em>, 2019, Fig. 3.</p></figcaption>
       </figure>
     </div>
   </section>
 
-  <section class="section-block" id="gallery-change">
+  <section class="gallery-section" id="gallery-change">
     <h2>Ressources en eau dans un environnement changeant</h2>
-    <p class="small">Des risques côtiers au suivi et à l’anticipation des ressources à l’échelle nationale.</p>
-    <div class="research-gallery">
-      <figure class="gallery-card gallery-card-wide">
-        <a href="assets/figures/gallery-coastal-aquifer.svg" target="_blank" rel="noopener"><img src="assets/figures/gallery-coastal-aquifer.svg" alt="Aquifère côtier, topographie et remontée de nappe" loading="lazy" decoding="async"></a>
-        <figcaption><strong>Aquifères côtiers et remontée de nappe.</strong><span>La topographie, le niveau marin et la mise en charge de l’aquifère contrôlent la vulnérabilité littorale.</span><small>Illustration de synthèse d’après les travaux RIVAGES Normands 2100 / Bréville-sur-Mer.</small></figcaption>
+    <p class="small">Du fonctionnement des aquifères à leur suivi et à leur projection à grande échelle.</p>
+    <div class="figure-stream">
+      <figure class="figure-story">
+        <a class="figure-story-visual" href="https://hess.copernicus.org/articles/24/633/2020/" target="_blank" rel="noopener"><img src="https://hess.copernicus.org/articles/24/633/2020/hess-24-633-2020-f01-thumb.png" alt="Schéma des processus hydrologiques représentés dans la plateforme AquiFR" loading="lazy" decoding="async"></a>
+        <figcaption class="figure-story-copy"><h3>AquiFR : représenter les grands processus hydrologiques</h3><p>La plateforme articule recharge, écoulements souterrains, cours d’eau et échanges nappe–rivière pour suivre les ressources en eau souterraine en France.</p><p class="figure-source">Vergnes et al., <em>Hydrology and Earth System Sciences</em>, 2020, Fig. 1 · CC BY 4.0.</p></figcaption>
       </figure>
-
-      <figure class="gallery-card gallery-card-wide">
-        <a href="https://hess.copernicus.org/articles/24/633/2020/" target="_blank" rel="noopener"><img src="https://hess.copernicus.org/articles/24/633/2020/hess-24-633-2020-f01-thumb.png" alt="Schéma du système physique de la plateforme AquiFR" loading="lazy" decoding="async"></a>
-        <figcaption><strong>AquiFR : représenter les principaux processus hydrologiques.</strong><span>Le système couple forçages atmosphériques, recharge, écoulements souterrains, rivières et échanges nappe–rivière.</span><small>Vergnes et al., HESS, 2020, Fig. 1 · CC BY 4.0.</small></figcaption>
-      </figure>
-
-      <figure class="gallery-card">
-        <a href="https://hess.copernicus.org/articles/24/633/2020/" target="_blank" rel="noopener"><img src="https://hess.copernicus.org/articles/24/633/2020/hess-24-633-2020-f03-thumb.png" alt="Principaux aquifères de France classés par type géologique" loading="lazy" decoding="async"></a>
-        <figcaption><strong>Passer à l’échelle nationale.</strong><span>Principaux aquifères de France classés par type géologique, cadre de déploiement de la plateforme AquiFR.</span><small>Vergnes et al., HESS, 2020, Fig. 3 · CC BY 4.0.</small></figcaption>
+      <figure class="figure-story">
+        <a class="figure-story-visual" href="https://hess.copernicus.org/articles/24/633/2020/" target="_blank" rel="noopener"><img src="https://hess.copernicus.org/articles/24/633/2020/hess-24-633-2020-f03-thumb.png" alt="Principaux aquifères de France par type géologique" loading="lazy" decoding="async"></a>
+        <figcaption class="figure-story-copy"><h3>Déployer la modélisation des ressources à l’échelle nationale</h3><p>La diversité des grands aquifères français impose de combiner plusieurs modèles et conceptualisations hydrogéologiques au sein d’une même plateforme.</p><p class="figure-source">Vergnes et al., <em>Hydrology and Earth System Sciences</em>, 2020, Fig. 3 · CC BY 4.0.</p></figcaption>
       </figure>
     </div>
   </section>
 
-  <section class="section-block" id="gallery-modelling">
+  <section class="gallery-section" id="gallery-modelling">
     <h2>Modélisation et outils numériques</h2>
-    <p class="small">Du couplage surface–subsurface aux workflows reproductibles et déployables.</p>
-    <div class="research-gallery">
-      <figure class="gallery-card gallery-card-wide">
-        <a href="https://hess.copernicus.org/articles/30/5571/2026/" target="_blank" rel="noopener"><img src="https://hess.copernicus.org/articles/30/5571/2026/hess-30-5571-2026-f01-thumb.png" alt="Workflow de HydroModPy et organisation des scripts Python" loading="lazy" decoding="async"></a>
-        <figcaption><strong>HydroModPy : du bassin versant aux sorties du modèle.</strong><span>Six étapes structurent extraction du bassin, données, paramétrisation, calcul, sorties et calibration.</span><small>Gauvain et al., HESS, 2026, Fig. 1 · CC BY 4.0.</small></figcaption>
+    <p class="small">Des méthodes de calcul aux workflows reproductibles permettant de déployer les modèles sur de nombreux bassins.</p>
+    <div class="figure-stream">
+      <figure class="figure-story">
+        <a class="figure-story-visual" href="https://hess.copernicus.org/articles/30/5571/2026/" target="_blank" rel="noopener"><img src="https://hess.copernicus.org/articles/30/5571/2026/hess-30-5571-2026-f01-thumb.png" alt="Workflow HydroModPy" loading="lazy" decoding="async"></a>
+        <figcaption class="figure-story-copy"><h3>HydroModPy : organiser un workflow hydrogéologique complet</h3><p>Extraction du bassin, préparation des données, paramétrisation, calcul, sorties et calibration sont réunis dans une chaîne reproductible.</p><p class="figure-source">Gauvain et al., <em>Hydrology and Earth System Sciences</em>, 2026, Fig. 1 · CC BY 4.0.</p></figcaption>
       </figure>
-
-      <figure class="gallery-card gallery-card-wide">
-        <a href="https://hess.copernicus.org/articles/30/5571/2026/" target="_blank" rel="noopener"><img src="https://hess.copernicus.org/articles/30/5571/2026/hess-30-5571-2026-f02-thumb.jpg" alt="Étapes de modélisation HydroModPy appliquées au bassin du Nançon" loading="lazy" decoding="async"></a>
-        <figcaption><strong>Construire un modèle de bassin versant.</strong><span>Topographie, données, recharge, conceptualisation et discrétisation illustrées sur le bassin du Nançon.</span><small>Gauvain et al., HESS, 2026, Fig. 2 · CC BY 4.0.</small></figcaption>
+      <figure class="figure-story">
+        <a class="figure-story-visual" href="https://hess.copernicus.org/articles/30/5571/2026/" target="_blank" rel="noopener"><img src="https://hess.copernicus.org/articles/30/5571/2026/hess-30-5571-2026-f02-thumb.jpg" alt="Étapes de modélisation HydroModPy sur le bassin du Nançon" loading="lazy" decoding="async"></a>
+        <figcaption class="figure-story-copy"><h3>Du terrain au modèle de bassin versant</h3><p>Le bassin du Nançon illustre le passage de la topographie et des données disponibles à la conceptualisation, la discrétisation et la simulation.</p><p class="figure-source">Gauvain et al., <em>Hydrology and Earth System Sciences</em>, 2026, Fig. 2 · CC BY 4.0.</p></figcaption>
       </figure>
-
-      <figure class="gallery-card">
-        <a href="https://hess.copernicus.org/articles/30/5571/2026/" target="_blank" rel="noopener"><img src="https://hess.copernicus.org/articles/30/5571/2026/hess-30-5571-2026-f03-thumb.png" alt="Sites d’application de HydroModPy dans le monde" loading="lazy" decoding="async"></a>
-        <figcaption><strong>Déployer les modèles dans des contextes variés.</strong><span>Applications HydroModPy pour la gestion des ressources, la compréhension des processus et le développement d’outils.</span><small>Gauvain et al., HESS, 2026, Fig. 3 · CC BY 4.0.</small></figcaption>
-      </figure>
-
-      <figure class="gallery-card gallery-card-wide">
-        <a href="assets/figures/gallery-surface-subsurface-coupling.svg" target="_blank" rel="noopener"><img src="assets/figures/gallery-surface-subsurface-coupling.svg" alt="Couplage surface-subsurface et déclenchement du ruissellement par saturation" loading="lazy" decoding="async"></a>
-        <figcaption><strong>Coupler surface et subsurface.</strong><span>Le ruissellement est activé lorsque la saturation de la nappe atteint localement la surface.</span><small>Illustration de synthèse d’après Marçais et al. (2017).</small></figcaption>
+      <figure class="figure-story">
+        <a class="figure-story-visual" href="https://hess.copernicus.org/articles/30/5571/2026/" target="_blank" rel="noopener"><img src="https://hess.copernicus.org/articles/30/5571/2026/hess-30-5571-2026-f03-thumb.png" alt="Sites d’application de HydroModPy" loading="lazy" decoding="async"></a>
+        <figcaption class="figure-story-copy"><h3>Déployer les modèles dans des contextes variés</h3><p>Les applications couvrent la gestion des ressources, la compréhension des processus et le développement méthodologique dans plusieurs contextes hydrogéologiques.</p><p class="figure-source">Gauvain et al., <em>Hydrology and Earth System Sciences</em>, 2026, Fig. 3 · CC BY 4.0.</p></figcaption>
       </figure>
     </div>
   </section>
 
-  <section class="section-block" id="gallery-fractured">
+  <section class="gallery-section" id="gallery-fractured">
     <h2>Milieux fracturés, hétérogénéité et changement d’échelle</h2>
-    <p class="small">Un ensemble de recherches principalement menées des années 2000 au milieu des années 2010, depuis la structure des réseaux jusqu’aux applications énergétiques.</p>
-    <div class="research-gallery">
-      <figure class="gallery-card gallery-card-wide">
-        <a href="https://doi.org/10.1029/2012JB009461" target="_blank" rel="noopener"><img src="assets/figures/fractured-media-channeling.png" alt="Réseaux de fractures et chenalisation des écoulements" loading="lazy" decoding="async"></a>
-        <figcaption><strong>Connectivité, hétérogénéité et chenalisation.</strong><span>L’organisation des fractures concentre les écoulements sur un nombre limité de chemins préférentiels et contrôle les propriétés à grande échelle.</span><small>Illustration de synthèse d’après de Dreuzy, Méheust &amp; Pichot (2012).</small></figcaption>
-      </figure>
-
-      <figure class="gallery-card gallery-card-wide">
-        <a href="assets/figures/gallery-thermal-storage.svg" target="_blank" rel="noopener"><img src="assets/figures/gallery-thermal-storage.svg" alt="Stockage thermique dans un milieu fracturé autour d’un forage" loading="lazy" decoding="async"></a>
-        <figcaption><strong>Stockage thermique et réseaux de fractures.</strong><span>Les régimes de transfert et de récupération de chaleur dépendent de la géométrie des fractures et de l’échelle de temps considérée.</span><small>Illustration de synthèse d’après Bernardie et al. (2018).</small></figcaption>
-      </figure>
-
-      <figure class="gallery-card">
-        <a href="assets/figures/gallery-gravity-storage.svg" target="_blank" rel="noopener"><img src="assets/figures/gallery-gravity-storage.svg" alt="Principe du stockage gravitaire dans une carrière abandonnée" loading="lazy" decoding="async"></a>
-        <figcaption><strong>Stockage gravitaire en carrière.</strong><span>Utiliser l’écart d’altitude entre un réservoir supérieur et une carrière souterraine pour stocker et restituer de l’énergie.</span><small>Illustration de synthèse d’après les travaux de Poulain et al.</small></figcaption>
+    <p class="small">Les recherches plus anciennes sur les réseaux de fractures, leur connectivité et la localisation des écoulements sont progressivement réintégrées à partir de figures originales retrouvées.</p>
+    <div class="figure-stream">
+      <figure class="figure-story">
+        <a class="figure-story-visual" href="https://www.slideserve.com/avani/hydrogeologie-ecoulement-en-milieu-fracture-2d" target="_blank" rel="noopener"><img src="https://image2.slideserve.com/4840368/flow-in-2d-fracture-networks-l.jpg" alt="Écoulement dans un réseau de fractures bidimensionnel" loading="lazy" decoding="async"></a>
+        <figcaption class="figure-story-copy"><h3>Écoulement dans les réseaux de fractures 2D</h3><p>Cette figure ancienne montre déjà la forte localisation des écoulements dans quelques chemins connectés au sein d’un réseau de fractures beaucoup plus dense.</p><p class="figure-source">Présentation Erhel, de Dreuzy &amp; Davy, 2004 ; travaux associés dans <em>Water Resources Research</em>, 2000–2001.</p></figcaption>
       </figure>
     </div>
   </section>
 
-  <p class="gallery-note">Les figures HESS sont reproduites depuis des articles publiés sous licence Creative Commons Attribution 4.0. Les schémas explicitement indiqués comme « illustration de synthèse » reprennent des résultats ou concepts de travaux antérieurs sans reproduire à l’identique les figures publiées.</p>
+  <div class="gallery-principle"><strong>Principe de la galerie.</strong> Seules des figures effectivement récupérées depuis une publication, une présentation scientifique ou un document source sont affichées. Les schémas générés ou redessinés pour le site sont exclus de cette page. La récupération des figures des travaux plus anciens se poursuit, notamment pour les réseaux de fractures 3D, les expériences de traceurs et les applications énergétiques.</div>
   <p class="backlink"><a href="recherche.html">← Retour à la page Recherche</a></p>
 </main>
 <footer class="preview-footer"><div class="inner">Jean-Raynald de Dreuzy · CNRS · Géosciences Rennes · ENS Rennes</div></footer>
