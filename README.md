@@ -18,4 +18,8 @@ Les correspondances officielles sont définies dans `mirror-map.json`. Le script
 
 La vérification est exécutée par GitHub Actions à chaque modification grâce à `.github/workflows/check-bilingual-mirror.yml`.
 
+Lors d'une modification d'une page, mettre à jour sa page miroir dans le même commit. Avant de pousser, vérifier localement avec `python scripts/check_bilingual_mirror.py` et `python scripts/check_local_links.py`.
+
+Sur `main`, le workflow attend deux minutes avant de vérifier les pages. Un nouveau push pendant ce délai annule le contrôle précédent : les modifications FR/EN publiées en deux commits rapprochés ne déclenchent plus de fausse alerte. Le dernier état est toujours vérifié et un écart persistant reste une erreur. Les contrôles des pull requests et les lancements manuels restent immédiats.
+
 Site public : https://dreuzy.github.io

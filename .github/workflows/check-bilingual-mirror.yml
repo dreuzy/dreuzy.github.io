@@ -9,11 +9,19 @@ on:
 permissions:
   contents: read
 
+# Keep only the latest check while both language pages are updated in quick succession.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   mirror:
     name: Verify FR/EN page parity and local links
     runs-on: ubuntu-latest
     steps:
+      - name: Allow paired edits on main to arrive
+        if: github.event_name == 'push'
+        run: sleep 120
       - name: Check out the site
         uses: actions/checkout@v4
       - name: Set up Python
