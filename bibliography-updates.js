@@ -76,8 +76,8 @@
     {
       id: 'pnas-outreach',
       title: 'Stratification of reactivity determines nitrate removal in groundwater',
-      fr: '<strong>Autour de cette publication :</strong> <a href="https://dev.espace-sciences.org/sciences-ouest/370/actualite/l-eau-souterraine-lavee-des-nitrates" target="_blank" rel="noopener">Espace des sciences — L’eau souterraine lavée des nitrates</a> · <a href="https://oseren.univ-rennes.fr/actualites/losur-booste-linterdisciplinarite-et-construit-des-ponts-entre-les-unites" target="_blank" rel="noopener">OSERen — focus sur cette publication</a>',
-      en: '<strong>About this publication:</strong> <a href="https://dev.espace-sciences.org/sciences-ouest/370/actualite/l-eau-souterraine-lavee-des-nitrates" target="_blank" rel="noopener">Espace des sciences — L’eau souterraine lavée des nitrates</a> · <a href="https://oseren.univ-rennes.fr/actualites/losur-booste-linterdisciplinarite-et-construit-des-ponts-entre-les-unites" target="_blank" rel="noopener">OSERen — feature on this paper</a>'
+      fr: '<strong>Autour de cette publication :</strong> <a href="https://www.espace-sciences.org/sciences-ouest/370/actualite/l-eau-souterraine-lavee-des-nitrates" target="_blank" rel="noopener">Espace des sciences — L’eau souterraine lavée des nitrates</a> · <a href="https://oseren.univ-rennes.fr/actualites/losur-booste-linterdisciplinarite-et-construit-des-ponts-entre-les-unites" target="_blank" rel="noopener">OSERen — focus sur cette publication</a>',
+      en: '<strong>About this publication:</strong> <a href="https://www.espace-sciences.org/sciences-ouest/370/actualite/l-eau-souterraine-lavee-des-nitrates" target="_blank" rel="noopener">Espace des sciences — L’eau souterraine lavée des nitrates</a> · <a href="https://oseren.univ-rennes.fr/actualites/losur-booste-linterdisciplinarite-et-construit-des-ponts-entre-les-unites" target="_blank" rel="noopener">OSERen — feature on this paper</a>'
     }
   ];
 
