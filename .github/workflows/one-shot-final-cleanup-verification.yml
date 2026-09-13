@@ -1,0 +1,157 @@
+name: One-shot final cleanup verification
+on:
+  push:
+    paths:
+      - '.github/workflows/one-shot-final-cleanup-verification.yml'
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deep repository verification
+        run: |
+          python scripts/check_bilingual_mirror.py
+          python scripts/check_local_links.py
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          root=Path('.')
+          selfwf='.github/workflows/one-shot-final-cleanup-verification.yml'
+
+          # Only four permanent workflows should remain aside from this temporary verifier.
+          workflows={p.as_posix() for p in (root/'.github'/'workflows').glob('*.yml') if p.as_posix()!=selfwf}
+          expected_workflows={
+            '.github/workflows/build-pyages-image.yml',
+            '.github/workflows/check-bilingual-mirror.yml',
+            '.github/workflows/update-publications-over-time.yml',
+            '.github/workflows/verify-pyages-live.yml'
+          }
+          assert workflows==expected_workflows, (workflows,expected_workflows)
+          print('Permanent workflows OK:', ', '.join(sorted(workflows)))
+
+          # Check non-chunk assets: every one must be referenced by site/source/workflow code.
+          text_ext={'.html','.css','.js','.py','.yml','.yaml','.json','.md','.xml','.txt'}
+          sources=[]
+          for p in root.rglob('*'):
+              if not p.is_file() or '.git' in p.parts or p.as_posix()==selfwf: continue
+              if p.as_posix().startswith('assets/'): continue
+              if p.suffix.lower() not in text_ext: continue
+              try: sources.append(p.read_text(encoding='utf-8'))
+              except Exception: pass
+          orphan_assets=[]
+          for p in (root/'assets').rglob('*'):
+              if not p.is_file() or 'figure-data' in p.parts: continue
+              rel=p.as_posix()
+              if not any(rel in s for s in sources): orphan_assets.append(rel)
+          assert not orphan_assets, orphan_assets
+          print('Non-chunk assets: zero orphans')
+
+          # Figure-data families: every family must be used by HTML or exact source/workflow code.
+          data=root/'assets'/'figure-data'
+          groups={}
+          for p in data.glob('*.part-*.txt'):
+              m=re.match(r'(.+)\.part-(\d+)\.txt$',p.name)
+              if m: groups.setdefault(m.group(1),[]).append(p)
+          html_names=set(); html_counts={}
+          for p in root.rglob('*.html'):
+              s=p.read_text(encoding='utf-8')
+              for name,count in re.findall(r'data-b64-name=["\']([^"\']+)["\'][^>]*data-b64-parts=["\'](\d+)["\']',s):
+                  html_names.add(name); html_counts[name]=max(html_counts.get(name,0),int(count))
+          code_names=set()
+          code_files=[]
+          for p in root.rglob('*'):
+              if not p.is_file() or '.git' in p.parts or p.as_posix()==selfwf or 'assets/figure-data' in p.as_posix(): continue
+              if p.suffix.lower() not in {'.js','.py','.yml','.yaml','.json','.md'}: continue
+              try: code_files.append(p.read_text(encoding='utf-8'))
+              except Exception: pass
+          for name in groups:
+              patt=re.compile(r'(?<![A-Za-z0-9_-])'+re.escape(name)+r'(?![A-Za-z0-9_-])')
+              if any(patt.search(s) for s in code_files): code_names.add(name)
+          unused=set(groups)-(html_names|code_names)
+          assert not unused, unused
+          print('Figure-data families: zero unused')
+
+          # All HTML-requested chunk sequences must be complete.
+          for name,count in html_counts.items():
+              for i in range(count):
+                  p=data/f'{name}.part-{i:02d}.txt'
+                  assert p.exists() and p.stat().st_size>0, p
+          print('All HTML-requested figure chunk sequences complete')
+
+          # Core operational files/datasets.
+          for f in ['robots.txt','sitemap.xml','.nojekyll','mirror-map.json','bibliography-loader.js','bibliography-updates.js','bibliography-hal.js']:
+              assert Path(f).exists(), f
+          payloads=sorted(root.glob('bibliographie-payload-*.txt'))
+          assert len(payloads)==5 and all(p.stat().st_size>0 for p in payloads), payloads
+          print('Bibliography payloads and operational files OK')
+          PY
+      - name: Live site and dynamic asset verification
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from urllib.request import Request,urlopen
+          import re,time
+          base='https://dreuzy.github.io/'
+          stamp=str(int(time.time()))
+          errors=[]
+          html_files=sorted(p.as_posix() for p in Path('.').rglob('*.html') if '.git' not in p.parts)
+          live={}
+          for rel in html_files:
+              try:
+                  req=Request(base+rel+'?cleanupcheck='+stamp,headers={'User-Agent':'Mozilla/5.0','Cache-Control':'no-cache'})
+                  with urlopen(req,timeout=25) as r: b=r.read(); code=r.status
+                  if code!=200 or len(b)<80: errors.append(f'{rel}: HTTP {code} bytes={len(b)}')
+                  else: live[rel]=b.decode('utf-8','replace')
+              except Exception as e: errors.append(f'{rel}: {type(e).__name__}: {e}')
+          print(f'Live HTML: {len(live)}/{len(html_files)}')
+
+          # Direct non-chunk assets that matter to visible pages.
+          visible_assets=[
+            'styles.css','assets/pyages-software-figure.png','assets/pyages-groundwater-age-v2.webp',
+            'assets/maquette-nappes.jpg','assets/maquette-fractures.jpg',
+            'assets/figures/fractured-media-channeling.png','assets/figures/eau-territoire.png',
+            'assets/figures/futureflow-framework.webp','assets/figures/hydromodpy-approved.webp','assets/figures/onewater.svg'
+          ]
+          for rel in visible_assets:
+              try:
+                  req=Request(base+rel+'?cleanupcheck='+stamp,headers={'User-Agent':'Mozilla/5.0','Cache-Control':'no-cache'})
+                  with urlopen(req,timeout=25) as r: b=r.read(); code=r.status
+                  if code!=200 or not b: errors.append(f'{rel}: asset HTTP {code} bytes={len(b)}')
+              except Exception as e: errors.append(f'{rel}: {type(e).__name__}: {e}')
+
+          # Fetch every dynamically requested figure-data chunk from the live site.
+          requests={}
+          for p in Path('.').rglob('*.html'):
+              s=p.read_text(encoding='utf-8')
+              for name,count in re.findall(r'data-b64-name=["\']([^"\']+)["\'][^>]*data-b64-parts=["\'](\d+)["\']',s):
+                  requests[name]=max(requests.get(name,0),int(count))
+          chunk_ok=0
+          for name,count in sorted(requests.items()):
+              for i in range(count):
+                  rel=f'assets/figure-data/{name}.part-{i:02d}.txt'
+                  try:
+                      req=Request(base+rel+'?cleanupcheck='+stamp,headers={'User-Agent':'Mozilla/5.0','Cache-Control':'no-cache'})
+                      with urlopen(req,timeout=25) as r: b=r.read(); code=r.status
+                      if code!=200 or not b: errors.append(f'{rel}: chunk HTTP {code} bytes={len(b)}')
+                      else: chunk_ok+=1
+                  except Exception as e: errors.append(f'{rel}: {type(e).__name__}: {e}')
+          print('Live dynamic chunks OK:',chunk_ok)
+
+          markers={
+            'masters.html':['<h2>Anciens Masters</h2>','class="people-grid"'],
+            'cv.html':['Computational Methods in Water Resources, 2018–2024','co-organisateur'],
+            'science-societe.html':['assets/maquette-nappes.jpg','assets/maquette-fractures.jpg'],
+            'en/masters.html':["Former Master's students and interns",'class="people-grid"'],
+            'en/cv.html':['Computational Methods in Water Resources, 2018–2024','co-organizer']
+          }
+          for f,needles in markers.items():
+              s=live.get(f,'')
+              for n in needles:
+                  if n not in s: errors.append(f'{f}: missing live marker {n}')
+          if errors:
+              print('ERRORS'); print('\n'.join(errors)); raise SystemExit(1)
+          print('FINAL LIVE CLEANUP VERIFICATION PASS')
+          PY
