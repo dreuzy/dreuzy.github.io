@@ -25,6 +25,48 @@
       "navigation": true
     },
     {
+      "id": "scientific-results",
+      "fr": "resultats-scientifiques.html",
+      "en": "en/scientific-results.html",
+      "navigation": true
+    },
+    {
+      "id": "result-streams-subsurface",
+      "fr": "resultat-rivieres-sous-sol.html",
+      "en": "en/result-streams-subsurface.html",
+      "navigation": true
+    },
+    {
+      "id": "result-transit-reactivity",
+      "fr": "resultat-temps-reactivite.html",
+      "en": "en/result-transit-reactivity.html",
+      "navigation": true
+    },
+    {
+      "id": "result-models-europe",
+      "fr": "resultat-modeles-europe.html",
+      "en": "en/result-models-europe.html",
+      "navigation": true
+    },
+    {
+      "id": "result-climate-water-resources",
+      "fr": "resultat-climat-ressources.html",
+      "en": "en/result-climate-water-resources.html",
+      "navigation": true
+    },
+    {
+      "id": "result-fractured-media",
+      "fr": "resultat-milieux-fractures.html",
+      "en": "en/result-fractured-media.html",
+      "navigation": true
+    },
+    {
+      "id": "research-figures",
+      "fr": "galerie-recherche.html",
+      "en": "en/research-figures.html",
+      "navigation": true
+    },
+    {
       "id": "projects",
       "fr": "projets.html",
       "en": "en/projects.html",
