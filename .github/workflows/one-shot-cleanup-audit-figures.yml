@@ -1,0 +1,60 @@
+name: One-shot cleanup audit figures
+on:
+  push:
+    paths:
+      - '.github/workflows/one-shot-cleanup-audit-figures.yml'
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify site after cleanup
+        run: |
+          python scripts/check_bilingual_mirror.py
+          python scripts/check_local_links.py
+          test ! -e .github/workflows/verify-pyages-live-and-mark.yml
+          test ! -e assets/pyages-live-verified.txt
+      - name: Audit figure-data families
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          root=Path('.')
+          data=root/'assets'/'figure-data'
+          groups={}
+          for p in data.glob('*.part-*.txt'):
+              m=re.match(r'(.+)\.part-(\d+)\.txt$', p.name)
+              if m:
+                  groups.setdefault(m.group(1),[]).append(p)
+
+          # Exact data-b64 names used by HTML.
+          html_names=set()
+          for p in root.rglob('*.html'):
+              s=p.read_text(encoding='utf-8')
+              html_names.update(re.findall(r'data-b64-name=["\']([^"\']+)["\']', s))
+
+          # Exact non-HTML names explicitly used by source/workflow code.
+          code_names=set()
+          exts={'.js','.py','.yml','.yaml','.json','.md'}
+          code_files=[p for p in root.rglob('*') if p.is_file() and p.suffix in exts and 'assets/figure-data' not in p.as_posix() and '.git' not in p.parts]
+          for name in groups:
+              patt=re.compile(r'(?<![A-Za-z0-9_-])'+re.escape(name)+r'(?![A-Za-z0-9_-])')
+              for p in code_files:
+                  try: s=p.read_text(encoding='utf-8')
+                  except Exception: continue
+                  if patt.search(s):
+                      code_names.add(name); break
+
+          active=html_names|code_names
+          print('HTML data-b64 names:', ', '.join(sorted(html_names)))
+          print('Code/workflow exact names:', ', '.join(sorted(code_names)))
+          print('ACTIVE FIGURE-DATA FAMILIES:')
+          for name in sorted(groups):
+              total=sum(p.stat().st_size for p in groups[name])
+              status='ACTIVE' if name in active else 'UNREFERENCED'
+              print(f'{status:12} {name:45} parts={len(groups[name]):2d} bytes={total}')
+          print('UNREFERENCED NAMES:', ', '.join(sorted(set(groups)-active)))
+          PY
