@@ -1,0 +1,48 @@
+name: One-shot editorial dates
+on:
+  push:
+    paths:
+      - '.github/workflows/one-shot-editorial-dates.yml'
+permissions:
+  contents: write
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Update editorial dates
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          edits = {
+            'cv.html': [
+              ('<strong>Hydrogeology Journal</strong> — éditeur associé à partir de 2006 ; activité aujourd’hui terminée.', '<strong>Hydrogeology Journal, 2006–2011</strong> — éditeur associé.'),
+              ('<strong>Journal of Hydrology</strong> — éditeur associé pendant quelques années ; activité aujourd’hui terminée.', '<strong>Journal of Hydrology, 2013–2018</strong> — éditeur associé.'),
+            ],
+            'en/cv.html': [
+              ('<strong>Hydrogeology Journal</strong> — Associate Editor from 2006; role now completed.', '<strong>Hydrogeology Journal, 2006–2011</strong> — Associate Editor.'),
+              ('<strong>Journal of Hydrology</strong> — Associate Editor for several years; role now completed.', '<strong>Journal of Hydrology, 2013–2018</strong> — Associate Editor.'),
+            ],
+          }
+          for path, replacements in edits.items():
+              p = Path(path)
+              text = p.read_text(encoding='utf-8')
+              for old, new in replacements:
+                  if old not in text:
+                      raise SystemExit(f'Missing expected text in {path}: {old}')
+                  text = text.replace(old, new, 1)
+              p.write_text(text, encoding='utf-8')
+          PY
+      - name: Validate mirror and links
+        run: |
+          python scripts/check_bilingual_mirror.py
+          python scripts/check_local_links.py
+      - name: Commit
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add cv.html en/cv.html
+          git commit -m 'Clarify past editorial dates'
+          git push
