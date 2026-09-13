@@ -1,0 +1,147 @@
+name: One-shot full site audit
+on:
+  push:
+    paths:
+      - '.github/workflows/one-shot-full-site-audit.yml'
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Repository structural checks
+        run: |
+          set -e
+          python scripts/check_bilingual_mirror.py
+          python scripts/check_local_links.py
+          python - <<'PY'
+          from pathlib import Path
+          from html.parser import HTMLParser
+          from urllib.parse import urlparse
+          import re
+
+          class P(HTMLParser):
+              def __init__(self):
+                  super().__init__(); self.lang=None; self.title=[]; self.refs=[]; self.canon=[]
+              def handle_starttag(self, tag, attrs):
+                  a=dict(attrs)
+                  if tag=='html': self.lang=a.get('lang')
+                  if tag=='link' and a.get('rel')=='canonical' and a.get('href'): self.canon.append(a['href'])
+                  for k in ('href','src'):
+                      if a.get(k): self.refs.append(a[k])
+              def handle_data(self,data):
+                  pass
+
+          html_files=sorted(p for p in Path('.').rglob('*.html') if '.git' not in p.parts)
+          errs=[]
+          for p in html_files:
+              s=p.read_text(encoding='utf-8')
+              q=P(); q.feed(s)
+              if '<title>' not in s or '</title>' not in s: errs.append(f'{p}: missing title')
+              if q.lang not in ('fr','en'): errs.append(f'{p}: invalid lang={q.lang!r}')
+              if len(q.canon)!=1: errs.append(f'{p}: canonical count={len(q.canon)}')
+              for ref in q.refs:
+                  if ref.startswith(('#','mailto:','tel:','data:','javascript:','//')): continue
+                  u=urlparse(ref)
+                  if u.scheme in ('http','https'): continue
+                  if u.path and not (p.parent/u.path).resolve().exists(): errs.append(f'{p}: missing local target {ref}')
+
+          # Key content and requested layout.
+          checks={
+            'cv.html':['Computational Methods in Water Resources, 2018–2024','Computational Methods in Water Resources 2018, Saint-Malo','co-organisateur','Thierry Labasque','Alain Rapaport'],
+            'en/cv.html':['Computational Methods in Water Resources, 2018–2024','Computational Methods in Water Resources 2018, Saint-Malo','co-organizer','Thierry Labasque','Alain Rapaport'],
+            'science-societe.html':['assets/maquette-nappes.jpg','assets/maquette-fractures.jpg'],
+            'en/science-society.html':['../assets/maquette-nappes.jpg','../assets/maquette-fractures.jpg'],
+          }
+          for f, needles in checks.items():
+              s=Path(f).read_text(encoding='utf-8')
+              for n in needles:
+                  if n not in s: errs.append(f'{f}: missing {n}')
+
+          for f, heading in [('masters.html','Anciens Masters'),('en/masters.html',"Former Master's students and interns")]:
+              s=Path(f).read_text(encoding='utf-8')
+              try: sec=s.split(f'<h2>{heading}</h2>',1)[1].split('</section>',1)[0]
+              except Exception: errs.append(f'{f}: former masters section missing'); continue
+              if 'class="people-grid"' not in sec: errs.append(f'{f}: former masters not in people-grid')
+              n=sec.count('<div class="people-entry">')
+              if n<2: errs.append(f'{f}: suspicious former-master entry count {n}')
+              # people-grid should contain two direct column wrappers.
+              grid=sec.split('class="people-grid"',1)[1]
+              if grid.count('\n      <div>') < 2: errs.append(f'{f}: two-column wrappers not found')
+              print(f'{f}: former masters entries={n}, two-column grid present')
+
+          for asset in ['assets/maquette-nappes.jpg','assets/maquette-fractures.jpg','styles.css']:
+              p=Path(asset)
+              if not p.exists() or p.stat().st_size==0: errs.append(f'{asset}: missing/empty')
+
+          print(f'HTML pages in repository: {len(html_files)}')
+          print(f'FR pages: {sum(1 for p in html_files if "en" not in p.parts)}; EN pages: {sum(1 for p in html_files if "en" in p.parts)}')
+          if errs:
+              print('REPOSITORY ERRORS:')
+              print('\n'.join(errs))
+              raise SystemExit(1)
+          print('Repository structural audit: PASS')
+          PY
+      - name: Published GitHub Pages checks
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from urllib.request import Request, urlopen
+          from urllib.error import HTTPError, URLError
+          from urllib.parse import quote
+          import time
+
+          base='https://dreuzy.github.io/'
+          stamp=str(int(time.time()))
+          html_files=sorted(p.as_posix() for p in Path('.').rglob('*.html') if '.git' not in p.parts)
+          failures=[]
+          sizes=[]
+          live={}
+          for rel in html_files:
+              url=base+rel+'?audit='+stamp
+              try:
+                  req=Request(url,headers={'User-Agent':'Mozilla/5.0 site-audit','Cache-Control':'no-cache'})
+                  with urlopen(req,timeout=20) as r:
+                      data=r.read().decode('utf-8','replace')
+                      code=r.status
+                  if code!=200 or len(data)<100: failures.append(f'{rel}: HTTP {code}, bytes={len(data)}')
+                  else: sizes.append((rel,len(data))); live[rel]=data
+              except Exception as e:
+                  failures.append(f'{rel}: {type(e).__name__}: {e}')
+
+          assets=['styles.css','assets/maquette-nappes.jpg','assets/maquette-fractures.jpg']
+          for rel in assets:
+              url=base+rel+'?audit='+stamp
+              try:
+                  req=Request(url,headers={'User-Agent':'Mozilla/5.0 site-audit','Cache-Control':'no-cache'})
+                  with urlopen(req,timeout=20) as r:
+                      data=r.read(); code=r.status
+                  if code!=200 or len(data)==0: failures.append(f'{rel}: HTTP {code}, bytes={len(data)}')
+                  else: print(f'LIVE ASSET OK {rel}: {len(data)} bytes')
+              except Exception as e: failures.append(f'{rel}: {type(e).__name__}: {e}')
+
+          markers={
+            'masters.html':['<h2>Anciens Masters</h2>','class="people-grid"'],
+            'en/masters.html':["<h2>Former Master's students and interns</h2>",'class="people-grid"'],
+            'cv.html':['Computational Methods in Water Resources, 2018–2024','Computational Methods in Water Resources 2018, Saint-Malo','co-organisateur'],
+            'en/cv.html':['Computational Methods in Water Resources, 2018–2024','co-organizer'],
+            'science-societe.html':['assets/maquette-nappes.jpg','assets/maquette-fractures.jpg'],
+            'en/science-society.html':['../assets/maquette-nappes.jpg','../assets/maquette-fractures.jpg'],
+          }
+          for rel, needles in markers.items():
+              s=live.get(rel,'')
+              for n in needles:
+                  if n not in s: failures.append(f'{rel}: live marker missing: {n}')
+              if s: print(f'LIVE MARKERS OK {rel}')
+
+          print(f'Published HTML pages checked: {len(html_files)}')
+          print(f'Published HTML pages OK: {len(sizes)}')
+          if failures:
+              print('LIVE FAILURES / DEPLOYMENT LAG:')
+              print('\n'.join(failures))
+              raise SystemExit(2)
+          print('Published-site audit: PASS')
+          PY
