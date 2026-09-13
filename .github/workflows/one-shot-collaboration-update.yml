@@ -1,0 +1,90 @@
+name: One-shot collaboration update
+on:
+  push:
+    paths:
+      - '.github/workflows/one-shot-collaboration-update.yml'
+permissions:
+  contents: write
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - name: Update collaborations and inspect bibliography
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import base64, gzip, re, unicodedata
+          from bs4 import BeautifulSoup, Tag
+
+          def read(p): return Path(p).read_text(encoding='utf-8')
+          def write(p,s): Path(p).write_text(s,encoding='utf-8')
+
+          # Add Tanguy Le Borgne to current collaborations, FR/EN.
+          for p in ['equipe.html','en/team.html']:
+              s=read(p)
+              old='<strong>Luc Aquilina</strong> · <strong>Laurent Longuevergne</strong> · <strong>Camille Bouchez</strong>'
+              new='<strong>Luc Aquilina</strong> · <strong>Laurent Longuevergne</strong> · <strong>Tanguy Le Borgne</strong> · <strong>Camille Bouchez</strong>'
+              if old not in s: raise SystemExit(f'missing current collaboration anchor in {p}')
+              s=s.replace(old,new,1)
+              write(p,s)
+
+          # Add Benoît Noetinger and Jacques Bodin to past collaborations, FR/EN.
+          p='cv.html'; s=read(p)
+          anchor='<strong>Anthony Beaudoin</strong> (Institut P′, CNRS / Université de Poitiers / ENSMA — dispersion et transport en milieux hétérogènes), '
+          addition=anchor + '<strong>Benoît Noetinger</strong> (IFP Energies nouvelles — changement d’échelle, transport stochastique et milieux fracturés), <strong>Jacques Bodin</strong> (IC2MP, équipe HydrASA, Université de Poitiers — hydrogéologie des milieux fracturés et karstifiés, modélisation et transport), '
+          if anchor not in s: raise SystemExit('missing FR past collaboration anchor')
+          s=s.replace(anchor,addition,1); write(p,s)
+
+          p='en/cv.html'; s=read(p)
+          anchor='<strong>Anthony Beaudoin</strong> (Institut P′, CNRS / University of Poitiers / ENSMA — dispersion and transport in heterogeneous media), '
+          addition=anchor + '<strong>Benoît Noetinger</strong> (IFP Energies nouvelles — upscaling, stochastic transport and fractured media), <strong>Jacques Bodin</strong> (IC2MP, HydrASA team, University of Poitiers — fractured and karst aquifers, modelling and transport), '
+          if anchor not in s: raise SystemExit('missing EN past collaboration anchor')
+          s=s.replace(anchor,addition,1); write(p,s)
+
+          # Bibliography-based recurrence check for plausible missing collaborators.
+          raw=''.join(Path(f'bibliographie-payload-0{i}.txt').read_text(encoding='utf-8') for i in range(1,6))
+          html=gzip.decompress(base64.b64decode(re.sub(r'\s+','',raw))).decode('utf-8')
+          soup=BeautifulSoup(html,'html.parser')
+          def norm(t):
+              t=unicodedata.normalize('NFD',t or '')
+              t=''.join(c for c in t if unicodedata.category(c)!='Mn')
+              return re.sub(r'\s+',' ',t).strip().lower()
+          def heading(target):
+              for h in soup.find_all(re.compile(r'^h[1-6]$')):
+                  if norm(h.get_text(' ',strip=True))==norm(target): return h
+              raise RuntimeError(target)
+          h=heading('Articles dans des revues à comité de lecture'); level=int(h.name[1]); state=''; entries=[]; node=h.find_next_sibling()
+          while node:
+              if isinstance(node,Tag) and re.match(r'^h[1-6]$',node.name):
+                  if int(node.name[1])<=level: break
+                  state=norm(node.get_text(' ',strip=True))
+              elif isinstance(node,Tag) and node.name in ('ol','ul') and state==norm('Articles publiés'):
+                  entries += [li.get_text(' ',strip=True) for li in node.find_all('li',recursive=False)]
+              node=node.find_next_sibling()
+          candidates=['Tanguy Le Borgne','Benoit Noetinger','Jacques Bodin','Philippe Gouze','Fred Delay','Gilles Porel','Alain Rapaport','Diogo Bolster','Beth Parker','Mustafa Eissa','Maria Klepikova','Niklas Linde','Jean-Christophe Marechal','Philippe Ackerer','Jean de Bremond d’Ars','Renaud Toussaint','Jean Schmittbuhl','Gilles Pinay','Tanguy Le Borgne','Thierry Labasque','Philippe Pezard']
+          print('PUBLISHED-ARTICLE OCCURRENCES BY CANDIDATE')
+          low=[norm(e) for e in entries]
+          for name in candidates:
+              key=norm(name)
+              surname=key.split()[-1].replace('d’','').replace("d'",'')
+              c=sum(1 for e in low if surname in e)
+              if c: print(f'{name}: {c}')
+          print('TOTAL ARTICLES',len(entries))
+          PY
+      - name: Validate mirror and links
+        run: |
+          python scripts/check_bilingual_mirror.py
+          python scripts/check_local_links.py
+      - name: Commit
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add equipe.html en/team.html cv.html en/cv.html
+          git commit -m 'Refine current and past collaborations'
+          git push
