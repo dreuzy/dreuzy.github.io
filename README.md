@@ -2,24 +2,33 @@
 
 Site personnel : recherche, projets, équipe, publications et parcours.
 
-Le site est volontairement statique et léger afin de rester simple à maintenir. Les pages HTML et le fichier `styles.css` peuvent être modifiés directement ; les schémas sont dans `assets/figures/`.
+Site public : https://dreuzy.github.io
+
+Le site est volontairement statique et léger afin de rester simple à maintenir. La branche publiée est `main` ; les pages HTML, `styles.css`, les assets et les scripts du dépôt sont servis par GitHub Pages.
+
+## Avant toute reprise ou modification
+
+Lire d’abord **[`DEVELOPMENT.md`](DEVELOPMENT.md)**. Ce document décrit l’architecture complète du site, les conventions FR/EN, les figures dynamiques, PyAges, la bibliographie, le SEO, les workflows GitHub Actions, les contrôles à effectuer et l’état de référence du dépôt.
+
+Le site doit pouvoir être repris à partir du dépôt seul, sans dépendre d’un ancien fil de discussion.
 
 ## Structure bilingue en miroir
 
-La version française reste à la racine du site et la version anglaise dans le répertoire `en/`. Chaque page française possède un équivalent anglais direct, avec la même structure, le même ordre de navigation et les mêmes figures.
+La version française est à la racine du site et la version anglaise dans `en/`. Chaque page française possède un équivalent anglais direct.
 
-Les correspondances officielles sont définies dans `mirror-map.json`. Le script `scripts/check_bilingual_mirror.py` vérifie automatiquement :
+Les correspondances officielles sont définies dans `mirror-map.json`. Le script `scripts/check_bilingual_mirror.py` vérifie notamment l’existence des paires FR/EN, les liens de langue, la navigation et la cohérence des blocs et figures.
 
-- l’existence de chaque paire de pages FR/EN ;
-- la réciprocité des liens de langue ;
-- l’ordre identique de la navigation ;
-- la parité des blocs de mise en page ;
-- l’identité des figures entre les deux langues.
+Lors d’une modification d’une page, mettre à jour sa page miroir dans la même opération logique.
 
-La vérification est exécutée par GitHub Actions à chaque modification grâce à `.github/workflows/check-bilingual-mirror.yml`.
+## Contrôles de base
 
-Lors d'une modification d'une page, mettre à jour sa page miroir dans le même commit. Avant de pousser, vérifier localement avec `python scripts/check_bilingual_mirror.py` et `python scripts/check_local_links.py`.
+Avant de considérer une modification terminée :
 
-Sur `main`, le workflow attend deux minutes avant de vérifier les pages. Un nouveau push pendant ce délai annule le contrôle précédent : les modifications FR/EN publiées en deux commits rapprochés ne déclenchent plus de fausse alerte. Le dernier état est toujours vérifié et un écart persistant reste une erreur. Les contrôles des pull requests et les lancements manuels restent immédiats.
+```bash
+python scripts/check_bilingual_mirror.py
+python scripts/check_local_links.py
+```
 
-Site public : https://dreuzy.github.io
+Le workflow `.github/workflows/check-bilingual-mirror.yml` exécute également ces contrôles sur GitHub Actions. Sur les pushes vers `main`, il attend deux minutes afin d’éviter les faux écarts lorsqu’une paire FR/EN est mise à jour en plusieurs commits rapprochés.
+
+Pour les opérations touchant aux figures, à PyAges, à la bibliographie, au sitemap ou aux workflows, suivre les procédures détaillées dans `DEVELOPMENT.md`.
