@@ -1,0 +1,207 @@
+name: One-shot publications over time
+on:
+  push:
+    paths:
+      - '.github/workflows/one-shot-publications-over-time.yml'
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install --quiet matplotlib
+      - name: Build publication-history pages and figures
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          import numpy as np
+          import matplotlib
+          matplotlib.use('Agg')
+          matplotlib.rcParams['svg.fonttype'] = 'none'
+          import matplotlib.pyplot as plt
+
+          years = np.arange(1998, 2027)
+          article_counts = {
+              2000:1, 2001:4, 2002:2, 2003:3, 2004:4, 2005:0, 2006:2, 2007:5, 2008:1,
+              2009:1, 2010:11, 2011:4, 2012:8, 2013:9, 2014:4, 2015:3, 2016:9, 2017:7,
+              2018:7, 2019:4, 2020:4, 2021:5, 2022:4, 2023:3, 2024:4, 2025:1, 2026:4
+          }
+          abstract_counts = {
+              2000:3, 2001:1, 2002:6, 2003:7, 2004:1, 2005:5, 2006:6, 2007:7, 2008:19,
+              2009:4, 2010:8, 2011:8, 2012:5, 2013:16, 2014:6, 2015:8, 2016:13, 2017:14,
+              2018:24, 2019:6, 2020:7, 2021:13, 2022:7, 2023:11, 2024:10, 2025:11, 2026:4
+          }
+          proceedings_counts = {2003:1, 2005:2, 2006:2, 2007:2, 2009:2, 2010:1, 2013:1, 2014:2, 2016:1, 2020:1}
+          combined_abstracts = {y: abstract_counts.get(y, 0) + proceedings_counts.get(y, 0) for y in range(2000, 2027)}
+
+          articles = np.array([article_counts.get(int(y), np.nan) for y in years], dtype=float)
+          abstracts = np.array([combined_abstracts.get(int(y), np.nan) for y in years], dtype=float)
+
+          def ma5(arr):
+              out = np.full_like(arr, np.nan)
+              valid = np.where(~np.isnan(arr))[0]
+              for i in valid:
+                  lo = max(valid[0], i - 2)
+                  hi = min(valid[-1], i + 2)
+                  out[i] = np.nanmean(arr[lo:hi+1])
+              return out
+
+          ma5_articles = ma5(articles)
+          ma5_abstracts = ma5(abstracts)
+
+          color_pub = '#2B6CB0'
+          color_ma5_pub = '#123B63'
+          color_abs = '#8FA39A'
+          color_ma5_abs = '#5F7A6E'
+          color_band = '#F6F7F8'
+          color_career = '#666666'
+          color_text = '#30343B'
+
+          def build_svg(path, lang='fr'):
+              if lang == 'fr':
+                  labels = {
+                      'year':'Année', 'articles_axis':'Articles publiés par année', 'abstracts_axis':'Abstracts de colloques par année',
+                      'articles':'Articles publiés', 'articles_ma':'Articles (moyenne mobile 5 ans)',
+                      'abstracts':'Abstracts de colloques', 'abstracts_ma':'Abstracts (moyenne mobile 5 ans)',
+                      'thesis':'Thèse', 'israel':'Israël', 'barcelona':'Barcelone / CSIC–UPC', 'osur':'Direction OSUR',
+                      'vp':'VP Rech.', 'pres':'Présidence', 'ens':'ENS Rennes', 'made':'Réalisation 2026'
+                  }
+              else:
+                  labels = {
+                      'year':'Year', 'articles_axis':'Published articles per year', 'abstracts_axis':'Conference abstracts per year',
+                      'articles':'Published articles', 'articles_ma':'Articles (5-year moving average)',
+                      'abstracts':'Conference abstracts', 'abstracts_ma':'Abstracts (5-year moving average)',
+                      'thesis':'PhD', 'israel':'Israel', 'barcelona':'Barcelona / CSIC–UPC', 'osur':'OSUR Director',
+                      'vp':'VP Research', 'pres':'President', 'ens':'ENS Rennes', 'made':'Produced in 2026'
+                  }
+
+              fig = plt.figure(figsize=(18, 10.6))
+              gs = fig.add_gridspec(2, 1, height_ratios=[4.9, 1.35], hspace=0.18)
+              ax = fig.add_subplot(gs[0]); ax_r = ax.twinx()
+              l1, = ax.plot(years, articles, color=color_pub, linestyle='--', linewidth=2.0,
+                            marker='o', markersize=4.2, alpha=0.9, label=labels['articles'], zorder=4)
+              l2, = ax.plot(years, ma5_articles, color=color_ma5_pub, linewidth=3.3,
+                            label=labels['articles_ma'], zorder=5)
+              l3, = ax_r.plot(years, abstracts, color=color_abs, linestyle=':', linewidth=1.8,
+                              marker='o', markersize=3.2, alpha=0.65, label=labels['abstracts'], zorder=2)
+              l4, = ax_r.plot(years, ma5_abstracts, color=color_ma5_abs, linewidth=1.7,
+                              label=labels['abstracts_ma'], zorder=3)
+              ax.set_xlim(1998, 2026.8); ax.set_ylim(0, 12); ax_r.set_ylim(0, 24)
+              ax.set_xlabel(labels['year'], fontsize=18, labelpad=8)
+              ax.set_ylabel(labels['articles_axis'], fontsize=18, color=color_pub, labelpad=12)
+              ax_r.set_ylabel(labels['abstracts_axis'], fontsize=18, color=color_abs, labelpad=14)
+              ax.set_xticks(np.arange(1998, 2027, 2))
+              ax.tick_params(axis='x', labelsize=14); ax.tick_params(axis='y', labelsize=14, labelcolor=color_pub)
+              ax_r.tick_params(axis='y', labelsize=14, labelcolor=color_abs)
+              ax.grid(axis='y', alpha=0.16); ax.spines['top'].set_visible(False); ax_r.spines['top'].set_visible(False)
+              fig.legend([l1,l2,l3,l4],[x.get_label() for x in [l1,l2,l3,l4]], loc='upper center',
+                         bbox_to_anchor=(0.5,0.992), ncol=4, fontsize=13.5, frameon=False)
+              fig.text(0.985,0.018,labels['made'],ha='right',va='bottom',fontsize=14,color=color_text)
+
+              band = fig.add_subplot(gs[1], sharex=ax)
+              band.set_facecolor(color_band); band.set_ylim(0,1); band.set_yticks([])
+              band.tick_params(axis='x', which='both', bottom=False, labelbottom=False)
+              for side in ['left','right','top','bottom']: band.spines[side].set_visible(False)
+              band.plot(1999,0.80,marker='o',markersize=6,color=color_career)
+              band.text(1999,0.88,f"{labels['thesis']}\n1999",ha='center',va='bottom',fontsize=13,color=color_text)
+              band.plot(2008,0.80,marker='o',markersize=6,color=color_career)
+              band.text(2008,0.88,'HDR\n2008',ha='center',va='bottom',fontsize=13,color=color_text)
+              for start,end,label in [(2000.,2001.,f"{labels['israel']}\n2000–2001"),(2011.,2013.,f"{labels['barcelona']}\n2011–2013")]:
+                  band.hlines(0.50,start,end,color=color_career,linewidth=3.8)
+                  band.vlines([start,end],0.455,0.545,color=color_career,linewidth=1.2)
+                  band.text((start+end)/2,0.58,label,ha='center',va='bottom',fontsize=13,color=color_text)
+              for start,end,label,fs in [
+                  (2017.,2021.,f"{labels['osur']}\n2017–2021",12.5),
+                  (2021.,2026.,f"{labels['vp']}\n{labels['ens']}\n2021–2026",12),
+                  (2026.,2026.8,f"{labels['pres']}\n{labels['ens']}\n2026–",12)]:
+                  band.hlines(0.20,start,end,color=color_career,linewidth=3.8)
+                  band.vlines([start,end],0.155,0.245,color=color_career,linewidth=1.2)
+                  band.text((start+end)/2,0.28,label,ha='center',va='bottom',fontsize=fs,color=color_text,linespacing=0.95)
+              fig.subplots_adjust(left=0.075,right=0.91,top=0.91,bottom=0.12)
+              fig.savefig(path, format='svg', bbox_inches='tight')
+              plt.close(fig)
+
+          build_svg('publications-au-fil-du-temps.svg','fr')
+          build_svg('en/publications-au-fil-du-temps.svg','en')
+
+          fr_page = '''<!doctype html>
+          <html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+          <title>Publications au fil du temps — Jean-Raynald de Dreuzy</title>
+          <meta name="description" content="Publications de Jean-Raynald de Dreuzy au fil du temps.">
+          <link rel="canonical" href="https://dreuzy.github.io/publications-au-fil-du-temps.html">
+          <link rel="alternate" hreflang="fr" href="https://dreuzy.github.io/publications-au-fil-du-temps.html">
+          <link rel="alternate" hreflang="en" href="https://dreuzy.github.io/en/publications-over-time.html">
+          <link rel="alternate" hreflang="x-default" href="https://dreuzy.github.io/publications-au-fil-du-temps.html">
+          <link rel="stylesheet" href="styles.css"></head><body>
+          <header class="site-header"><div class="inner"><a class="brand-link" href="index.html">Jean-Raynald de Dreuzy</a>
+          <nav class="nav-links"><a href="index.html">Accueil</a><a href="recherche.html">Recherche</a><a href="projets.html">Projets</a><a href="equipe.html">Équipe</a><a class="active" href="publications.html">Publications</a><a href="logiciels.html">Logiciels</a><a href="science-societe.html">Science &amp; société</a><a href="cv.html">CV</a><span><strong>FR</strong> | <a href="en/publications-over-time.html">EN</a></span></nav></div></header>
+          <main class="preview-content"><h1>Publications au fil du temps</h1>
+          <figure class="figure-panel"><img src="publications-au-fil-du-temps.svg" alt="Évolution annuelle des articles, abstracts et proceedings, avec moyennes mobiles sur cinq ans et repères de carrière" style="width:100%;height:auto;display:block;"></figure>
+          </main><footer class="preview-footer"><div class="inner">Jean-Raynald de Dreuzy · CNRS · Géosciences Rennes · ENS Rennes</div></footer></body></html>'''
+
+          en_page = '''<!doctype html>
+          <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+          <title>Publications over time — Jean-Raynald de Dreuzy</title>
+          <meta name="description" content="Jean-Raynald de Dreuzy's publications over time.">
+          <link rel="canonical" href="https://dreuzy.github.io/en/publications-over-time.html">
+          <link rel="alternate" hreflang="fr" href="https://dreuzy.github.io/publications-au-fil-du-temps.html">
+          <link rel="alternate" hreflang="en" href="https://dreuzy.github.io/en/publications-over-time.html">
+          <link rel="alternate" hreflang="x-default" href="https://dreuzy.github.io/publications-au-fil-du-temps.html">
+          <link rel="stylesheet" href="../styles.css"></head><body>
+          <header class="site-header"><div class="inner"><a class="brand-link" href="index.html">Jean-Raynald de Dreuzy</a>
+          <nav class="nav-links"><a href="index.html">Home</a><a href="research.html">Research</a><a href="projects.html">Projects</a><a href="team.html">Team</a><a class="active" href="publications.html">Publications</a><a href="software.html">Software</a><a href="science-society.html">Science &amp; society</a><a href="cv.html">CV</a><span><a href="../publications-au-fil-du-temps.html">FR</a> | <strong>EN</strong></span></nav></div></header>
+          <main class="preview-content"><h1>Publications over time</h1>
+          <figure class="figure-panel"><img src="publications-au-fil-du-temps.svg" alt="Annual evolution of articles, conference abstracts and proceedings, with five-year moving averages and career milestones" style="width:100%;height:auto;display:block;"></figure>
+          </main><footer class="preview-footer"><div class="inner">Jean-Raynald de Dreuzy · CNRS · Géosciences Rennes · ENS Rennes</div></footer></body></html>'''
+
+          Path('publications-au-fil-du-temps.html').write_text(fr_page, encoding='utf-8')
+          Path('en/publications-over-time.html').write_text(en_page, encoding='utf-8')
+
+          fr_bib = Path('bibliographie.html')
+          s = fr_bib.read_text(encoding='utf-8')
+          old = '  <p class="backlink"><a href="publications.html">← Retour aux publications sélectionnées</a></p>\n'
+          new = old + '  <p class="backlink"><a href="publications-au-fil-du-temps.html">→ Publications au fil du temps</a></p>\n'
+          if 'publications-au-fil-du-temps.html' not in s:
+              if old not in s: raise SystemExit('FR bibliography insertion point not found')
+              s = s.replace(old, new, 1)
+              fr_bib.write_text(s, encoding='utf-8')
+
+          en_bib = Path('en/bibliography.html')
+          s = en_bib.read_text(encoding='utf-8')
+          old = '  <p class="backlink"><a href="publications.html">← Back to selected publications</a></p>\n'
+          new = old + '  <p class="backlink"><a href="publications-over-time.html">→ Publications over time</a></p>\n'
+          if 'publications-over-time.html' not in s:
+              if old not in s: raise SystemExit('EN bibliography insertion point not found')
+              s = s.replace(old, new, 1)
+              en_bib.write_text(s, encoding='utf-8')
+
+          manifest_path = Path('mirror-map.json')
+          manifest = json.loads(manifest_path.read_text(encoding='utf-8'))
+          if not any(p.get('id') == 'publications-over-time' for p in manifest['pages']):
+              insert_at = next((i+1 for i,p in enumerate(manifest['pages']) if p.get('id') == 'bibliography'), len(manifest['pages']))
+              manifest['pages'].insert(insert_at, {
+                  'id':'publications-over-time',
+                  'fr':'publications-au-fil-du-temps.html',
+                  'en':'en/publications-over-time.html',
+                  'navigation':False
+              })
+              manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+          PY
+      - name: Validate site
+        run: |
+          python scripts/check_bilingual_mirror.py
+          python scripts/check_local_links.py
+      - name: Commit changes
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add publications-au-fil-du-temps.svg en/publications-au-fil-du-temps.svg publications-au-fil-du-temps.html en/publications-over-time.html bibliographie.html en/bibliography.html mirror-map.json
+          git commit -m 'Add publications over time page'
+          git push
