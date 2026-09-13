@@ -1,0 +1,43 @@
+name: One-shot audit orphan assets
+on:
+  push:
+    paths:
+      - '.github/workflows/one-shot-audit-orphan-assets.yml'
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify and list orphan non-chunk assets
+        run: |
+          python scripts/check_bilingual_mirror.py
+          python scripts/check_local_links.py
+          python - <<'PY'
+          from pathlib import Path
+
+          root=Path('.')
+          audit_path='.github/workflows/one-shot-audit-orphan-assets.yml'
+          text_ext={'.html','.css','.js','.py','.yml','.yaml','.json','.md','.xml','.txt'}
+          source_text=[]
+          for p in root.rglob('*'):
+              if not p.is_file() or '.git' in p.parts or p.as_posix()==audit_path: continue
+              if p.as_posix().startswith('assets/'): continue
+              if p.suffix.lower() not in text_ext: continue
+              try: source_text.append((p,p.read_text(encoding='utf-8')))
+              except Exception: pass
+
+          assets=[]
+          for p in (root/'assets').rglob('*'):
+              if not p.is_file() or 'figure-data' in p.parts: continue
+              rel=p.as_posix()
+              refs=[str(src) for src,s in source_text if rel in s]
+              assets.append((rel,p.stat().st_size,refs))
+
+          orphan=[x for x in assets if not x[2]]
+          print('NON-CHUNK ASSETS:',len(assets),'ORPHAN:',len(orphan))
+          for rel,size,refs in assets:
+              print(('USED  ' if refs else 'ORPHAN'),f'{size:9d}',rel,(' <- '+', '.join(refs[:5]) if refs else ''))
+          print('ORPHAN PATHS:', ', '.join(rel for rel,_,_ in orphan))
+          PY
