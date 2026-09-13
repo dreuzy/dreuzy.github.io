@@ -79,6 +79,12 @@
       "navigation": false
     },
     {
+      "id": "publications-over-time",
+      "fr": "publications-au-fil-du-temps.html",
+      "en": "en/publications-over-time.html",
+      "navigation": false
+    },
+    {
       "id": "about-redirect",
       "fr": "a-propos.html",
       "en": "en/about.html",
