@@ -1,0 +1,43 @@
+name: One-shot editorial-role correction
+on:
+  push:
+    paths:
+      - '.github/workflows/one-shot-editorial-fix.yml'
+permissions:
+  contents: write
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Correct past editorial role
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          replacements = {
+            'cv.html': (
+              '<p><strong>Journal of Hydrology</strong> — éditeur associé ; activité aujourd’hui terminée.</p>',
+              '<p><strong>Hydrogeology Journal</strong> — éditeur associé à partir de 2006 ; activité aujourd’hui terminée.</p>'
+            ),
+            'en/cv.html': (
+              '<p><strong>Journal of Hydrology</strong> — Associate Editor; role now completed.</p>',
+              '<p><strong>Hydrogeology Journal</strong> — Associate Editor from 2006; role now completed.</p>'
+            )
+          }
+          for name,(old,new) in replacements.items():
+              p=Path(name); s=p.read_text(encoding='utf-8')
+              if old not in s: raise SystemExit(f'missing pattern in {name}')
+              p.write_text(s.replace(old,new,1),encoding='utf-8')
+          PY
+      - run: |
+          python scripts/check_bilingual_mirror.py
+          python scripts/check_local_links.py
+      - name: Commit
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add cv.html en/cv.html
+          git commit -m 'Correct past editorial role'
+          git push
