@@ -1,0 +1,66 @@
+name: Align auxiliary navigation
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/one-shot-nav-fix.yml
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    if: github.event.head_commit.message == 'Align auxiliary page navigation'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - name: Align menus
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          replacements = {
+            'masters.html': (
+              '<nav class="nav-links"><a href="index.html">Accueil</a><a href="recherche.html">Recherche</a><a href="projets.html">Projets</a><a class="active" href="equipe.html">Équipe</a><a href="publications.html">Publications</a><a href="logiciels.html">Logiciels</a><a href="cv.html">CV</a><strong>FR</strong><a href="en/masters.html">EN</a></nav>',
+              '<nav class="nav-links"><a href="index.html">Accueil</a><a href="recherche.html">Recherche</a><a href="projets.html">Projets</a><a class="active" href="equipe.html">Équipe</a><a href="publications.html">Publications</a><a href="logiciels.html">Logiciels</a><a href="science-societe.html">Science &amp; société</a><a href="cv.html">CV</a><span><strong>FR</strong> | <a href="en/masters.html">EN</a></span></nav>'
+            ),
+            'en/masters.html': (
+              '<nav class="nav-links"><a href="index.html">Home</a><a href="research.html">Research</a><a href="projects.html">Projects</a><a class="active" href="team.html">Team</a><a href="publications.html">Publications</a><a href="software.html">Software</a><a href="cv.html">CV</a><a href="../masters.html">FR</a><strong>EN</strong></nav>',
+              '<nav class="nav-links"><a href="index.html">Home</a><a href="research.html">Research</a><a href="projects.html">Projects</a><a class="active" href="team.html">Team</a><a href="publications.html">Publications</a><a href="software.html">Software</a><a href="science-society.html">Science &amp; society</a><a href="cv.html">CV</a><span><a href="../masters.html">FR</a> | <strong>EN</strong></span></nav>'
+            ),
+            'bibliographie.html': (
+              '''<nav class="nav-links">\n      <a href="index.html">Accueil</a>\n      <a href="recherche.html">Recherche</a>\n      <a href="projets.html">Projets</a>\n      <a href="equipe.html">Équipe</a>\n      <a class="active" href="publications.html">Publications</a>\n      <a href="logiciels.html">Logiciels</a>\n      <a href="cv.html">CV</a>\n      <strong>FR</strong><a href="en/bibliography.html">EN</a>\n    </nav>''',
+              '''<nav class="nav-links">\n      <a href="index.html">Accueil</a>\n      <a href="recherche.html">Recherche</a>\n      <a href="projets.html">Projets</a>\n      <a href="equipe.html">Équipe</a>\n      <a class="active" href="publications.html">Publications</a>\n      <a href="logiciels.html">Logiciels</a>\n      <a href="science-societe.html">Science &amp; société</a>\n      <a href="cv.html">CV</a>\n      <span><strong>FR</strong> | <a href="en/bibliography.html">EN</a></span>\n    </nav>'''
+            ),
+            'en/bibliography.html': (
+              '''<nav class="nav-links">\n      <a href="index.html">Home</a><a href="research.html">Research</a><a href="projects.html">Projects</a><a href="team.html">Team</a><a class="active" href="publications.html">Publications</a><a href="software.html">Software</a><a href="cv.html">CV</a><a href="../bibliographie.html">FR</a><strong>EN</strong>\n    </nav>''',
+              '''<nav class="nav-links">\n      <a href="index.html">Home</a><a href="research.html">Research</a><a href="projects.html">Projects</a><a href="team.html">Team</a><a class="active" href="publications.html">Publications</a><a href="software.html">Software</a><a href="science-society.html">Science &amp; society</a><a href="cv.html">CV</a><span><a href="../bibliographie.html">FR</a> | <strong>EN</strong></span>\n    </nav>'''
+            ),
+          }
+
+          changed=[]
+          for name,(old,new) in replacements.items():
+              p=Path(name); s=p.read_text(encoding='utf-8')
+              if old not in s:
+                  raise SystemExit(f'Expected old navigation not found in {name}')
+              p.write_text(s.replace(old,new,1), encoding='utf-8')
+              changed.append(name)
+          print('Updated:', ', '.join(changed))
+          PY
+      - name: Validate site
+        run: |
+          python scripts/check_bilingual_mirror.py
+          python scripts/check_local_links.py
+      - name: Commit changes
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add masters.html en/masters.html bibliographie.html en/bibliography.html
+          git commit -m 'Align navigation on auxiliary pages'
+          git push
