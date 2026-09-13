@@ -66,6 +66,12 @@
       const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'));
       host.innerHTML = await new Response(stream).text();
 
+      host.querySelectorAll('li,p').forEach(entry => {
+        entry.innerHTML = entry.innerHTML
+          .replaceAll('From Aqua Incognita to Aqua Cognita', 'Headwater catchments: from aqua incognita to aqua cognita')
+          .replaceAll('PyAge: an extensible toolkit for lumped-parameter modeling of tracer-derived groundwater ages', 'PyAges: an extensible toolkit for lumped-parameter modeling of tracer-derived groundwater ages');
+      });
+
       const unwanted = [
         'towards a more comprehensive representation of hydrosystems in water footprint assessments',
         'technical note: hydromodpy',
@@ -136,11 +142,11 @@
 
         const submittedList = getFollowingList(submittedHeading);
         const hostText = () => normalize(host.textContent);
-        if (!hostText().includes('pyage: an extensible toolkit for lumped-parameter modeling of tracer-derived groundwater ages')) {
+        if (!hostText().includes('pyages: an extensible toolkit for lumped-parameter modeling of tracer-derived groundwater ages')) {
           const li = document.createElement('li');
           li.innerHTML = lang === 'en'
-            ? 'J.-R. de Dreuzy, S. Leray, J. Marçais (2026), PyAge: an extensible toolkit for lumped-parameter modeling of tracer-derived groundwater ages. Submitted to <span class="smallcaps">Geoscientific Model Development</span>.'
-            : 'J.-R. de Dreuzy, S. Leray, J. Marçais (2026), PyAge: an extensible toolkit for lumped-parameter modeling of tracer-derived groundwater ages. Soumis à <span class="smallcaps">Geoscientific Model Development</span>.';
+            ? 'J.-R. de Dreuzy, S. Leray, J. Marçais (2026), PyAges: an extensible toolkit for lumped-parameter modeling of tracer-derived groundwater ages. Submitted to <span class="smallcaps">Geoscientific Model Development</span>.'
+            : 'J.-R. de Dreuzy, S. Leray, J. Marçais (2026), PyAges: an extensible toolkit for lumped-parameter modeling of tracer-derived groundwater ages. Soumis à <span class="smallcaps">Geoscientific Model Development</span>.';
           submittedList.prepend(li);
         }
         if (!hostText().includes('sentinel water fingerprint: capturing hydrosystem dynamics for adaptive water management')) {
