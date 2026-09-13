@@ -1,0 +1,153 @@
+name: One-shot deep site audit
+on:
+  push:
+    paths:
+      - '.github/workflows/one-shot-deep-site-audit.yml'
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Deep source audit
+        run: |
+          set -e
+          python scripts/check_bilingual_mirror.py
+          python scripts/check_local_links.py
+          python - <<'PY'
+          from pathlib import Path
+          from html.parser import HTMLParser
+          from urllib.parse import urlparse
+          import re, json
+
+          class Parser(HTMLParser):
+              def __init__(self):
+                  super().__init__(); self.lang=None; self.title=[]; self.meta_desc=[]; self.canon=[]; self.h1=0; self.img=[]; self.refs=[]; self.alternates=[]
+              def handle_starttag(self, tag, attrs):
+                  a=dict(attrs)
+                  if tag=='html': self.lang=a.get('lang')
+                  if tag=='meta' and a.get('name')=='description': self.meta_desc.append(a.get('content',''))
+                  if tag=='link' and a.get('rel')=='canonical': self.canon.append(a.get('href'))
+                  if tag=='link' and a.get('rel')=='alternate' and a.get('hreflang'): self.alternates.append((a.get('hreflang'),a.get('href')))
+                  if tag=='h1': self.h1 += 1
+                  if tag=='img': self.img.append(a)
+                  for k in ('href','src'):
+                      if a.get(k): self.refs.append(a[k])
+              def handle_data(self,data):
+                  pass
+
+          files=sorted(p for p in Path('.').rglob('*.html') if '.git' not in p.parts)
+          errs=[]; warns=[]
+          canonical_values={}; titles={}; descs={}
+          for p in files:
+              s=p.read_text(encoding='utf-8'); q=Parser(); q.feed(s)
+              m=re.search(r'<title>(.*?)</title>',s,re.S)
+              title=(m.group(1).strip() if m else '')
+              titles.setdefault(title,[]).append(str(p))
+              desc=(q.meta_desc[0].strip() if q.meta_desc else '')
+              if desc: descs.setdefault(desc,[]).append(str(p))
+              if q.lang not in ('fr','en'): errs.append(f'{p}: invalid html lang {q.lang!r}')
+              if not title: errs.append(f'{p}: missing/empty title')
+              if len(q.meta_desc)!=1: errs.append(f'{p}: meta description count={len(q.meta_desc)}')
+              if len(q.canon)!=1: errs.append(f'{p}: canonical count={len(q.canon)}')
+              else: canonical_values.setdefault(q.canon[0],[]).append(str(p))
+              if q.h1!=1: errs.append(f'{p}: h1 count={q.h1}')
+              if not q.alternates: errs.append(f'{p}: missing hreflang alternates')
+              else:
+                  langs={x for x,_ in q.alternates}
+                  if not {'fr','en','x-default'}.issubset(langs): errs.append(f'{p}: incomplete hreflang set {sorted(langs)}')
+              for im in q.img:
+                  if not im.get('alt'): errs.append(f'{p}: img missing alt src={im.get("src")}')
+              for ref in q.refs:
+                  if ref.startswith(('#','mailto:','tel:','data:','javascript:','//')): continue
+                  u=urlparse(ref)
+                  if u.scheme in ('http','https'): continue
+                  if u.path and not (p.parent/u.path).resolve().exists(): errs.append(f'{p}: missing local target {ref}')
+
+          for val,paths in canonical_values.items():
+              if len(paths)>1: errs.append(f'duplicate canonical {val}: {paths}')
+          for title,paths in titles.items():
+              if title and len(paths)>1 and set(paths)!={'cv.html','en/cv.html'}:
+                  warns.append(f'duplicate title: {title} -> {paths}')
+
+          # key requested content/layout
+          req={
+            'masters.html':['<h2>Anciens Masters</h2>','class="people-grid"'],
+            'en/masters.html':["<h2>Former Master's students and interns</h2>",'class="people-grid"'],
+            'cv.html':['Computational Methods in Water Resources, 2018–2024','Computational Methods in Water Resources 2018, Saint-Malo','co-organisateur','Thierry Labasque','Alain Rapaport'],
+            'en/cv.html':['Computational Methods in Water Resources, 2018–2024','Computational Methods in Water Resources 2018, Saint-Malo','co-organizer','Thierry Labasque','Alain Rapaport'],
+            'science-societe.html':['assets/maquette-nappes.jpg','assets/maquette-fractures.jpg'],
+            'en/science-society.html':['../assets/maquette-nappes.jpg','../assets/maquette-fractures.jpg'],
+            'galerie-recherche.html':['rel="canonical" href="https://dreuzy.github.io/galerie-recherche.html"'],
+            'en/research-figures.html':['rel="canonical" href="https://dreuzy.github.io/en/research-figures.html"']
+          }
+          for f,needles in req.items():
+              s=Path(f).read_text(encoding='utf-8')
+              for n in needles:
+                  if n not in s: errs.append(f'{f}: missing requested marker {n}')
+          for f,h in [('masters.html','Anciens Masters'),('en/masters.html',"Former Master's students and interns")]:
+              s=Path(f).read_text(encoding='utf-8'); sec=s.split(f'<h2>{h}</h2>',1)[1].split('</section>',1)[0]
+              n=sec.count('<div class="people-entry">')
+              if 'class="people-grid"' not in sec: errs.append(f'{f}: former masters not people-grid')
+              if n!=27: warns.append(f'{f}: former masters entry count={n}, expected 27 from current source')
+
+          css=Path('styles.css').read_text(encoding='utf-8')
+          if '.people-grid{display:grid;grid-template-columns:1fr 1fr' not in css: errs.append('styles.css: people-grid desktop two-column rule missing')
+          if '@media(max-width:900px)' not in css or '.people-grid{grid-template-columns:1fr}' not in css: errs.append('styles.css: responsive one-column people-grid rule missing')
+
+          print(f'SOURCE HTML={len(files)} FR={sum("en" not in p.parts for p in files)} EN={sum("en" in p.parts for p in files)}')
+          print(f'WARNINGS={len(warns)}')
+          for w in warns: print('WARN',w)
+          if errs:
+              print('ERRORS:'); print('\n'.join(errs)); raise SystemExit(1)
+          print('DEEP SOURCE AUDIT PASS')
+          PY
+      - name: Deep live audit
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from urllib.request import Request,urlopen
+          from urllib.parse import urljoin
+          import time,re
+          base='https://dreuzy.github.io/'
+          stamp=str(int(time.time()))
+          files=sorted(p.as_posix() for p in Path('.').rglob('*.html') if '.git' not in p.parts)
+          errs=[]; live={}
+          for rel in files:
+              try:
+                  req=Request(base+rel+'?audit='+stamp,headers={'User-Agent':'Mozilla/5.0','Cache-Control':'no-cache'})
+                  with urlopen(req,timeout=25) as r:
+                      data=r.read().decode('utf-8','replace'); code=r.status
+                  if code!=200 or len(data)<100: errs.append(f'{rel}: HTTP {code} bytes={len(data)}')
+                  else: live[rel]=data
+              except Exception as e: errs.append(f'{rel}: {type(e).__name__}: {e}')
+          assets=['styles.css','assets/maquette-nappes.jpg','assets/maquette-fractures.jpg']
+          for rel in assets:
+              try:
+                  req=Request(base+rel+'?audit='+stamp,headers={'User-Agent':'Mozilla/5.0','Cache-Control':'no-cache'})
+                  with urlopen(req,timeout=25) as r: data=r.read(); code=r.status
+                  if code!=200 or not data: errs.append(f'{rel}: asset failed')
+                  else: print(f'LIVE ASSET OK {rel} {len(data)} bytes')
+              except Exception as e: errs.append(f'{rel}: {type(e).__name__}: {e}')
+          markers={
+            'masters.html':['<h2>Anciens Masters</h2>','class="people-grid"'],
+            'en/masters.html':["<h2>Former Master's students and interns</h2>",'class="people-grid"'],
+            'cv.html':['Computational Methods in Water Resources, 2018–2024','Computational Methods in Water Resources 2018, Saint-Malo','co-organisateur'],
+            'en/cv.html':['Computational Methods in Water Resources, 2018–2024','co-organizer'],
+            'science-societe.html':['assets/maquette-nappes.jpg','assets/maquette-fractures.jpg'],
+            'en/science-society.html':['../assets/maquette-nappes.jpg','../assets/maquette-fractures.jpg'],
+            'galerie-recherche.html':['rel="canonical" href="https://dreuzy.github.io/galerie-recherche.html"'],
+            'en/research-figures.html':['rel="canonical" href="https://dreuzy.github.io/en/research-figures.html"']
+          }
+          for f,needles in markers.items():
+              s=live.get(f,'')
+              for n in needles:
+                  if n not in s: errs.append(f'{f}: live marker missing {n}')
+          print(f'LIVE pages={len(live)}/{len(files)}')
+          if errs:
+              print('LIVE ERRORS:'); print('\n'.join(errs)); raise SystemExit(2)
+          print('DEEP LIVE AUDIT PASS')
+          PY
