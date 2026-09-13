@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   audit:
-    if: github.event.head_commit.message == 'Add one-shot website audit'
+    if: github.event.head_commit.message == 'Finalize audited profile updates'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -20,103 +20,49 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
-      - name: Apply final exact corrections
+      - name: Synchronize audited profiles
         run: |
           python - <<'PY'
           from pathlib import Path
 
-          direct = 'https://www.lefigaro.fr/sciences/2018/06/14/01008-20180614ARTFIG00333-l-episode-pluvieux-a-t-il-ete-benefique-pour-les-nappes-phreatiques.php'
-          old = 'https://articles.lefigaro.fr/201806/14/'
-          changed = []
-          for name in ['science-societe.html', 'en/science-society.html']:
-              p = Path(name)
-              s = p.read_text(encoding='utf-8')
-              ns = s.replace(old, direct)
+          replacements = {
+              '<strong>Poste actuel :</strong> Cheffe de projets – Hydrogéologue, Ginger BURGEAP': '<strong>Poste actuel :</strong> Veolia',
+              '<strong>Current position:</strong> Project Manager – Hydrogeologist, Ginger BURGEAP': '<strong>Current position:</strong> Veolia',
+              '<strong>Poste actuel :</strong> Chercheur, LMD (CNRS / Sorbonne Université), équipe PLANETO': '<strong>Poste actuel :</strong> Postdoctorant, LMD — CNRS / IPSL / Sorbonne Université, équipe PLANETO',
+              '<strong>Current position:</strong> Researcher, LMD (CNRS / Sorbonne University), PLANETO team': '<strong>Current position:</strong> Postdoctoral Researcher, LMD — CNRS / IPSL / Sorbonne University, PLANETO team',
+          }
+          files = ['equipe.html', 'en/team.html', 'masters.html', 'en/masters.html']
+          changed=[]
+          for name in files:
+              p=Path(name)
+              s=p.read_text(encoding='utf-8')
+              ns=s
+              for old,new in replacements.items():
+                  ns=ns.replace(old,new)
               if ns != s:
                   p.write_text(ns, encoding='utf-8')
                   changed.append(name)
 
-          stale = []
-          for name in ['index.html', 'en/index.html', 'cv.html', 'en/cv.html']:
-              text = Path(name).read_text(encoding='utf-8')
-              if 'Vice-President for Research at ENS Rennes (2022–2026)' in text or 'vice-président Recherche de l’ENS Rennes (2022–2026)' in text or '>2022–2026</div><div>Vice-' in text:
-                  stale.append(name)
+          stale=[]
+          for name in files:
+              text=Path(name).read_text(encoding='utf-8')
+              for old in replacements:
+                  if old in text:
+                      stale.append(f'{name}: {old}')
           if stale:
-              raise SystemExit('Stale ENS Rennes vice-presidency date remains in: ' + ', '.join(stale))
-          print('Exact corrections applied to:', ', '.join(changed) if changed else 'none needed')
+              raise SystemExit('Stale profile strings remain:\n' + '\n'.join(stale))
+          print('Updated:', ', '.join(changed) if changed else 'none needed')
           PY
-      - name: Commit exact corrections
+      - name: Validate bilingual mirror and local links
+        run: |
+          python scripts/check_bilingual_mirror.py
+          python scripts/check_local_links.py
+      - name: Commit profile corrections
         run: |
           if ! git diff --quiet; then
             git config user.name 'github-actions[bot]'
             git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-            git add science-societe.html en/science-society.html
-            git commit -m 'Fix direct Le Figaro article link'
+            git add equipe.html en/team.html masters.html en/masters.html
+            git commit -m 'Synchronize audited current positions'
             git push
           fi
-      - name: Audit external links
-        run: |
-          python - <<'PY'
-          from html.parser import HTMLParser
-          from pathlib import Path
-          from urllib.parse import urlsplit
-          from urllib.request import Request, urlopen
-          from urllib.error import HTTPError, URLError
-          from concurrent.futures import ThreadPoolExecutor, as_completed
-          import socket, ssl
-
-          class P(HTMLParser):
-              def __init__(self):
-                  super().__init__()
-                  self.urls=[]
-              def handle_starttag(self, tag, attrs):
-                  d=dict(attrs)
-                  for key in ('href','src'):
-                      u=d.get(key)
-                      if u and urlsplit(u).scheme in ('http','https'):
-                          self.urls.append(u)
-
-          pages=list(Path('.').glob('*.html'))+list(Path('en').glob('*.html'))
-          refs={}
-          for page in pages:
-              p=P(); p.feed(page.read_text(encoding='utf-8'))
-              for u in p.urls:
-                  refs.setdefault(u,set()).add(str(page))
-          urls=sorted(refs)
-          print(f'External link audit: {len(pages)} HTML pages, {len(urls)} unique HTTP(S) URLs')
-
-          def check(u):
-              req=Request(u, headers={'User-Agent':'Mozilla/5.0 website-link-audit/1.0','Accept':'text/html,application/xhtml+xml,application/pdf,*/*;q=0.8'})
-              try:
-                  with urlopen(req, timeout=15) as r:
-                      code=getattr(r,'status',200)
-                      final=r.geturl()
-                      return ('OK', code, final, '')
-              except HTTPError as e:
-                  if e.code in (401,403,405,406,429,451):
-                      return ('BLOCKED', e.code, u, str(e.reason))
-                  if e.code in (404,410):
-                      return ('BROKEN', e.code, u, str(e.reason))
-                  return ('WARN', e.code, u, str(e.reason))
-              except (URLError, socket.timeout, TimeoutError, ssl.SSLError) as e:
-                  return ('WARN', None, u, str(e))
-              except Exception as e:
-                  return ('WARN', None, u, repr(e))
-
-          results={}
-          with ThreadPoolExecutor(max_workers=16) as ex:
-              fut={ex.submit(check,u):u for u in urls}
-              for f in as_completed(fut):
-                  results[fut[f]]=f.result()
-
-          counts={k:0 for k in ('OK','BLOCKED','BROKEN','WARN')}
-          for u in urls:
-              status,code,final,msg=results[u]
-              counts[status]+=1
-              if status!='OK':
-                  pagestr=', '.join(sorted(refs[u]))
-                  print(f'{status}\t{code or "-"}\t{u}\t[{pagestr}]\t{msg}')
-          print('SUMMARY', ' '.join(f'{k}={v}' for k,v in counts.items()))
-          if counts['BROKEN']:
-              print('NOTE: BROKEN means the remote server explicitly returned 404 or 410; BLOCKED/WARN require interpretation and are not treated as broken links.')
-          PY
