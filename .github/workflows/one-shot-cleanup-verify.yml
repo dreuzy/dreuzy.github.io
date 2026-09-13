@@ -1,0 +1,23 @@
+name: One-shot cleanup verify
+on:
+  push:
+    paths:
+      - '.github/workflows/one-shot-cleanup-verify.yml'
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify bilingual mirror
+        run: python scripts/check_bilingual_mirror.py
+      - name: Verify local links
+        run: python scripts/check_local_links.py
+      - name: Verify removed files absent
+        run: |
+          test ! -e .github/workflows/one-shot-deep-audit-20260913.yml
+          test ! -e .github/workflows/one-shot-live-parity-20260913.yml
+          test ! -e assets/figure-data/_test20k.txt
+          test ! -e scripts/integrate_figures.py
+          test ! -e portrait-note.txt
