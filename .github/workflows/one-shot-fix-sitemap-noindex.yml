@@ -1,0 +1,63 @@
+name: One-shot fix sitemap noindex
+on:
+  push:
+    paths:
+      - '.github/workflows/one-shot-fix-sitemap-noindex.yml'
+permissions:
+  contents: write
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Remove noindex galleries from sitemap with guards
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import xml.etree.ElementTree as ET
+
+          p=Path('sitemap.xml')
+          s=p.read_text(encoding='utf-8')
+          targets=[
+            'https://dreuzy.github.io/galerie-recherche.html',
+            'https://dreuzy.github.io/en/research-figures.html',
+          ]
+          lines=s.splitlines(keepends=True)
+          url_lines=[line for line in lines if '<url>' in line]
+          if len(url_lines)!=38:
+              raise SystemExit(f'Guard failed: expected 38 sitemap URL entries before fix, found {len(url_lines)}')
+          for target in targets:
+              matches=[line for line in lines if f'<loc>{target}</loc>' in line]
+              if len(matches)!=1:
+                  raise SystemExit(f'Guard failed: {target} occurs in {len(matches)} sitemap lines')
+          new_lines=[line for line in lines if not any(f'<loc>{target}</loc>' in line for target in targets)]
+          new=''.join(new_lines)
+          if sum(1 for line in new_lines if '<url>' in line)!=36:
+              raise SystemExit('Guard failed: sitemap does not have 36 URL entries after edit')
+          for target in targets:
+              if target in new:
+                  raise SystemExit(f'Guard failed: target still present: {target}')
+          # XML must remain valid.
+          ET.fromstring(new)
+          # The corresponding pages must still explicitly be noindex.
+          for page in ['galerie-recherche.html','en/research-figures.html']:
+              text=Path(page).read_text(encoding='utf-8')
+              if 'name="robots" content="noindex,follow"' not in text:
+                  raise SystemExit(f'Guard failed: {page} is not explicitly noindex,follow')
+          p.write_text(new,encoding='utf-8')
+          print('Sitemap corrected: 38 -> 36 URLs; both noindex galleries excluded.')
+          PY
+          python scripts/check_bilingual_mirror.py
+          python scripts/check_local_links.py
+      - name: Commit sitemap correction
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add sitemap.xml
+          git diff --cached --quiet && exit 0
+          git commit -m 'Exclude noindex galleries from sitemap'
+          git push
