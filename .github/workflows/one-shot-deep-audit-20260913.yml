@@ -1,0 +1,245 @@
+name: One-shot deep site audit 2026-09-13
+on:
+  push:
+    paths:
+      - '.github/workflows/one-shot-deep-audit-20260913.yml'
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - name: Deep source audit
+        run: |
+          set -e
+          python scripts/check_bilingual_mirror.py
+          python scripts/check_local_links.py
+          python - <<'PY'
+          from pathlib import Path
+          from html.parser import HTMLParser
+          from urllib.parse import urlsplit, urldefrag
+          import re, collections
+
+          ROOT=Path('.')
+          html_files=sorted(p for p in ROOT.rglob('*.html') if '.git' not in p.parts)
+          errors=[]; warnings=[]
+          titles={}; descs={}; canonicals={}; external=set(); local_refs=0; imgs=0
+
+          class AuditParser(HTMLParser):
+              def __init__(self):
+                  super().__init__(); self.lang=None; self.ids=[]; self.refs=[]; self.imgs=[]; self.links=[]; self.h1=0; self.title_text=[]; self._in_title=False
+                  self.meta=[]; self.linktags=[]
+              def handle_starttag(self, tag, attrs):
+                  a=dict(attrs)
+                  if tag=='html': self.lang=a.get('lang')
+                  if a.get('id'): self.ids.append(a['id'])
+                  if tag=='h1': self.h1+=1
+                  if tag=='img': self.imgs.append(a)
+                  if tag=='a': self.links.append(a)
+                  if tag=='meta': self.meta.append(a)
+                  if tag=='link': self.linktags.append(a)
+                  for k in ('href','src'):
+                      if a.get(k): self.refs.append(a[k])
+                  if tag=='title': self._in_title=True
+              def handle_endtag(self, tag):
+                  if tag=='title': self._in_title=False
+              def handle_data(self,data):
+                  if self._in_title: self.title_text.append(data)
+
+          def meta_content(q,name=None,prop=None):
+              vals=[]
+              for m in q.meta:
+                  if name and m.get('name')==name and m.get('content') is not None: vals.append(m['content'])
+                  if prop and m.get('property')==prop and m.get('content') is not None: vals.append(m['content'])
+              return vals
+
+          for p in html_files:
+              s=p.read_text(encoding='utf-8')
+              q=AuditParser(); q.feed(s)
+              rel=p.as_posix()
+              expected_lang='en' if 'en' in p.parts else 'fr'
+              if q.lang!=expected_lang: errors.append(f'{rel}: lang={q.lang!r}, expected {expected_lang}')
+              title=''.join(q.title_text).strip()
+              if not title: errors.append(f'{rel}: missing/empty title')
+              titles.setdefault(expected_lang,collections.defaultdict(list))[title].append(rel)
+              descriptions=meta_content(q,name='description')
+              if len(descriptions)!=1 or not descriptions[0].strip(): errors.append(f'{rel}: meta description count/content invalid ({len(descriptions)})')
+              else: descs.setdefault(expected_lang,collections.defaultdict(list))[descriptions[0].strip()].append(rel)
+              if q.h1!=1: errors.append(f'{rel}: h1 count={q.h1}, expected 1')
+              dup=[x for x,c in collections.Counter(q.ids).items() if c>1]
+              if dup: errors.append(f'{rel}: duplicate ids {dup[:8]}')
+              if not any(m.get('charset') for m in q.meta) and 'charset=' not in s[:500].lower(): errors.append(f'{rel}: missing charset')
+              if len(meta_content(q,name='viewport'))!=1: warnings.append(f'{rel}: viewport count != 1')
+
+              canon=[x.get('href') for x in q.linktags if x.get('rel')=='canonical' and x.get('href')]
+              if len(canon)!=1: errors.append(f'{rel}: canonical count={len(canon)}')
+              else:
+                  expected='https://dreuzy.github.io/'+rel
+                  if canon[0]!=expected: errors.append(f'{rel}: canonical {canon[0]} != {expected}')
+                  canonicals[rel]=canon[0]
+
+              alts=[(x.get('hreflang'),x.get('href')) for x in q.linktags if x.get('rel')=='alternate' and x.get('hreflang')]
+              langs={a for a,b in alts}
+              if not {'fr','en','x-default'}.issubset(langs): errors.append(f'{rel}: missing hreflang(s), found {sorted(langs)}')
+
+              ogtitle=meta_content(q,prop='og:title'); ogdesc=meta_content(q,prop='og:description'); ogurl=meta_content(q,prop='og:url')
+              if len(ogtitle)!=1: warnings.append(f'{rel}: og:title count={len(ogtitle)}')
+              if len(ogdesc)!=1: warnings.append(f'{rel}: og:description count={len(ogdesc)}')
+              if len(ogurl)!=1: warnings.append(f'{rel}: og:url count={len(ogurl)}')
+
+              for im in q.imgs:
+                  imgs+=1
+                  if 'alt' not in im: errors.append(f'{rel}: img missing alt ({im.get("src","")})')
+                  if not im.get('src'): errors.append(f'{rel}: img missing src')
+              for a in q.links:
+                  if a.get('target')=='_blank':
+                      relv=set((a.get('rel') or '').split())
+                      if 'noopener' not in relv: warnings.append(f'{rel}: target=_blank without noopener: {a.get("href","")}')
+
+              ids=set(q.ids)
+              for ref in q.refs:
+                  if ref.startswith(('mailto:','tel:','data:','javascript:')): continue
+                  if ref.startswith('#'):
+                      if ref[1:] and ref[1:] not in ids: errors.append(f'{rel}: broken same-page anchor {ref}')
+                      continue
+                  u=urlsplit(ref)
+                  if u.scheme in ('http','https') or ref.startswith('//'):
+                      if 'dreuzy.github.io' not in (u.netloc or ''): external.add(ref)
+                      continue
+                  local_refs+=1
+                  pathpart,frag=urldefrag(ref)
+                  if pathpart:
+                      target=(p.parent/pathpart).resolve()
+                      if not target.exists(): errors.append(f'{rel}: missing local target {ref}')
+                      elif frag and target.suffix.lower()=='.html':
+                          tq=AuditParser(); tq.feed(target.read_text(encoding='utf-8'))
+                          if frag not in set(tq.ids): errors.append(f'{rel}: broken cross-page anchor {ref}')
+
+          # Duplicate titles/descriptions within same language are usually unintended.
+          for lang,d in titles.items():
+              for val,ps in d.items():
+                  if val and len(ps)>1: warnings.append(f'duplicate {lang} title {val!r}: {ps}')
+          for lang,d in descs.items():
+              for val,ps in d.items():
+                  if val and len(ps)>1: warnings.append(f'duplicate {lang} description on {ps}')
+
+          # Requested recent changes.
+          for f,h in [('masters.html','Anciens Masters'),('en/masters.html',"Former Master's students and interns")]:
+              s=Path(f).read_text(encoding='utf-8'); sec=s.split(f'<h2>{h}</h2>',1)[1].split('</section>',1)[0]
+              n=sec.count('class="people-entry"')
+              if 'class="people-grid"' not in sec: errors.append(f'{f}: former masters lack people-grid')
+              if n!=27: warnings.append(f'{f}: former masters entry count={n}, expected current count 27')
+              print(f'{f}: former masters={n}, people-grid={"people-grid" in sec}')
+          css=Path('styles.css').read_text(encoding='utf-8')
+          if '.people-grid{display:grid;grid-template-columns:1fr 1fr' not in css: errors.append('styles.css: desktop two-column people-grid rule missing')
+          if '@media(max-width:900px)' not in css or '.people-grid{grid-template-columns:1fr}' not in css: errors.append('styles.css: mobile one-column people-grid rule missing')
+
+          req={
+            'cv.html':['Computational Methods in Water Resources, 2018–2024','CMWR Committee','Computational Methods in Water Resources 2018, Saint-Malo','co-organisateur','Thierry Labasque','Alain Rapaport'],
+            'en/cv.html':['Computational Methods in Water Resources, 2018–2024','CMWR Committee','Computational Methods in Water Resources 2018, Saint-Malo','co-organizer','Thierry Labasque','Alain Rapaport'],
+            'science-societe.html':['assets/maquette-nappes.jpg','assets/maquette-fractures.jpg'],
+            'en/science-society.html':['../assets/maquette-nappes.jpg','../assets/maquette-fractures.jpg']}
+          for f,needles in req.items():
+              s=Path(f).read_text(encoding='utf-8')
+              for n in needles:
+                  if n not in s: errors.append(f'{f}: missing required marker {n}')
+
+          # Sitemap: every indexable canonical should be present; noindex pages may be absent.
+          sitemap=Path('sitemap.xml').read_text(encoding='utf-8') if Path('sitemap.xml').exists() else ''
+          for p in html_files:
+              rel=p.as_posix(); s=p.read_text(encoding='utf-8')
+              noindex='noindex' in ''.join(meta_content((lambda q:(q.feed(s),q)[1])(AuditParser()),name='robots')).lower()
+              c=canonicals.get(rel)
+              if c and not noindex and c not in sitemap: warnings.append(f'{rel}: indexable canonical absent from sitemap')
+
+          print(f'SOURCE SUMMARY pages={len(html_files)} FR={sum("en" not in p.parts for p in html_files)} EN={sum("en" in p.parts for p in html_files)} local_refs={local_refs} images={imgs} external_urls={len(external)}')
+          if warnings:
+              print('SOURCE WARNINGS:')
+              for w in warnings: print('WARN',w)
+          if errors:
+              print('SOURCE ERRORS:')
+              for e in errors: print('ERROR',e)
+              raise SystemExit(1)
+          print('DEEP SOURCE AUDIT: PASS')
+          Path('/tmp/external_urls.txt').write_text('\n'.join(sorted(external)),encoding='utf-8')
+          PY
+      - name: Live deployment parity audit
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from urllib.request import Request,urlopen
+          import hashlib,time
+
+          base='https://dreuzy.github.io/'
+          files=sorted([p for p in Path('.').rglob('*.html') if '.git' not in p.parts] + [Path('styles.css'),Path('sitemap.xml'),Path('robots.txt'),Path('assets/maquette-nappes.jpg'),Path('assets/maquette-fractures.jpg')])
+          stamp=str(int(time.time())); errors=[]; mismatches=[]
+          for p in files:
+              rel=p.as_posix(); url=base+rel+'?deepaudit='+stamp
+              try:
+                  req=Request(url,headers={'User-Agent':'Mozilla/5.0 deep-site-audit','Cache-Control':'no-cache'})
+                  with urlopen(req,timeout=20) as r:
+                      live=r.read(); code=r.status
+                  if code!=200: errors.append(f'{rel}: HTTP {code}'); continue
+                  src=p.read_bytes()
+                  if hashlib.sha256(src).digest()!=hashlib.sha256(live).digest(): mismatches.append((rel,len(src),len(live)))
+              except Exception as e: errors.append(f'{rel}: {type(e).__name__}: {e}')
+          print(f'LIVE PARITY checked={len(files)}, mismatches={len(mismatches)}, fetch_errors={len(errors)}')
+          for m in mismatches: print('MISMATCH',m)
+          for e in errors: print('FETCH_ERROR',e)
+          # Parity mismatch is deployment lag, not a source defect, but report and fail so it is visible.
+          if errors or mismatches: raise SystemExit(2)
+          print('LIVE DEPLOYMENT PARITY: PASS')
+          PY
+      - name: External links health sample
+        if: always()
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from html.parser import HTMLParser
+          from urllib.parse import urlsplit
+          from urllib.request import Request,urlopen
+          from urllib.error import HTTPError
+          import concurrent.futures, socket
+
+          class P(HTMLParser):
+              def __init__(self): super().__init__(); self.urls=[]
+              def handle_starttag(self,tag,attrs):
+                  a=dict(attrs)
+                  for k in ('href','src'):
+                      u=a.get(k,'')
+                      if u.startswith(('http://','https://')) and 'dreuzy.github.io' not in urlsplit(u).netloc: self.urls.append(u)
+          urls=set()
+          for p in Path('.').rglob('*.html'):
+              if '.git' in p.parts: continue
+              q=P(); q.feed(p.read_text(encoding='utf-8')); urls.update(q.urls)
+
+          def check(u):
+              headers={'User-Agent':'Mozilla/5.0 compatible; site-link-audit/1.0'}
+              try:
+                  req=Request(u,headers=headers,method='HEAD')
+                  with urlopen(req,timeout=10) as r: return u,r.status,'HEAD'
+              except HTTPError as e:
+                  if e.code not in (400,403,405,406,429): return u,e.code,'HEAD'
+              except Exception: pass
+              try:
+                  req=Request(u,headers=headers,method='GET')
+                  with urlopen(req,timeout=12) as r: return u,r.status,'GET'
+              except HTTPError as e: return u,e.code,'GET'
+              except Exception as e: return u,None,type(e).__name__
+
+          hard=[]; blocked=[]; transient=[]; ok=0
+          with concurrent.futures.ThreadPoolExecutor(max_workers=12) as ex:
+              for u,status,mode in ex.map(check,sorted(urls)):
+                  if status is not None and 200 <= status < 400: ok+=1
+                  elif status in (401,403,405,406,429): blocked.append((status,u))
+                  elif status in (404,410): hard.append((status,u))
+                  else: transient.append((status,u,mode))
+          print(f'EXTERNAL LINKS unique={len(urls)} ok={ok} blocked/rate-limited={len(blocked)} hard404/410={len(hard)} transient/other={len(transient)}')
+          for x in hard: print('HARD_EXTERNAL',x)
+          for x in blocked[:25]: print('BLOCKED_EXTERNAL',x)
+          for x in transient[:25]: print('TRANSIENT_EXTERNAL',x)
+          if hard: raise SystemExit(3)
+          PY
