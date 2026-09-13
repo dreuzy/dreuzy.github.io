@@ -1,0 +1,294 @@
+name: One-shot final audit 2026-09-14
+on:
+  push:
+    paths:
+      - '.github/workflows/one-shot-final-audit-20260914.yml'
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Repository, HTML, SEO and asset audit
+        run: |
+          set -e
+          python scripts/check_bilingual_mirror.py
+          python scripts/check_local_links.py
+          python - <<'PY'
+          from pathlib import Path
+          from html.parser import HTMLParser
+          from urllib.parse import urlparse
+          import re, xml.etree.ElementTree as ET
+
+          root=Path('.')
+          selfwf='.github/workflows/one-shot-final-audit-20260914.yml'
+          html_files=sorted(p for p in root.rglob('*.html') if '.git' not in p.parts)
+          errors=[]; warnings=[]; redirects=[]; content=[]
+
+          class P(HTMLParser):
+              def __init__(self):
+                  super().__init__(); self.lang=None; self.titles=0; self.meta=[]; self.canon=[]; self.alts=[]; self.h1=0; self.img=[]; self.refs=[]; self.refresh=False; self.robots=[]; self.ogurl=[]
+              def handle_starttag(self,tag,attrs):
+                  a=dict(attrs)
+                  if tag=='html': self.lang=a.get('lang')
+                  if tag=='title': self.titles += 1
+                  if tag=='meta' and a.get('name')=='description': self.meta.append(a.get('content',''))
+                  if tag=='meta' and a.get('name')=='robots': self.robots.append(a.get('content',''))
+                  if tag=='meta' and a.get('property')=='og:url': self.ogurl.append(a.get('content',''))
+                  if tag=='meta' and a.get('http-equiv','').lower()=='refresh': self.refresh=True
+                  if tag=='link' and a.get('rel')=='canonical': self.canon.append(a.get('href',''))
+                  if tag=='link' and a.get('rel')=='alternate' and a.get('hreflang'): self.alts.append((a.get('hreflang'),a.get('href','')))
+                  if tag=='h1': self.h1 += 1
+                  if tag=='img': self.img.append(a)
+                  for k in ('href','src'):
+                      if a.get(k): self.refs.append(a[k])
+
+          canon_seen={}; title_seen={}
+          for p in html_files:
+              s=p.read_text(encoding='utf-8'); q=P(); q.feed(s)
+              tm=re.search(r'<title>(.*?)</title>',s,re.S|re.I); title=tm.group(1).strip() if tm else ''
+              if q.lang not in ('fr','en'): errors.append(f'{p}: invalid lang={q.lang!r}')
+              if not title: errors.append(f'{p}: missing/empty title')
+              title_seen.setdefault(title,[]).append(str(p))
+              if q.refresh:
+                  redirects.append(str(p))
+                  if len(q.canon)!=1: errors.append(f'{p}: redirect canonical count {len(q.canon)}')
+                  continue
+              content.append(str(p))
+              if len(q.meta)!=1 or not q.meta[0].strip(): errors.append(f'{p}: meta description invalid/count={len(q.meta)}')
+              if len(q.canon)!=1 or not q.canon[0].startswith('https://dreuzy.github.io/'): errors.append(f'{p}: canonical invalid {q.canon}')
+              else: canon_seen.setdefault(q.canon[0],[]).append(str(p))
+              if q.h1!=1: errors.append(f'{p}: h1 count={q.h1}')
+              langs={x for x,_ in q.alts}
+              if not {'fr','en','x-default'}.issubset(langs): errors.append(f'{p}: hreflang incomplete {sorted(langs)}')
+              if q.ogurl and q.canon and q.ogurl[0]!=q.canon[0]: errors.append(f'{p}: og:url differs from canonical')
+              for im in q.img:
+                  if not im.get('alt'): errors.append(f'{p}: image missing alt src={im.get("src")}')
+              for ref in q.refs:
+                  if ref.startswith(('#','mailto:','tel:','data:','javascript:','//')): continue
+                  u=urlparse(ref)
+                  if u.scheme in ('http','https'): continue
+                  target=(p.parent/u.path).resolve() if u.path else None
+                  if target and not target.exists(): errors.append(f'{p}: missing local target {ref}')
+
+          for c,ps in canon_seen.items():
+              if len(ps)>1: errors.append(f'duplicate canonical {c}: {ps}')
+          for title,ps in title_seen.items():
+              # FR/EN can intentionally share short titles; only flag 3+ content pages.
+              if title and len(ps)>=3: warnings.append(f'duplicate title {title}: {ps}')
+
+          # Core latest edits/content checks.
+          req={
+            'masters.html':['<h2>Anciens Masters</h2>','class="people-grid"'],
+            'en/masters.html':["Former Master's students and interns",'class="people-grid"'],
+            'cv.html':['Computational Methods in Water Resources, 2018–2024','Computational Methods in Water Resources 2018, Saint-Malo','co-organisateur','Thierry Labasque','Alain Rapaport'],
+            'en/cv.html':['Computational Methods in Water Resources, 2018–2024','Computational Methods in Water Resources 2018, Saint-Malo','co-organizer','Thierry Labasque','Alain Rapaport'],
+            'science-societe.html':['assets/maquette-nappes.jpg','assets/maquette-fractures.jpg'],
+            'en/science-society.html':['../assets/maquette-nappes.jpg','../assets/maquette-fractures.jpg'],
+            'galerie-recherche.html':['https://dreuzy.github.io/galerie-recherche.html'],
+            'en/research-figures.html':['https://dreuzy.github.io/en/research-figures.html']
+          }
+          for f,needles in req.items():
+              s=Path(f).read_text(encoding='utf-8')
+              for n in needles:
+                  if n not in s: errors.append(f'{f}: missing required marker {n}')
+
+          # Former masters exact current count and responsive grid.
+          for f,h in [('masters.html','Anciens Masters'),('en/masters.html',"Former Master's students and interns")]:
+              s=Path(f).read_text(encoding='utf-8'); sec=s.split(f'<h2>{h}</h2>',1)[1].split('</section>',1)[0]
+              n=sec.count('<div class="people-entry">')
+              if n!=27: warnings.append(f'{f}: former masters count={n}, current expected=27')
+              if 'class="people-grid"' not in sec: errors.append(f'{f}: former masters not in people-grid')
+          css=Path('styles.css').read_text(encoding='utf-8')
+          if '.people-grid{display:grid;grid-template-columns:1fr 1fr' not in css: errors.append('styles.css: two-column people-grid rule missing')
+          if '.people-grid{grid-template-columns:1fr}' not in css: errors.append('styles.css: responsive one-column people-grid rule missing')
+
+          # Sitemap: every non-noindex content page canonical must be present, no redirect URLs.
+          tree=ET.parse('sitemap.xml'); ns={'sm':'http://www.sitemaps.org/schemas/sitemap/0.9'}
+          locs={e.text.strip() for e in tree.findall('.//sm:loc',ns) if e.text}
+          should=set()
+          noindex=[]
+          for p in html_files:
+              s=p.read_text(encoding='utf-8'); q=P(); q.feed(s)
+              if q.refresh: continue
+              if any('noindex' in x.lower() for x in q.robots): noindex.append(str(p)); continue
+              if q.canon: should.add(q.canon[0])
+          missing_sitemap=sorted(should-locs)
+          if missing_sitemap: errors.append(f'sitemap missing {missing_sitemap}')
+          for red in redirects:
+              url='https://dreuzy.github.io/'+red
+              if url in locs: errors.append(f'sitemap contains redirect page {url}')
+
+          robots=Path('robots.txt').read_text(encoding='utf-8')
+          if 'Sitemap: https://dreuzy.github.io/sitemap.xml' not in robots: errors.append('robots.txt sitemap declaration missing')
+
+          # Permanent workflows only (excluding this audit).
+          workflows={p.name for p in (root/'.github/workflows').glob('*.yml') if p.as_posix()!=selfwf}
+          expected={'build-pyages-image.yml','check-bilingual-mirror.yml','update-publications-over-time.yml','verify-pyages-live.yml'}
+          if workflows!=expected: errors.append(f'workflow set differs: {sorted(workflows)}')
+
+          # Non-chunk assets: every asset should have a textual reference somewhere outside assets.
+          text_ext={'.html','.css','.js','.py','.yml','.yaml','.json','.md','.xml','.txt'}
+          source_text=[]
+          for p in root.rglob('*'):
+              if not p.is_file() or '.git' in p.parts or p.as_posix()==selfwf or p.as_posix().startswith('assets/'): continue
+              if p.suffix.lower() not in text_ext: continue
+              try: source_text.append(p.read_text(encoding='utf-8'))
+              except Exception: pass
+          orphan_assets=[]
+          for p in (root/'assets').rglob('*'):
+              if not p.is_file() or 'figure-data' in p.parts: continue
+              rel=p.as_posix()
+              if not any(rel in s for s in source_text): orphan_assets.append(rel)
+          if orphan_assets: errors.append(f'orphan assets: {orphan_assets}')
+
+          # Dynamic figure chunks: no unused family and every requested sequence complete.
+          data=root/'assets/figure-data'; groups={}
+          for p in data.glob('*.part-*.txt'):
+              m=re.match(r'(.+)\.part-(\d+)\.txt$',p.name)
+              if m: groups.setdefault(m.group(1),[]).append(p)
+          html_names=set(); html_counts={}
+          for p in html_files:
+              s=p.read_text(encoding='utf-8')
+              for name,count in re.findall(r'data-b64-name=["\']([^"\']+)["\'][^>]*data-b64-parts=["\'](\d+)["\']',s):
+                  html_names.add(name); html_counts[name]=max(html_counts.get(name,0),int(count))
+          code_files=[]
+          for p in root.rglob('*'):
+              if not p.is_file() or '.git' in p.parts or p.as_posix()==selfwf or 'assets/figure-data' in p.as_posix(): continue
+              if p.suffix.lower() not in {'.js','.py','.yml','.yaml','.json','.md'}: continue
+              try: code_files.append(p.read_text(encoding='utf-8'))
+              except Exception: pass
+          code_names=set()
+          for name in groups:
+              patt=re.compile(r'(?<![A-Za-z0-9_-])'+re.escape(name)+r'(?![A-Za-z0-9_-])')
+              if any(patt.search(s) for s in code_files): code_names.add(name)
+          unused=sorted(set(groups)-(html_names|code_names))
+          if unused: errors.append(f'unused figure-data families: {unused}')
+          for name,count in html_counts.items():
+              for i in range(count):
+                  p=data/f'{name}.part-{i:02d}.txt'
+                  if not p.exists() or p.stat().st_size==0: errors.append(f'missing active figure chunk {p}')
+          # PyAges build chunks are workflow inputs even though not loaded dynamically.
+          for i in range(9):
+              p=data/f'pyages-final-v2.part-{i:02d}.txt'
+              if not p.exists() or p.stat().st_size==0: errors.append(f'missing PyAges build chunk {p}')
+
+          # Bibliography and operational data.
+          for f in ['robots.txt','sitemap.xml','.nojekyll','mirror-map.json','bibliography-loader.js','bibliography-updates.js','bibliography-hal.js','scripts/build_publications_over_time.py','scripts/check_bilingual_mirror.py','scripts/check_local_links.py']:
+              if not Path(f).exists(): errors.append(f'missing operational file {f}')
+          payloads=sorted(root.glob('bibliographie-payload-*.txt'))
+          if len(payloads)!=5 or any(p.stat().st_size==0 for p in payloads): errors.append(f'bibliography payload problem: {payloads}')
+
+          print(f'HTML pages={len(html_files)} content={len(content)} redirects={len(redirects)} FR={sum("en" not in p.parts for p in html_files)} EN={sum("en" in p.parts for p in html_files)}')
+          print('Redirect pages:', redirects)
+          print('Noindex content pages:', noindex)
+          print('Sitemap URLs:',len(locs),'expected indexable canonicals:',len(should))
+          print('Non-chunk orphan assets:',len(orphan_assets))
+          print('Figure-data families:',len(groups),'unused:',len(unused))
+          print('HTML dynamic figure families:',len(html_counts),'chunks requested:',sum(html_counts.values()))
+          print('Warnings:',len(warnings))
+          for w in warnings: print('WARN',w)
+          if errors:
+              print('ERRORS:',len(errors))
+              print('\n'.join(errors))
+              raise SystemExit(1)
+          print('REPOSITORY/HTML/SEO/ASSET AUDIT PASS')
+          PY
+      - name: Live site audit
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from urllib.request import Request,urlopen
+          import re,time
+          base='https://dreuzy.github.io/'; stamp=str(int(time.time()))
+          errors=[]; live={}
+          html_files=sorted(p.as_posix() for p in Path('.').rglob('*.html') if '.git' not in p.parts)
+          for rel in html_files:
+              try:
+                  req=Request(base+rel+'?audit='+stamp,headers={'User-Agent':'Mozilla/5.0','Cache-Control':'no-cache'})
+                  with urlopen(req,timeout=25) as r: b=r.read(); code=r.status
+                  if code!=200 or len(b)<80: errors.append(f'{rel}: HTTP {code} bytes={len(b)}')
+                  else: live[rel]=b.decode('utf-8','replace')
+              except Exception as e: errors.append(f'{rel}: {type(e).__name__}: {e}')
+          direct=['styles.css','robots.txt','sitemap.xml','bibliography-loader.js','bibliography-updates.js','bibliography-hal.js','assets/pyages-software-figure.png','assets/pyages-groundwater-age-v2.webp','assets/maquette-nappes.jpg','assets/maquette-fractures.jpg','assets/figures/fractured-media-channeling.png','assets/figures/eau-territoire.png','assets/figures/futureflow-framework.webp','assets/figures/hydromodpy-approved.webp','assets/figures/onewater.svg']
+          for rel in direct:
+              try:
+                  req=Request(base+rel+'?audit='+stamp,headers={'User-Agent':'Mozilla/5.0','Cache-Control':'no-cache'})
+                  with urlopen(req,timeout=25) as r: b=r.read(); code=r.status
+                  if code!=200 or not b: errors.append(f'{rel}: asset HTTP {code} bytes={len(b)}')
+              except Exception as e: errors.append(f'{rel}: {type(e).__name__}: {e}')
+          requests={}
+          for p in Path('.').rglob('*.html'):
+              s=p.read_text(encoding='utf-8')
+              for name,count in re.findall(r'data-b64-name=["\']([^"\']+)["\'][^>]*data-b64-parts=["\'](\d+)["\']',s): requests[name]=max(requests.get(name,0),int(count))
+          chunk_ok=0
+          for name,count in sorted(requests.items()):
+              for i in range(count):
+                  rel=f'assets/figure-data/{name}.part-{i:02d}.txt'
+                  try:
+                      req=Request(base+rel+'?audit='+stamp,headers={'User-Agent':'Mozilla/5.0','Cache-Control':'no-cache'})
+                      with urlopen(req,timeout=25) as r: b=r.read(); code=r.status
+                      if code!=200 or not b: errors.append(f'{rel}: HTTP {code} bytes={len(b)}')
+                      else: chunk_ok+=1
+                  except Exception as e: errors.append(f'{rel}: {type(e).__name__}: {e}')
+          # PyAges build source chunks also must be live because build workflow depends on repo files, though page uses binary asset.
+          pyages_chunks=0
+          for i in range(9):
+              rel=f'assets/figure-data/pyages-final-v2.part-{i:02d}.txt'
+              try:
+                  req=Request(base+rel+'?audit='+stamp,headers={'User-Agent':'Mozilla/5.0','Cache-Control':'no-cache'})
+                  with urlopen(req,timeout=25) as r: b=r.read(); code=r.status
+                  if code!=200 or not b: errors.append(f'{rel}: HTTP {code} bytes={len(b)}')
+                  else: pyages_chunks+=1
+              except Exception as e: errors.append(f'{rel}: {type(e).__name__}: {e}')
+          markers={
+            'masters.html':['<h2>Anciens Masters</h2>','class="people-grid"'],
+            'en/masters.html':["Former Master's students and interns",'class="people-grid"'],
+            'cv.html':['Computational Methods in Water Resources, 2018–2024','co-organisateur'],
+            'en/cv.html':['Computational Methods in Water Resources, 2018–2024','co-organizer'],
+            'science-societe.html':['assets/maquette-nappes.jpg','assets/maquette-fractures.jpg']
+          }
+          for f,needles in markers.items():
+              s=live.get(f,'')
+              for n in needles:
+                  if n not in s: errors.append(f'{f}: live marker missing {n}')
+          print(f'LIVE HTML {len(live)}/{len(html_files)}')
+          print(f'LIVE dynamic chunks {chunk_ok}/{sum(requests.values())}')
+          print(f'LIVE PyAges source chunks {pyages_chunks}/9')
+          if errors:
+              print('LIVE ERRORS:',len(errors)); print('\n'.join(errors)); raise SystemExit(2)
+          print('LIVE SITE AUDIT PASS')
+          PY
+      - name: External link reachability audit
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from html.parser import HTMLParser
+          from urllib.request import Request,urlopen
+          import concurrent.futures
+          class P(HTMLParser):
+              def __init__(self): super().__init__(); self.urls=[]
+              def handle_starttag(self,tag,attrs):
+                  u=dict(attrs).get('href')
+                  if u and u.startswith(('http://','https://')) and 'dreuzy.github.io' not in u: self.urls.append(u)
+          urls=set()
+          for p in Path('.').rglob('*.html'):
+              q=P(); q.feed(p.read_text(encoding='utf-8')); urls.update(q.urls)
+          urls=sorted(urls)
+          def chk(u):
+              for method in ('HEAD','GET'):
+                  try:
+                      req=Request(u,headers={'User-Agent':'Mozilla/5.0'},method=method)
+                      with urlopen(req,timeout=10) as r: return (u,r.status,None)
+                  except Exception as e: last=e
+              return (u,None,f'{type(last).__name__}: {last}')
+          bad=[]; ok=0
+          with concurrent.futures.ThreadPoolExecutor(max_workers=12) as ex:
+              for u,s,e in ex.map(chk,urls):
+                  if s and s<400: ok+=1
+                  else: bad.append((u,s,e))
+          print(f'EXTERNAL unique={len(urls)} reachable={ok} unresolved={len(bad)}')
+          for u,s,e in bad: print('EXTERNAL WARN',s,u,e)
+          # Unresolved external links remain warnings because many DOI/LinkedIn/publisher sites block automated clients.
+          PY
