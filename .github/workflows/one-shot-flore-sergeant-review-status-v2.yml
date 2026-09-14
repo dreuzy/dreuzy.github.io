@@ -1,0 +1,167 @@
+name: One-shot update Flore Sergeant review status v2
+on:
+  push:
+    paths:
+      - '.github/workflows/one-shot-flore-sergeant-review-status-v2.yml'
+permissions:
+  contents: write
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - name: Install parser
+        run: python -m pip install --quiet beautifulsoup4
+      - name: Update selected publications and bibliography source
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          from bs4 import BeautifulSoup, NavigableString
+          import base64, gzip, math, re, unicodedata
+
+          DISPLAY_TITLE='Headwater catchments: from aqua incognita to aqua cognita'
+          PAYLOAD_TITLE='From Aqua Incognita to Aqua Cognita'
+
+          def norm(s):
+              s=unicodedata.normalize('NFD',s or '')
+              s=''.join(c for c in s if unicodedata.category(c)!='Mn')
+              return re.sub(r'\s+',' ',s).strip().lower()
+
+          # Update the two visible selected-publication pages, guarded against touching
+          # the other F. Sergeant paper that remains submitted.
+          replacements={
+            'publications.html':(
+              'F. Sergeant, J.-R. de Dreuzy, S. Bernal, M. Ross &amp; G. Pinay (2026) · soumis à <span class="smallcaps">Hydrological Processes</span>',
+              'F. Sergeant, J.-R. de Dreuzy, S. Bernal, M. Ross &amp; G. Pinay (2026) · en révision pour <span class="smallcaps">Hydrological Processes</span>'
+            ),
+            'en/publications.html':(
+              'F. Sergeant, J.-R. de Dreuzy, S. Bernal, M. Ross &amp; G. Pinay (2026) · submitted to <span class="smallcaps">Hydrological Processes</span>',
+              'F. Sergeant, J.-R. de Dreuzy, S. Bernal, M. Ross &amp; G. Pinay (2026) · under review at <span class="smallcaps">Hydrological Processes</span>'
+            )
+          }
+          for fn,(old,new) in replacements.items():
+              p=Path(fn); s=p.read_text(encoding='utf-8')
+              if s.count(old)!=1:
+                  raise SystemExit(f'Guard failed: expected headwater status exactly once in {fn}, got {s.count(old)}')
+              p.write_text(s.replace(old,new,1),encoding='utf-8')
+
+          # Decode the canonical bibliography source. Its stored title is the older
+          # "From Aqua Incognita to Aqua Cognita"; bibliography-loader.js renames it
+          # at display time.
+          payloads=[Path(f'bibliographie-payload-0{i}.txt') for i in range(1,6)]
+          joined=''.join(p.read_text(encoding='utf-8') for p in payloads)
+          raw=gzip.decompress(base64.b64decode(re.sub(r'\s+','',joined))).decode('utf-8')
+          soup=BeautifulSoup(raw,'html.parser')
+
+          candidates=[el for el in soup.find_all(['li','p']) if norm(PAYLOAD_TITLE) in norm(el.get_text(' ',strip=True))]
+          if len(candidates)!=1:
+              raise SystemExit(f'Guard failed: payload target count={len(candidates)}')
+          entry=candidates[0]
+          if entry.name!='li':
+              raise SystemExit(f'Guard failed: payload target is <{entry.name}>, expected <li>')
+
+          heading_re=re.compile(r'^h[1-6]$')
+          previous=entry.find_previous(heading_re)
+          if not previous or not any(x in norm(previous.get_text(' ',strip=True)) for x in ('soumis','submitted')):
+              raise SystemExit(f'Guard failed: target not in submitted section; previous heading={previous.get_text(" ",strip=True) if previous else None}')
+
+          headings=soup.find_all(heading_re)
+          review=next((h for h in headings if ('revision' in norm(h.get_text(' ',strip=True)) or 'under review' in norm(h.get_text(' ',strip=True)) or 'in review' in norm(h.get_text(' ',strip=True)))),None)
+
+          def next_list_after(h):
+              level=int(h.name[1])
+              node=h.find_next_sibling()
+              while node:
+                  if getattr(node,'name',None) and heading_re.match(node.name):
+                      if int(node.name[1])<=level:
+                          return None
+                  if getattr(node,'name',None) in ('ol','ul'):
+                      return node
+                  node=node.find_next_sibling()
+              return None
+
+          if review:
+              review_list=next_list_after(review)
+              if review_list is None:
+                  review_list=soup.new_tag('ul')
+                  review.insert_after(review_list)
+          else:
+              submitted_list=next_list_after(previous)
+              if submitted_list is None:
+                  raise SystemExit('Guard failed: submitted list not found')
+              review=soup.new_tag(previous.name)
+              review.string='En révision'
+              review_list=soup.new_tag('ul')
+              submitted_list.insert_after(review)
+              review.insert_after(review_list)
+
+          # If the source entry itself says "submitted", update only this item's wording.
+          for node in list(entry.descendants):
+              if isinstance(node,NavigableString):
+                  text=str(node)
+                  new=re.sub(r'\b[Ss]oumis\s+à\b','En révision pour',text)
+                  new=re.sub(r'\b[Ss]ubmitted\s+to\b','Under review at',new)
+                  if new!=text:
+                      node.replace_with(new)
+
+          entry.extract()
+          review_list.insert(0,entry)
+          new_previous=entry.find_previous(heading_re)
+          if not new_previous or new_previous is not review:
+              raise SystemExit('Guard failed: target did not move under review heading')
+
+          # Re-encode to the same five-file payload scheme.
+          encoded=base64.b64encode(gzip.compress(str(soup).encode('utf-8'),mtime=0)).decode('ascii')
+          chunk_size=math.ceil(len(encoded)/5)
+          chunks=[encoded[i*chunk_size:(i+1)*chunk_size] for i in range(5)]
+          if len(chunks)!=5 or not all(chunks) or ''.join(chunks)!=encoded:
+              raise SystemExit('Guard failed: invalid five-part payload split')
+          for p,chunk in zip(payloads,chunks):
+              p.write_text(chunk+'\n',encoding='utf-8')
+
+          # Round-trip validation, including position under a review heading.
+          joined2=''.join(p.read_text(encoding='utf-8') for p in payloads)
+          check=BeautifulSoup(gzip.decompress(base64.b64decode(re.sub(r'\s+','',joined2))).decode('utf-8'),'html.parser')
+          matches=[el for el in check.find_all('li') if norm(PAYLOAD_TITLE) in norm(el.get_text(' ',strip=True))]
+          if len(matches)!=1:
+              raise SystemExit(f'Post-write payload target count={len(matches)}')
+          h=matches[0].find_previous(heading_re)
+          htext=norm(h.get_text(' ',strip=True)) if h else ''
+          if not ('revision' in htext or 'under review' in htext or 'in review' in htext):
+              raise SystemExit(f'Post-write heading is not review: {htext}')
+
+          print('Flore Sergeant headwater article moved from submitted to under review.')
+          PY
+      - name: Validate site
+        run: |
+          python scripts/check_bilingual_mirror.py
+          python scripts/check_local_links.py
+          python - <<'PY'
+          from pathlib import Path
+          title='Headwater catchments: from aqua incognita to aqua cognita'
+          nitrate='Nitrate removal in catchments is controlled by differences in transport time scales more than reactivity'
+          fr=Path('publications.html').read_text(encoding='utf-8')
+          en=Path('en/publications.html').read_text(encoding='utf-8')
+          assert title in fr and 'en révision pour <span class="smallcaps">Hydrological Processes</span>' in fr
+          assert title in en and 'under review at <span class="smallcaps">Hydrological Processes</span>' in en
+          # The other Sergeant article must remain submitted.
+          fr_n=fr.split(nitrate,1)[1].split('</div></div>',1)[0]
+          en_n=en.split(nitrate,1)[1].split('</div></div>',1)[0]
+          assert 'soumis à' in fr_n
+          assert 'submitted to' in en_n
+          print('FR/EN selected publications validated; second Sergeant paper unchanged.')
+          PY
+      - name: Commit update
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add publications.html en/publications.html bibliographie-payload-*.txt
+          git commit -m 'Move Flore Sergeant headwater paper to under review'
+          git push
