@@ -1,0 +1,262 @@
+name: One-shot audit bibliography completeness
+on:
+  push:
+    paths:
+      - '.github/workflows/one-shot-audit-bibliography-completeness.yml'
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: python -m pip install --quiet beautifulsoup4 requests
+      - name: Audit bibliography against HAL ORCID OpenAlex Crossref
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from bs4 import BeautifulSoup, Tag
+          import base64, gzip, json, re, unicodedata, requests, time
+          from difflib import SequenceMatcher
+
+          ORCID='0000-0003-2993-2015'
+          NAME='Jean-Raynald de Dreuzy'
+          S=requests.Session()
+          S.headers.update({'User-Agent':'dreuzy-bibliography-audit/1.0 (https://dreuzy.github.io/)'})
+
+          def norm(s):
+              s=unicodedata.normalize('NFKD',s or '')
+              s=''.join(c for c in s if not unicodedata.combining(c))
+              s=s.lower().replace('–','-').replace('—','-').replace('‐','-')
+              s=re.sub(r'<[^>]+>',' ',s)
+              s=re.sub(r'[^a-z0-9]+',' ',s)
+              return re.sub(r'\s+',' ',s).strip()
+
+          def norm_doi(s):
+              if not s: return ''
+              s=str(s).strip().lower()
+              s=re.sub(r'^https?://(?:dx\.)?doi\.org/','',s)
+              s=re.sub(r'^doi:\s*','',s)
+              return s.rstrip('.,;) ]')
+
+          def title_similarity(a,b):
+              a,b=norm(a),norm(b)
+              if not a or not b: return 0
+              if a==b: return 1
+              # containment helps titles with subtitles / punctuation variants
+              if min(len(a),len(b))>=35 and (a in b or b in a): return 0.97
+              return SequenceMatcher(None,a,b).ratio()
+
+          # ---- Decode site bibliography ----
+          payloads=[Path(f'bibliographie-payload-0{i}.txt') for i in range(1,6)]
+          joined=''.join(p.read_text(encoding='utf-8') for p in payloads)
+          html=gzip.decompress(base64.b64decode(re.sub(r'\s+','',joined))).decode('utf-8')
+          soup=BeautifulSoup(html,'html.parser')
+
+          headings=soup.find_all(re.compile(r'^h[1-6]$'))
+          art_heading=None
+          for h in headings:
+              t=norm(h.get_text(' ',strip=True))
+              if t=='articles dans des revues a comite de lecture':
+                  art_heading=h; break
+          if not art_heading: raise SystemExit('Journal articles heading not found')
+          level=int(art_heading.name[1])
+          site=[]; status=''
+          node=art_heading.find_next_sibling()
+          while node:
+              if isinstance(node,Tag) and re.match(r'^h[1-6]$',node.name):
+                  lv=int(node.name[1])
+                  if lv<=level: break
+                  status=node.get_text(' ',strip=True)
+              elif isinstance(node,Tag) and node.name in ('ol','ul'):
+                  for li in node.find_all('li',recursive=False):
+                      txt=li.get_text(' ',strip=True)
+                      # best title: linked title if available, otherwise text after year/authors heuristics
+                      links=[a.get_text(' ',strip=True) for a in li.find_all('a') if a.get_text(' ',strip=True)]
+                      title=links[0] if links else ''
+                      doi=''
+                      for a in li.find_all('a',href=True):
+                          m=re.search(r'doi\.org/(10\.\d{4,9}/[^?#\s]+)',a['href'],re.I)
+                          if m: doi=norm_doi(m.group(1)); break
+                      if not doi:
+                          m=re.search(r'\b(10\.\d{4,9}/[^\s<>]+)',txt,re.I)
+                          if m: doi=norm_doi(m.group(1))
+                      if not title:
+                          # remove leading author block through year; then stop before journal when possible
+                          m=re.search(r'\((?:19|20)\d{2}\)\s*,?\s*(.+)',txt)
+                          rest=m.group(1) if m else txt
+                          # split before common status/journal separator only after enough title chars
+                          title=rest
+                          for sep in ['. Soumis', '. En révision', '. En preparation', '. En préparation']:
+                              if sep in title: title=title.split(sep,1)[0]
+                      site.append({'title':title.strip(' .'),'doi':doi,'status':status,'text':txt})
+              node=node.find_next_sibling()
+
+          print(f'SITE_ARTICLES_TOTAL={len(site)}')
+          status_counts={}
+          for x in site: status_counts[x['status']]=status_counts.get(x['status'],0)+1
+          print('SITE_STATUS_COUNTS='+json.dumps(status_counts,ensure_ascii=False,sort_keys=True))
+
+          site_dois={x['doi'] for x in site if x['doi']}
+          site_titles=[x['title'] for x in site]
+
+          # ---- External sources ----
+          ext=[]
+          def add(source,title,doi='',year=None,typ='',url=''):
+              if not title: return
+              ext.append({'source':source,'title':str(title).strip(),'doi':norm_doi(doi),'year':year,'type':typ,'url':url})
+
+          # HAL: journal articles only
+          hal_url='https://api.archives-ouvertes.fr/search/'
+          params={'q':f'authFullName_s:"{NAME}"','fl':'title_s,doiId_s,producedDateY_i,docType_s,uri_s','rows':'1000','wt':'json'}
+          r=S.get(hal_url,params=params,timeout=30); r.raise_for_status()
+          haldocs=r.json().get('response',{}).get('docs',[])
+          for d in haldocs:
+              if d.get('docType_s')!='ART': continue
+              title=d.get('title_s'); title=title[0] if isinstance(title,list) else title
+              doi=d.get('doiId_s'); doi=doi[0] if isinstance(doi,list) else doi
+              add('HAL',title,doi,d.get('producedDateY_i'),d.get('docType_s'),d.get('uri_s',''))
+          print(f'HAL_ARTICLES={sum(1 for x in ext if x["source"]=="HAL")}')
+
+          # ORCID works
+          headers={'Accept':'application/json'}
+          r=S.get(f'https://pub.orcid.org/v3.0/{ORCID}/works',headers=headers,timeout=30)
+          if r.ok:
+              groups=r.json().get('group',[])
+              for g in groups:
+                  summaries=g.get('work-summary',[])
+                  if not summaries: continue
+                  w=summaries[0]
+                  title=((w.get('title') or {}).get('title') or {}).get('value','')
+                  typ=w.get('type','')
+                  year=(((w.get('publication-date') or {}).get('year') or {}).get('value'))
+                  doi=''
+                  for eid in ((w.get('external-ids') or {}).get('external-id') or []):
+                      if (eid.get('external-id-type') or '').lower()=='doi': doi=eid.get('external-id-value',''); break
+                  if typ in ('JOURNAL_ARTICLE','REVIEW_ARTICLE'):
+                      add('ORCID',title,doi,year,typ)
+              print(f'ORCID_ARTICLES={sum(1 for x in ext if x["source"]=="ORCID")}')
+          else:
+              print(f'ORCID_HTTP={r.status_code}')
+
+          # OpenAlex: resolve author by ORCID then all works; journal/review-like works
+          r=S.get(f'https://api.openalex.org/authors/https://orcid.org/{ORCID}',timeout=30)
+          if r.ok:
+              aid=r.json()['id'].rsplit('/',1)[-1]
+              cursor='*'; n=0
+              while cursor:
+                  rr=S.get('https://api.openalex.org/works',params={'filter':f'author.id:{aid}','per-page':200,'cursor':cursor},timeout=30)
+                  rr.raise_for_status(); js=rr.json()
+                  for w in js.get('results',[]):
+                      typ=w.get('type','')
+                      if typ in ('article','review','letter','editorial'):
+                          doi=w.get('doi','') or ''
+                          add('OpenAlex',w.get('title',''),doi,w.get('publication_year'),typ,w.get('id','')); n+=1
+                  cursor=js.get('meta',{}).get('next_cursor')
+                  if not js.get('results'): break
+                  if n>1000: break
+              print(f'OPENALEX_ARTICLES={sum(1 for x in ext if x["source"]=="OpenAlex")}')
+          else:
+              print(f'OPENALEX_HTTP={r.status_code}')
+
+          # Crossref: broad author query; retain works whose author list contains de Dreuzy
+          cr=[]
+          for offset in (0,1000):
+              params={'query.author':NAME,'rows':1000,'offset':offset,'select':'DOI,title,author,published,type,URL'}
+              rr=S.get('https://api.crossref.org/works',params=params,timeout=60)
+              if not rr.ok:
+                  print(f'CROSSREF_HTTP={rr.status_code}'); break
+              items=rr.json().get('message',{}).get('items',[])
+              if not items: break
+              for w in items:
+                  authors=w.get('author') or []
+                  exact=False
+                  for a in authors:
+                      fam=norm(a.get('family',''))
+                      giv=norm(a.get('given',''))
+                      oid=a.get('ORCID','') or ''
+                      if ORCID in oid or (fam in ('de dreuzy','dreuzy') and ('jean' in giv or 'j r' in giv or 'raynald' in giv)):
+                          exact=True; break
+                  if not exact: continue
+                  typ=w.get('type','')
+                  if typ not in ('journal-article','proceedings-article','posted-content'): continue
+                  title=(w.get('title') or [''])[0]
+                  year=None
+                  parts=((w.get('published') or {}).get('date-parts') or [])
+                  if parts and parts[0]: year=parts[0][0]
+                  cr.append((title,w.get('DOI',''),year,typ,w.get('URL','')))
+              if len(items)<1000: break
+          for row in cr: add('Crossref',*row)
+          print(f'CROSSREF_MATCHES={len(cr)}')
+
+          # ---- Match external records to site ----
+          # deduplicate external union by DOI, else highly normalized title.
+          union={}
+          for x in ext:
+              key=('doi',x['doi']) if x['doi'] else ('title',norm(x['title']))
+              if key not in union:
+                  union[key]={**x,'sources':set([x['source']])}
+              else:
+                  union[key]['sources'].add(x['source'])
+                  if not union[key].get('doi') and x.get('doi'): union[key]['doi']=x['doi']
+          union=list(union.values())
+
+          def match_site(x):
+              if x['doi'] and x['doi'] in site_dois:
+                  return ('doi',1.0,None)
+              best=(0,None)
+              for s in site:
+                  sim=title_similarity(x['title'],s['title'])
+                  # fallback against full entry because some site's inferred titles are imperfect
+                  sim=max(sim,title_similarity(x['title'],s['text']))
+                  if sim>best[0]: best=(sim,s)
+              if best[0]>=0.90: return ('title',best[0],best[1])
+              return ('',best[0],best[1])
+
+          missing=[]; matched=0
+          for x in union:
+              method,score,s=match_site(x)
+              if method: matched+=1
+              else:
+                  # exclude obvious proceedings from the journal-article completeness list
+                  # Crossref proceedings are retained as diagnostic only unless supported by another journal source
+                  sources=x['sources']
+                  if x['type']=='proceedings-article' and sources=={'Crossref'}: continue
+                  missing.append((x,score,s))
+
+          # rank candidates: multi-source first, DOI then title similarity
+          missing.sort(key=lambda z:(-len(z[0]['sources']),0 if z[0]['doi'] else 1,-z[1],z[0].get('year') or 0))
+          print(f'EXTERNAL_UNION={len(union)}')
+          print(f'EXTERNAL_MATCHED={matched}')
+          print(f'MISSING_CANDIDATES={len(missing)}')
+          print('--- MISSING CANDIDATES START ---')
+          for x,score,s in missing:
+              print(json.dumps({
+                  'title':x['title'],'doi':x['doi'],'year':x['year'],'type':x['type'],
+                  'sources':sorted(x['sources']),'best_site_score':round(score,3),
+                  'best_site_title':s['title'] if s else None
+              },ensure_ascii=False))
+          print('--- MISSING CANDIDATES END ---')
+
+          # DOI diagnostics: external DOI absent from site even if title matched
+          doi_diag=[]
+          for x in union:
+              if x['doi'] and x['doi'] not in site_dois:
+                  method,score,s=match_site(x)
+                  doi_diag.append((x,method,score,s))
+          print(f'EXTERNAL_DOIS_ABSENT_SITE={len(doi_diag)}')
+          print('--- DOI DIAGNOSTICS START ---')
+          for x,method,score,s in doi_diag:
+              print(json.dumps({'title':x['title'],'doi':x['doi'],'sources':sorted(x['sources']),'title_match':method=='title','score':round(score,3),'matched_site_title':s['title'] if s else None},ensure_ascii=False))
+          print('--- DOI DIAGNOSTICS END ---')
+
+          # List all site articles compactly for later manual spot-check.
+          print('--- SITE ARTICLE LIST START ---')
+          for i,x in enumerate(site,1):
+              print(json.dumps({'i':i,'status':x['status'],'title':x['title'],'doi':x['doi']},ensure_ascii=False))
+          print('--- SITE ARTICLE LIST END ---')
+          PY
