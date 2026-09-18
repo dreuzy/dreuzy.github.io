@@ -72,6 +72,16 @@
           .replaceAll('PyAge: an extensible toolkit for lumped-parameter modeling of tracer-derived groundwater ages', 'PyAges: an extensible toolkit for lumped-parameter modeling of tracer-derived groundwater ages');
       });
 
+      host.querySelectorAll('li,p').forEach(entry => {
+        const text = normalize(entry.textContent);
+        if (text.includes('reading the aquifer in the stream: a unified framework to infer subsurface denitrification from low flow stream chemistry')) {
+          entry.innerHTML = entry.innerHTML.replace(/Environmental Science Letters\s*,?\s*/gi, '');
+          entry.querySelectorAll('span,em,i').forEach(el => {
+            if (!normalize(el.textContent)) el.remove();
+          });
+        }
+      });
+
       const unwanted = [
         'towards a more comprehensive representation of hydrosystems in water footprint assessments',
         'technical note: hydromodpy',
