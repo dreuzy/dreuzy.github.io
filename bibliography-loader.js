@@ -124,10 +124,12 @@
         const prepList = document.createElement('ul');
         prepList.className = 'bib-unnumbered';
         const items = lang === 'en' ? [
+          'R. Abhervé et al., Stream networks reveal shallow aquifer transmissivity across European crystalline bedrock headwater catchments. In preparation for <span class="smallcaps">Geophysical Research Letters</span>.',
           'J. Marçais, J.-R. de Dreuzy, H. V. Gupta, Groundwater flow contributions to streamflows predicted by a hydrogeomorphological wetness index: insights from synthetic experiments. In preparation for <span class="smallcaps">Comptes Rendus Géoscience — Sciences de la Planète</span>.',
           'K. Brenner, Y. Qiang, J. Marçais, J.-R. de Dreuzy, An Integrated Double-Continuum Approach for Simulating Coupled Vertical Richards Flows and Lateral Boussinesq Flows. In preparation for <span class="smallcaps">Advances in Water Resources</span>.',
           'T. Touzeau et al., Functional archetypes of shallow aquifers for sustaining stream low flows: balancing storage and transmissivity. In preparation for <span class="smallcaps">Comptes Rendus Géoscience — Sciences de la Planète</span>.'
         ] : [
+          'R. Abhervé et al., Stream networks reveal shallow aquifer transmissivity across European crystalline bedrock headwater catchments. En préparation pour <span class="smallcaps">Geophysical Research Letters</span>.',
           'J. Marçais, J.-R. de Dreuzy, H. V. Gupta, Groundwater flow contributions to streamflows predicted by a hydrogeomorphological wetness index: insights from synthetic experiments. En préparation pour <span class="smallcaps">Comptes Rendus Géoscience — Sciences de la Planète</span>.',
           'K. Brenner, Y. Qiang, J. Marçais, J.-R. de Dreuzy, An Integrated Double-Continuum Approach for Simulating Coupled Vertical Richards Flows and Lateral Boussinesq Flows. En préparation pour <span class="smallcaps">Advances in Water Resources</span>.',
           'T. Touzeau et al., Functional archetypes of shallow aquifers for sustaining stream low flows: balancing storage and transmissivity. En préparation pour <span class="smallcaps">Comptes Rendus Géoscience — Sciences de la Planète</span>.'
