@@ -172,9 +172,13 @@
         while (walker.nextNode()) nodes.push(walker.currentNode);
         nodes.forEach(node => {
           node.nodeValue = node.nodeValue
-            .replace(/article en révision pour/gi, 'under review for')
-            .replace(/article en révision/gi, 'under review')
-            .replace(/en révision/gi, 'under review')
+            .replace(/article en révision pour/gi, 'in revision for')
+            .replace(/article en révision/gi, 'in revision')
+            .replace(/en révision/gi, 'in revision')
+            .replace(/under review at/gi, 'in revision for')
+            .replace(/under review for/gi, 'in revision for')
+            .replace(/under review/gi, 'in revision')
+            .replace(/in review/gi, 'in revision')
             .replace(/soumis à/gi, 'submitted to')
             .replace(/soumis/gi, 'submitted')
             .replace(/en préparation pour/gi, 'in preparation for')
@@ -186,8 +190,12 @@
         while (walker.nextNode()) nodes.push(walker.currentNode);
         nodes.forEach(node => {
           node.nodeValue = node.nodeValue
-            .replace(/under review for/gi, 'article en révision pour')
-            .replace(/under review/gi, 'article en révision')
+            .replace(/under review at/gi, 'en révision pour')
+            .replace(/under review for/gi, 'en révision pour')
+            .replace(/under review/gi, 'en révision')
+            .replace(/in revision at/gi, 'en révision pour')
+            .replace(/in revision for/gi, 'en révision pour')
+            .replace(/in revision/gi, 'en révision')
             .replace(/in review/gi, 'en révision')
             .replace(/submitted to/gi, 'soumis à')
             .replace(/submitted/gi, 'soumis')
@@ -202,12 +210,12 @@
         if (lang === 'en') {
           if (title.includes('in preparation')) heading.textContent = 'In preparation';
           else if (title.includes('soumis') || title.includes('submitted')) heading.textContent = 'Submitted';
-          else if (title === 'in review' || title.includes('en revision') || title.includes('under review')) heading.textContent = 'Under review';
+          else if (title === 'in review' || title.includes('en revision') || title.includes('under review') || title.includes('in revision')) heading.textContent = 'In revision';
           else if (title.includes('articles publies') || title === 'publies' || title === 'published') heading.textContent = 'Published';
         } else {
           if (title.includes('en preparation')) heading.textContent = 'En préparation';
           else if (title.includes('soumis')) heading.textContent = 'Soumis';
-          else if (title === 'in review' || title.includes('en revision') || title.includes('article en revision')) heading.textContent = 'En révision';
+          else if (title === 'in review' || title.includes('en revision') || title.includes('article en revision') || title.includes('under review') || title.includes('in revision')) heading.textContent = 'En révision';
           else if (title.includes('articles publies') || title === 'publies') heading.textContent = 'Publiés';
         }
       });
@@ -216,17 +224,25 @@
         if (!heading) return;
         const finalWord = kind === 'submitted'
           ? (lang === 'en' ? 'submitted' : 'soumis')
-          : (lang === 'en' ? 'in preparation' : 'en préparation');
+          : kind === 'revision'
+            ? (lang === 'en' ? 'in revision' : 'en révision')
+            : (lang === 'en' ? 'in preparation' : 'en préparation');
         const withTargetPatterns = kind === 'submitted'
           ? [
               /\s*(?:submitted\s+to|soumis\s+à|prepared\s+for|préparé\s+pour)\s+([\s\S]+?)\.?\s*$/i
             ]
-          : [
-              /\s*(?:in\s+preparation\s+for|en\s+préparation\s+pour)\s+([\s\S]+?)\.?\s*$/i
-            ];
+          : kind === 'revision'
+            ? [
+                /\s*(?:in\s+revision\s+(?:at|for)|under\s+review\s+(?:at|for)|en\s+révision\s+pour|article\s+en\s+révision\s+pour)\s+([\s\S]+?)\.?\s*$/i
+              ]
+            : [
+                /\s*(?:in\s+preparation\s+for|en\s+préparation\s+pour)\s+([\s\S]+?)\.?\s*$/i
+              ];
         const barePatterns = kind === 'submitted'
           ? [/\s*,?\s*(?:submitted|soumis)\.?\s*$/i]
-          : [/\s*,?\s*(?:in\s+preparation|en\s+préparation)\.?\s*$/i];
+          : kind === 'revision'
+            ? [/\s*,?\s*(?:in\s+revision|under\s+review|in\s+review|en\s+révision|article\s+en\s+révision)\.?\s*$/i]
+            : [/\s*,?\s*(?:in\s+preparation|en\s+préparation)\.?\s*$/i];
 
         const entries = [];
         sectionNodes(heading).forEach(node => {
@@ -260,8 +276,10 @@
       headings = [...host.querySelectorAll('h2,h3,h4,h5,h6')];
       const finalPrepHeading = headings.find(h => normalize(h.textContent) === (lang === 'en' ? 'in preparation' : 'en preparation'));
       const finalSubmittedHeading = headings.find(h => normalize(h.textContent) === (lang === 'en' ? 'submitted' : 'soumis'));
+      const finalRevisionHeading = headings.find(h => normalize(h.textContent) === (lang === 'en' ? 'in revision' : 'en revision'));
       finalizeStatusAtEnd(finalPrepHeading, 'preparation');
       finalizeStatusAtEnd(finalSubmittedHeading, 'submitted');
+      finalizeStatusAtEnd(finalRevisionHeading, 'revision');
 
       headings = [...host.querySelectorAll('h2,h3,h4,h5,h6')];
       const publishedLabel = lang === 'en' ? 'published' : 'publies';
@@ -280,7 +298,7 @@
 
       headings.filter(h => {
         const t = normalize(h.textContent);
-        return ['en preparation', 'soumis', 'en revision', 'in preparation', 'submitted', 'under review'].includes(t);
+        return ['en preparation', 'soumis', 'en revision', 'in preparation', 'submitted', 'in revision', 'under review'].includes(t);
       }).forEach(makeSectionUnnumbered);
 
       host.querySelectorAll('li strong, li b, p strong, p b').forEach(el => {
