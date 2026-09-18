@@ -124,21 +124,21 @@
         const prepList = document.createElement('ul');
         prepList.className = 'bib-unnumbered';
         const items = lang === 'en' ? [
-          'J. Marçais, J.-R. de Dreuzy, H. V. Gupta, Groundwater flow contributions to streamflows predicted by a hydrogeomorphological wetness index: insights from synthetic experiments. In preparation for <span class="smallcaps">Comptes Rendus Géoscience — Sciences de la Planète</span>.',
-          'K. Brenner, Y. Qiang, J. Marçais, J.-R. de Dreuzy, An Integrated Double-Continuum Approach for Simulating Coupled Vertical Richards Flows and Lateral Boussinesq Flows. In preparation for <span class="smallcaps">Advances in Water Resources</span>.',
-          'T. Touzeau et al., Functional archetypes of shallow aquifers for sustaining stream low flows: balancing storage and transmissivity. In preparation for <span class="smallcaps">Comptes Rendus Géoscience — Sciences de la Planète</span>.',
-          'R. Abhervé et al., Stream networks reveal shallow aquifer transmissivity across European crystalline bedrock headwater catchments. In preparation for <span class="smallcaps">Geophysical Research Letters</span>.',
-          'B. Boivin et al., Identifying inflow, evaporation and seepage from reservoir water-level dynamics for water-resource management. In preparation for <span class="smallcaps">Water Resources Research</span>.',
-          'E. Le Carrer et al., Pesticide dynamics in agricultural catchments. In preparation.',
-          'I. Issolah et al., A generic software architecture for aquifer simulation. In preparation.'
+          'J. Marçais, J.-R. de Dreuzy, H. V. Gupta, Groundwater flow contributions to streamflows predicted by a hydrogeomorphological wetness index: insights from synthetic experiments. <span class="smallcaps">Comptes Rendus Géoscience — Sciences de la Planète</span>, in preparation.',
+          'K. Brenner, Y. Qiang, J. Marçais, J.-R. de Dreuzy, An Integrated Double-Continuum Approach for Simulating Coupled Vertical Richards Flows and Lateral Boussinesq Flows. <span class="smallcaps">Advances in Water Resources</span>, in preparation.',
+          'T. Touzeau et al., Functional archetypes of shallow aquifers for sustaining stream low flows: balancing storage and transmissivity. <span class="smallcaps">Comptes Rendus Géoscience — Sciences de la Planète</span>, in preparation.',
+          'R. Abhervé et al., Stream networks reveal shallow aquifer transmissivity across European crystalline bedrock headwater catchments. <span class="smallcaps">Geophysical Research Letters</span>, in preparation.',
+          'B. Boivin et al., Identifying inflow, evaporation and seepage from reservoir water-level dynamics for water-resource management. <span class="smallcaps">Water Resources Research</span>, in preparation.',
+          'E. Le Carrer et al., Pesticide dynamics in agricultural catchments, in preparation.',
+          'I. Issolah et al., A generic software architecture for aquifer simulation, in preparation.'
         ] : [
-          'J. Marçais, J.-R. de Dreuzy, H. V. Gupta, Groundwater flow contributions to streamflows predicted by a hydrogeomorphological wetness index: insights from synthetic experiments. En préparation pour <span class="smallcaps">Comptes Rendus Géoscience — Sciences de la Planète</span>.',
-          'K. Brenner, Y. Qiang, J. Marçais, J.-R. de Dreuzy, An Integrated Double-Continuum Approach for Simulating Coupled Vertical Richards Flows and Lateral Boussinesq Flows. En préparation pour <span class="smallcaps">Advances in Water Resources</span>.',
-          'T. Touzeau et al., Functional archetypes of shallow aquifers for sustaining stream low flows: balancing storage and transmissivity. En préparation pour <span class="smallcaps">Comptes Rendus Géoscience — Sciences de la Planète</span>.',
-          'R. Abhervé et al., Stream networks reveal shallow aquifer transmissivity across European crystalline bedrock headwater catchments. En préparation pour <span class="smallcaps">Geophysical Research Letters</span>.',
-          'B. Boivin et al., Identifying inflow, evaporation and seepage from reservoir water-level dynamics for water-resource management. En préparation pour <span class="smallcaps">Water Resources Research</span>.',
-          'E. Le Carrer et al., Pesticide dynamics in agricultural catchments. En préparation.',
-          'I. Issolah et al., A generic software architecture for aquifer simulation. En préparation.'
+          'J. Marçais, J.-R. de Dreuzy, H. V. Gupta, Groundwater flow contributions to streamflows predicted by a hydrogeomorphological wetness index: insights from synthetic experiments. <span class="smallcaps">Comptes Rendus Géoscience — Sciences de la Planète</span>, en préparation.',
+          'K. Brenner, Y. Qiang, J. Marçais, J.-R. de Dreuzy, An Integrated Double-Continuum Approach for Simulating Coupled Vertical Richards Flows and Lateral Boussinesq Flows. <span class="smallcaps">Advances in Water Resources</span>, en préparation.',
+          'T. Touzeau et al., Functional archetypes of shallow aquifers for sustaining stream low flows: balancing storage and transmissivity. <span class="smallcaps">Comptes Rendus Géoscience — Sciences de la Planète</span>, en préparation.',
+          'R. Abhervé et al., Stream networks reveal shallow aquifer transmissivity across European crystalline bedrock headwater catchments. <span class="smallcaps">Geophysical Research Letters</span>, en préparation.',
+          'B. Boivin et al., Identifying inflow, evaporation and seepage from reservoir water-level dynamics for water-resource management. <span class="smallcaps">Water Resources Research</span>, en préparation.',
+          'E. Le Carrer et al., Pesticide dynamics in agricultural catchments, en préparation.',
+          'I. Issolah et al., A generic software architecture for aquifer simulation, en préparation.'
         ];
         items.forEach(html => {
           const li = document.createElement('li');
@@ -153,15 +153,15 @@
         if (!hostText().includes('pyages: an extensible toolkit for lumped-parameter modeling of tracer-derived groundwater ages')) {
           const li = document.createElement('li');
           li.innerHTML = lang === 'en'
-            ? 'J.-R. de Dreuzy, S. Leray, J. Marçais (2026), PyAges: an extensible toolkit for lumped-parameter modeling of tracer-derived groundwater ages. Submitted to <span class="smallcaps">Geoscientific Model Development</span>.'
-            : 'J.-R. de Dreuzy, S. Leray, J. Marçais (2026), PyAges: an extensible toolkit for lumped-parameter modeling of tracer-derived groundwater ages. Soumis à <span class="smallcaps">Geoscientific Model Development</span>.';
+            ? 'J.-R. de Dreuzy, S. Leray, J. Marçais (2026), PyAges: an extensible toolkit for lumped-parameter modeling of tracer-derived groundwater ages. <span class="smallcaps">Geoscientific Model Development</span>, submitted.'
+            : 'J.-R. de Dreuzy, S. Leray, J. Marçais (2026), PyAges: an extensible toolkit for lumped-parameter modeling of tracer-derived groundwater ages. <span class="smallcaps">Geoscientific Model Development</span>, soumis.';
           submittedList.prepend(li);
         }
         if (!hostText().includes('sentinel water fingerprint: capturing hydrosystem dynamics for adaptive water management')) {
           const li = document.createElement('li');
           li.innerHTML = lang === 'en'
-            ? 'M. Ricau, R. Abhervé, H. Budzinski, C. Casenave, A. Chaumot, F. Courant, V. Dupraz, G. Fernandes, H. Fenet, E. Gomez, P. Gonzalez, G. Imfeld, J. Jaunat, G. Junqua, C. Kane, S. Lardy-Fontan, T. Le Borgne, B. Lopez, J. M.F. Martins, J. Molénat, S. Payraudeau, A. Togola, J. Tournebize, J.-R. de Dreuzy (2026), Sentinel water fingerprint: capturing hydrosystem dynamics for adaptive water management. Submitted to <span class="smallcaps">WIREs Water</span>.'
-            : 'M. Ricau, R. Abhervé, H. Budzinski, C. Casenave, A. Chaumot, F. Courant, V. Dupraz, G. Fernandes, H. Fenet, E. Gomez, P. Gonzalez, G. Imfeld, J. Jaunat, G. Junqua, C. Kane, S. Lardy-Fontan, T. Le Borgne, B. Lopez, J. M.F. Martins, J. Molénat, S. Payraudeau, A. Togola, J. Tournebize, J.-R. de Dreuzy (2026), Sentinel water fingerprint: capturing hydrosystem dynamics for adaptive water management. Soumis à <span class="smallcaps">WIREs Water</span>.';
+            ? 'M. Ricau, R. Abhervé, H. Budzinski, C. Casenave, A. Chaumot, F. Courant, V. Dupraz, G. Fernandes, H. Fenet, E. Gomez, P. Gonzalez, G. Imfeld, J. Jaunat, G. Junqua, C. Kane, S. Lardy-Fontan, T. Le Borgne, B. Lopez, J. M.F. Martins, J. Molénat, S. Payraudeau, A. Togola, J. Tournebize, J.-R. de Dreuzy (2026), Sentinel water fingerprint: capturing hydrosystem dynamics for adaptive water management. <span class="smallcaps">WIREs Water</span>, submitted.'
+            : 'M. Ricau, R. Abhervé, H. Budzinski, C. Casenave, A. Chaumot, F. Courant, V. Dupraz, G. Fernandes, H. Fenet, E. Gomez, P. Gonzalez, G. Imfeld, J. Jaunat, G. Junqua, C. Kane, S. Lardy-Fontan, T. Le Borgne, B. Lopez, J. M.F. Martins, J. Molénat, S. Payraudeau, A. Togola, J. Tournebize, J.-R. de Dreuzy (2026), Sentinel water fingerprint: capturing hydrosystem dynamics for adaptive water management. <span class="smallcaps">WIREs Water</span>, soumis.';
           submittedList.prepend(li);
         }
       }
@@ -176,7 +176,9 @@
             .replace(/article en révision/gi, 'under review')
             .replace(/en révision/gi, 'under review')
             .replace(/soumis à/gi, 'submitted to')
-            .replace(/soumis/gi, 'submitted');
+            .replace(/soumis/gi, 'submitted')
+            .replace(/en préparation pour/gi, 'in preparation for')
+            .replace(/en préparation/gi, 'in preparation');
         });
       } else {
         const walker = document.createTreeWalker(host, NodeFilter.SHOW_TEXT);
@@ -186,7 +188,11 @@
           node.nodeValue = node.nodeValue
             .replace(/under review for/gi, 'article en révision pour')
             .replace(/under review/gi, 'article en révision')
-            .replace(/in review/gi, 'en révision');
+            .replace(/in review/gi, 'en révision')
+            .replace(/submitted to/gi, 'soumis à')
+            .replace(/submitted/gi, 'soumis')
+            .replace(/in preparation for/gi, 'en préparation pour')
+            .replace(/in preparation/gi, 'en préparation');
         });
       }
 
@@ -205,6 +211,57 @@
           else if (title.includes('articles publies') || title === 'publies') heading.textContent = 'Publiés';
         }
       });
+
+      const finalizeStatusAtEnd = (heading, kind) => {
+        if (!heading) return;
+        const finalWord = kind === 'submitted'
+          ? (lang === 'en' ? 'submitted' : 'soumis')
+          : (lang === 'en' ? 'in preparation' : 'en préparation');
+        const withTargetPatterns = kind === 'submitted'
+          ? [
+              /\s*(?:submitted\s+to|soumis\s+à|prepared\s+for|préparé\s+pour)\s+([\s\S]+?)\.?\s*$/i
+            ]
+          : [
+              /\s*(?:in\s+preparation\s+for|en\s+préparation\s+pour)\s+([\s\S]+?)\.?\s*$/i
+            ];
+        const barePatterns = kind === 'submitted'
+          ? [/\s*,?\s*(?:submitted|soumis)\.?\s*$/i]
+          : [/\s*,?\s*(?:in\s+preparation|en\s+préparation)\.?\s*$/i];
+
+        const entries = [];
+        sectionNodes(heading).forEach(node => {
+          if (node.matches?.('li,p')) entries.push(node);
+          node.querySelectorAll?.('li,p').forEach(entry => entries.push(entry));
+        });
+        [...new Set(entries)].forEach(entry => {
+          let html = entry.innerHTML.trim();
+          let changed = false;
+          for (const pattern of withTargetPatterns) {
+            if (pattern.test(html)) {
+              html = html.replace(pattern, (_, target) =>
+                ` ${target.trim().replace(/[.,;:]\s*$/, '')}, ${finalWord}.`);
+              changed = true;
+              break;
+            }
+          }
+          if (!changed) {
+            for (const pattern of barePatterns) {
+              if (pattern.test(html)) {
+                html = html.replace(pattern, `, ${finalWord}.`);
+                changed = true;
+                break;
+              }
+            }
+          }
+          entry.innerHTML = html;
+        });
+      };
+
+      headings = [...host.querySelectorAll('h2,h3,h4,h5,h6')];
+      const finalPrepHeading = headings.find(h => normalize(h.textContent) === (lang === 'en' ? 'in preparation' : 'en preparation'));
+      const finalSubmittedHeading = headings.find(h => normalize(h.textContent) === (lang === 'en' ? 'submitted' : 'soumis'));
+      finalizeStatusAtEnd(finalPrepHeading, 'preparation');
+      finalizeStatusAtEnd(finalSubmittedHeading, 'submitted');
 
       headings = [...host.querySelectorAll('h2,h3,h4,h5,h6')];
       const publishedLabel = lang === 'en' ? 'published' : 'publies';
