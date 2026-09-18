@@ -119,6 +119,12 @@
       if (proceedingsIndexedHeading) proceedingsIndexedHeading.textContent = 'Proceedings';
       if (proceedingsNonIndexedHeading) proceedingsNonIndexedHeading.remove();
 
+      const bookChapterHeading = host.querySelector('#chapitre-douvrage');
+      if (proceedingsIndexedHeading && bookChapterHeading) {
+        const proceedingsBlock = [proceedingsIndexedHeading, ...sectionNodes(proceedingsIndexedHeading)];
+        proceedingsBlock.forEach(node => bookChapterHeading.insertAdjacentElement('beforebegin', node));
+      }
+
       let headings = [...host.querySelectorAll('h2,h3,h4,h5,h6')];
       let submittedHeading = headings.find(h => {
         const t = normalize(h.textContent);
