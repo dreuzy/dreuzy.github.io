@@ -233,7 +233,7 @@
             ]
           : kind === 'revision'
             ? [
-                /\s*(?:in\s+revision\s+(?:at|for)|under\s+review\s+(?:at|for)|en\s+révision\s+pour|article\s+en\s+révision\s+pour)\s+([\s\S]+?)\.?\s*$/i
+                /\s*(?:in\s+revision\s+(?:at|for)|under\s+review\s+(?:at|for)|en\s+révision\s+pour|article\s+en\s+révision\s+pour|submitted\s+to|soumis\s+à)\s+([\s\S]+?)\.?\s*$/i
               ]
             : [
                 /\s*(?:in\s+preparation\s+for|en\s+préparation\s+pour)\s+([\s\S]+?)\.?\s*$/i
