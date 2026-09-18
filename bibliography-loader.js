@@ -114,6 +114,11 @@
         });
       }
 
+      const proceedingsIndexedHeading = host.querySelector('#proceedings-references-dans-web-of-knowledge');
+      const proceedingsNonIndexedHeading = host.querySelector('#proceedings-non-references-dans-web-of-knowledge');
+      if (proceedingsIndexedHeading) proceedingsIndexedHeading.textContent = 'Proceedings';
+      if (proceedingsNonIndexedHeading) proceedingsNonIndexedHeading.remove();
+
       let headings = [...host.querySelectorAll('h2,h3,h4,h5,h6')];
       let submittedHeading = headings.find(h => {
         const t = normalize(h.textContent);
