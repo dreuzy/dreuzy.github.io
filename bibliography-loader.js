@@ -114,6 +114,24 @@
         });
       }
 
+      const reportsHeading = host.querySelector('#rapports-et-autres-publications');
+      if (reportsHeading) {
+        let reportsList = reportsHeading.nextElementSibling;
+        while (reportsList && !['OL', 'UL'].includes(reportsList.tagName) && !isHeading(reportsList)) {
+          reportsList = reportsList.nextElementSibling;
+        }
+        if (!reportsList || isHeading(reportsList)) {
+          reportsList = document.createElement('ol');
+          reportsHeading.insertAdjacentElement('afterend', reportsList);
+        }
+        const cydreReport = document.createElement('li');
+        const cydrePdf = `${root}assets/reports/Rapport_scientifique_final_CYDRE_2026_09.pdf`;
+        cydreReport.innerHTML = lang === 'en'
+          ? `J.-R. de Dreuzy (2026), <a href="${cydrePdf}" target="_blank" rel="noopener">CYDRE — Cycle hYdrologique, Disponibilité de la Ressource et Évolution. Rapport scientifique de fin de contrat</a>. September 2026.`
+          : `J.-R. de Dreuzy (2026), <a href="${cydrePdf}" target="_blank" rel="noopener">CYDRE — Cycle hYdrologique, Disponibilité de la Ressource et Évolution. Rapport scientifique de fin de contrat</a>. Septembre 2026.`;
+        reportsList.prepend(cydreReport);
+      }
+
       const proceedingsIndexedHeading = host.querySelector('#proceedings-references-dans-web-of-knowledge');
       const proceedingsNonIndexedHeading = host.querySelector('#proceedings-non-references-dans-web-of-knowledge');
       if (proceedingsIndexedHeading) proceedingsIndexedHeading.textContent = 'Proceedings';
