@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 420"><rect width="900" height="420" fill="#ffffff"/>
-<text x="40" y="42" font-family="Arial" font-size="20" font-weight="700" fill="#17324a">Empreinte Eau & Eau Sentinelle</text>
+<text x="40" y="42" font-family="Arial" font-size="20" font-weight="700" fill="#17324a">Empreinte Eau &amp; Eau Sentinelle</text>
 <g font-family="Arial" font-size="13" fill="#17324a">
 <rect x="45" y="150" width="110" height="70" rx="8" fill="#f7f9fb" stroke="#9eb4c2"/><text x="70" y="190">Usages</text>
 <rect x="185" y="150" width="120" height="70" rx="8" fill="#eef4f7" stroke="#497a9c"/><text x="207" y="182">Transferts</text><text x="199" y="202">transformations</text>

@@ -2,9 +2,13 @@
   "base_url": "https://dreuzy.github.io",
   "name": "Jean-Raynald de Dreuzy",
   "contact": {
-    "email": "jean-raynald.de-dreuzy@univ-rennes.fr",
+    "email": "jean-raynald.de-dreuzy@ens-rennes.fr",
     "orcid": "https://orcid.org/0000-0003-2993-2015",
-    "hal": "https://hal.science/search/index/?q=%22Jean-Raynald%20de%20Dreuzy%22"
+    "hal": "https://hal.science/search/index/?q=%22Jean-Raynald%20de%20Dreuzy%22",
+    "scholar": "https://scholar.google.com/citations?hl=en&user=5oB48GcAAAAJ",
+    "github": "https://github.com/dreuzy",
+    "directory": "https://www.ens-rennes.fr/annuaire/jean-raynald-de-dreuzy",
+    "portrait": "https://dreuzy.github.io/assets/portrait-jean-raynald-de-dreuzy.jpg"
   },
   "footer_organizations": [
     "CNRS",
@@ -41,6 +45,7 @@
     "bibliography": "publications",
     "publications-over-time": "publications",
     "software": "software",
+    "hydromodpy": "software",
     "pyages": "software",
     "science-society": "science-society",
     "cv": "cv"
@@ -48,8 +53,51 @@
   "cv": {
     "pdf": "assets/cv/CV_Jean-Raynald_de_Dreuzy_2026.pdf",
     "updated": "20 septembre 2026",
+    "updated_en": "20 September 2026",
     "updated_short": "septembre 2026",
     "publication_count": 114
+  },
+  "social_images": {
+    "home": {
+      "path": "assets/social/profile.png",
+      "fr": "Jean-Raynald de Dreuzy, président de l’ENS Rennes et directeur de recherche CNRS",
+      "en": "Jean-Raynald de Dreuzy, President of ENS Rennes and CNRS Research Director"
+    },
+    "research": {
+      "path": "assets/social/research.png",
+      "fr": "Recherche en hydrogéologie, ressources en eau et modélisation",
+      "en": "Research in hydrogeology, water resources and modelling"
+    },
+    "projects": {
+      "path": "assets/social/projects.png",
+      "fr": "Projets et contrats de recherche",
+      "en": "Research projects and grants"
+    },
+    "team": {
+      "path": "assets/social/team.png",
+      "fr": "Encadrements et collaborations scientifiques",
+      "en": "Research supervision and collaborations"
+    },
+    "publications": {
+      "path": "assets/social/publications.png",
+      "fr": "Publications et bibliographie scientifique",
+      "en": "Scientific publications and bibliography"
+    },
+    "software": {
+      "path": "assets/social/software.png",
+      "fr": "Logiciels scientifiques open source",
+      "en": "Open-source scientific software"
+    },
+    "science-society": {
+      "path": "assets/social/science-society.png",
+      "fr": "Science, société et médiation autour de l’eau",
+      "en": "Science, society and water outreach"
+    },
+    "cv": {
+      "path": "assets/social/profile.png",
+      "fr": "CV de Jean-Raynald de Dreuzy",
+      "en": "Jean-Raynald de Dreuzy’s CV"
+    }
   },
   "bibliography_reference_counts": {
     "published_articles": 114,

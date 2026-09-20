@@ -93,21 +93,56 @@ def replace_one(source: str, pattern: str, replacement: str, label: str, path: s
     return output
 
 
-def update_metadata(source: str, base_url: str, page: dict[str, object], lang: str) -> str:
+def update_person_jsonld(source: str, config: dict[str, object]) -> str:
+    pattern = r'(<script\b(?=[^>]*\btype="application/ld\+json")[^>]*>)(.*?)(</script>)'
+
+    def replacement(match: re.Match[str]) -> str:
+        try:
+            payload = json.loads(match.group(2))
+        except json.JSONDecodeError:
+            return match.group(0)
+        if payload.get("@type") != "Person":
+            return match.group(0)
+        contact = config["contact"]
+        payload["image"] = contact["portrait"]
+        payload["sameAs"] = [
+            contact["orcid"],
+            contact["hal"],
+            contact["scholar"],
+            contact["github"],
+            contact["directory"],
+        ]
+        compact = json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
+        return f"{match.group(1)}{compact}{match.group(3)}"
+
+    return re.sub(pattern, replacement, source, flags=re.DOTALL | re.IGNORECASE)
+
+
+def update_metadata(source: str, config: dict[str, object], page: dict[str, object], lang: str) -> str:
     path = page[lang]
+    base_url = config["base_url"]
     canonical = public_url(base_url, path)
     fr_url = public_url(base_url, page["fr"])
     en_url = public_url(base_url, page["en"])
+    section = config["page_sections"].get(page["id"], "research")
+    social = config["social_images"].get(section, config["social_images"]["research"])
+    social_url = f'{base_url}/{social["path"]}'
     replacements = [
         (r'<link\b(?=[^>]*\brel="canonical")[^>]*>', f'<link href="{canonical}" rel="canonical"/>', "canonical"),
         (r'<link\b(?=[^>]*\bhreflang="fr")[^>]*>', f'<link href="{fr_url}" hreflang="fr" rel="alternate"/>', "hreflang fr"),
         (r'<link\b(?=[^>]*\bhreflang="en")[^>]*>', f'<link href="{en_url}" hreflang="en" rel="alternate"/>', "hreflang en"),
         (r'<link\b(?=[^>]*\bhreflang="x-default")[^>]*>', f'<link href="{fr_url}" hreflang="x-default" rel="alternate"/>', "hreflang x-default"),
         (r'<meta\b(?=[^>]*\bproperty="og:url")[^>]*>', f'<meta content="{canonical}" property="og:url"/>', "og:url"),
+        (r'<meta\b(?=[^>]*\bproperty="og:image")[^>]*>', f'<meta content="{social_url}" property="og:image"/>', "og:image"),
+        (r'<meta\b(?=[^>]*\bproperty="og:image:width")[^>]*>', '<meta content="1200" property="og:image:width"/>', "og:image:width"),
+        (r'<meta\b(?=[^>]*\bproperty="og:image:height")[^>]*>', '<meta content="630" property="og:image:height"/>', "og:image:height"),
+        (r'<meta\b(?=[^>]*\bproperty="og:image:alt")[^>]*>', f'<meta content="{html.escape(social[lang], quote=True)}" property="og:image:alt"/>', "og:image:alt"),
+        (r'<meta\b(?=[^>]*\bname="twitter:image")[^>]*>', f'<meta content="{social_url}" name="twitter:image"/>', "twitter:image"),
+        (r'<meta\b(?=[^>]*\bname="twitter:image:alt")[^>]*>', f'<meta content="{html.escape(social[lang], quote=True)}" name="twitter:image:alt"/>', "twitter:image:alt"),
     ]
     for pattern, replacement, label in replacements:
         source = replace_one(source, pattern, replacement, label, path)
-    return source
+    return update_person_jsonld(source, config)
 
 
 def render_page(
@@ -122,7 +157,17 @@ def render_page(
     source = replace_one(source, r'<a\s+class="skip-link".*?</a>', skip, "skip link", path)
     source = replace_one(source, r'<header\s+class="site-header".*?</header>', header, "site header", path)
     source = replace_one(source, r'<footer\s+class="preview-footer".*?</footer>', footer, "site footer", path)
-    return update_metadata(source, config["base_url"], page, lang)
+    source = re.sub(
+        r'<img\b[^>]*\bfutureflow-framework\.webp[^>]*>',
+        lambda match: re.sub(
+            r'\b(height|width)="\d+"',
+            lambda dimension: 'height="750"' if dimension.group(1) == "height" else 'width="1200"',
+            match.group(0),
+        ),
+        source,
+        flags=re.IGNORECASE,
+    )
+    return update_metadata(source, config, page, lang)
 
 
 def render_404(source: str, config: dict[str, object], manifest: dict[str, object]) -> str:

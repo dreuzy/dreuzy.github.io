@@ -167,9 +167,9 @@ def main() -> int:
         str(temporary), pagesize=A4,
         leftMargin=20 * mm, rightMargin=20 * mm,
         topMargin=17 * mm, bottomMargin=19 * mm,
-        title="CV — Jean-Raynald de Dreuzy",
+        title="CV - Jean-Raynald de Dreuzy",
         author="Jean-Raynald de Dreuzy",
-        subject=f"Curriculum vitae synthétique — {UPDATED_SHORT}",
+        subject=f"Curriculum vitae synthétique - {UPDATED_SHORT}",
     )
     frame = Frame(doc.leftMargin, doc.bottomMargin, doc.width, doc.height, id="normal", leftPadding=0, rightPadding=0, topPadding=0, bottomPadding=0)
     doc.addPageTemplates(PageTemplate(id="cv", frames=[frame], onPage=page_chrome))
@@ -178,7 +178,7 @@ def main() -> int:
     story.append(Paragraph("Jean-Raynald de Dreuzy", styles["Name"]))
     story.append(Paragraph("Hydrogéologue · Directeur de recherche CNRS · Président de l’École normale supérieure de Rennes", styles["Role"]))
     story.append(Paragraph(
-        '<link href="mailto:jean-raynald.de-dreuzy@univ-rennes.fr" color="#0056B3">jean-raynald.de-dreuzy@univ-rennes.fr</link> &nbsp;·&nbsp; '
+        '<link href="mailto:jean-raynald.de-dreuzy@ens-rennes.fr" color="#0056B3">jean-raynald.de-dreuzy@ens-rennes.fr</link> &nbsp;·&nbsp; '
         '<link href="https://dreuzy.github.io/" color="#0056B3">dreuzy.github.io</link> &nbsp;·&nbsp; '
         '<link href="https://orcid.org/0000-0003-2993-2015" color="#0056B3">ORCID 0000-0003-2993-2015</link> &nbsp;·&nbsp; '
         '<link href="https://hal.science/search/index/?q=%22Jean-Raynald%20de%20Dreuzy%22" color="#0056B3">HAL</link>',
@@ -193,13 +193,13 @@ def main() -> int:
 
     story.append(section_title("Positions actuelles", styles))
     story.append(timeline([
-        ("Depuis 2026", "<b>Président</b> — École normale supérieure de Rennes"),
-        ("Depuis 2013", "<b>Directeur de recherche CNRS</b> — Géosciences Rennes, Université de Rennes"),
+        ("Depuis 2026", "<b>Président</b> - École normale supérieure de Rennes"),
+        ("Depuis 2013", "<b>Directeur de recherche CNRS</b> - Université de Rennes"),
     ], styles))
 
     story.append(section_title("Axes scientifiques", styles))
     for item in [
-        "Aquifères peu profonds, bassins versants de tête et échanges surface–souterrain.",
+        "Aquifères peu profonds, bassins versants de tête et échanges surface-souterrain.",
         "Temps de résidence, transferts de nitrates, réactivité et résilience de la qualité de l’eau.",
         "Effets du changement climatique sur les ressources, les faibles débits et les risques côtiers.",
         "Modèles multi-fidélité, méthodes numériques et chaînes reproductibles de simulation.",
@@ -209,7 +209,7 @@ def main() -> int:
 
     story.append(section_title("Responsabilités scientifiques actuelles", styles))
     for item in [
-        "<b>OneWater — Eau Bien Commun</b> : co-responsable du défi « Empreinte Eau » et d’un projet ciblé du PEPR national.",
+        "<b>OneWater - Eau Bien Commun</b> : co-responsable du défi « Empreinte Eau » et d’un projet ciblé du PEPR national.",
         "<b>IRIS-E</b> : co-responsable du WP2 « Recherches interdisciplinaires et co-construites ».",
         "<b>Chaire Eaux & Territoires</b> : co-titulaire avec Luc Aquilina, Fondation Université de Rennes.",
         "<b>ANDRA</b> : membre du conseil scientifique depuis 2025.",
@@ -222,32 +222,31 @@ def main() -> int:
     story.append(Paragraph("Parcours et structuration scientifique", styles["Name"]))
     story.append(section_title("Positions antérieures", styles))
     story.append(timeline([
-        ("2021–2026", "Vice-président Recherche — École normale supérieure de Rennes"),
-        ("2017–2021", "Directeur de l’Observatoire des Sciences de l’Univers de Rennes (OSUR)"),
-        ("2013–2016", "Chercheur associé à Inria, Rennes"),
-        ("2011–2013", "Mobilité Marie Curie — IDAEA-CSIC / Universitat Politècnica de Catalunya, Barcelone"),
-        ("2001–2010", "Chargé de recherche CNRS — Géosciences Rennes"),
-        ("2000–2001", "Postdoctorat — Institut Weizmann, Israël"),
+        ("2021-2026", "Vice-président Recherche - École normale supérieure de Rennes"),
+        ("2017-2021", "Directeur de l’Observatoire des Sciences de l’Univers de Rennes (OSUR, aujourd’hui OSERen)"),
+        ("2013-2016", "Chercheur associé à Inria, Rennes"),
+        ("2011-2013", "Mobilité Marie Curie - IDAEA-CSIC / Universitat Politècnica de Catalunya, Barcelone"),
+        ("2001-2010", "Chargé de recherche CNRS - Géosciences Rennes"),
+        ("2000-2001", "Postdoctorat - Institut Weizmann, Israël"),
     ], styles))
 
     story.append(section_title("Formation", styles))
     story.append(timeline([
-        ("2008", "Habilitation à diriger des recherches — modélisation des écoulements et du transport dans les milieux fortement hétérogènes et fracturés, Université de Rennes 1"),
-        ("1996–1999", "Doctorat — Géosciences Rennes, CNRS / Université de Rennes 1"),
-        ("1995", "DEA d’Hydrologie et d’Hydrogéologie — Université Paris VI"),
-        ("1992–1994", "École polytechnique"),
+        ("2008", "Habilitation à diriger des recherches - modélisation des écoulements et du transport dans les milieux fortement hétérogènes et fracturés, Université de Rennes 1"),
+        ("1996-1999", "Doctorat - Géosciences Rennes, CNRS / Université de Rennes 1"),
+        ("1995", "DEA d’Hydrologie et d’Hydrogéologie - Université Paris VI"),
+        ("1992-1994", "École polytechnique"),
     ], styles))
 
     story.append(section_title("Structuration de la recherche", styles))
     for year, text in [
-        ("2022–2024", "Création et direction du département Sciences pour l’Environnement de l’ENS Rennes."),
         ("Depuis 2021", "Contribution au montage de OneWater et d’IRIS-E, avec un accent sur l’interdisciplinarité et la co-construction."),
-        ("2018–2021", "Portage du CPER GLAZ Environnement et développement d’une plateforme régionale d’observation."),
-        ("2017–2021", "Direction de l’OSUR : plateformes, observatoires, projets interdisciplinaires et partenariats territoriaux."),
-        ("2014–2017", "Création et animation de RISC-E et de l’Observatoire Virtuel de l’Environnement."),
-        ("2013–2016", "Responsabilité de l’équipe EAU de Géosciences Rennes."),
+        ("2018-2021", "Portage du CPER GLAZ Environnement et développement d’une plateforme régionale d’observation."),
+        ("2017-2021", "Direction de l’OSUR, aujourd’hui OSERen : plateformes, observatoires, projets interdisciplinaires et partenariats territoriaux."),
+        ("2014-2017", "Création et animation de RISC-E et de l’Observatoire Virtuel de l’Environnement."),
+        ("2013-2016", "Responsabilité de l’équipe EAU de Géosciences Rennes."),
     ]:
-        story.append(bullet(f"<b>{year}</b> — {text}", styles))
+        story.append(bullet(f"<b>{year}</b> - {text}", styles))
 
     story.append(PageBreak())
     story.append(Paragraph("Principaux contrats de recherche", styles["Name"]))
@@ -256,45 +255,45 @@ def main() -> int:
         styles["Lead"],
     ))
     story.append(timeline([
-        ("2026–", "<b>FutureFlow</b> — ANR PRCI France–Suisse, ANR-25-CE01-2963. Approche multi-fidélité pour quantifier la contribution des eaux souterraines aux bassins versants de tête. Coordination avec Clément Roques."),
-        ("2023–", "<b>OneWater — PC4 OWMS</b> — ANR-22-PEXO-0005. Empreinte eau et observation multidimensionnelle des hydrosystèmes ; programme OneWater lancé en 2022."),
-        ("2019–", "<b>Chaire Eaux & Territoires</b> — Fondation Université de Rennes. Programme actuel 2024–2028 ; ressources, usages et adaptation territoriale."),
-        ("2025–", "<b>ARCHANGE</b> — remontée de nappe et intrusion saline en baie du Mont-Saint-Michel, dans le prolongement de RIVAGES Normands 2100."),
-        ("2024–", "<b>NIRECAS</b> — MSCA-PF 101150996. Capacité de récupération vis-à-vis des nitrates sur 200 sites pilotes du Massif armoricain."),
-        ("2019–2025", "<b>RIVAGES Normands 2100</b> — risques hydrogéologiques littoraux, recherche transdisciplinaire et adaptation des territoires."),
-        ("2019–2026", "<b>EAUX 2050 / RIVIÈRES 2070 / CYDRE</b> — projections climatiques, dialogue territorial et prévision saisonnière sur 98 bassins."),
-        ("2014–2019", "<b>AquiFR-BZH</b> — évaluation régionale des ressources dans les aquifères de socle."),
-        ("2011–2013", "<b>MUIGECCOS</b> — Marie Curie IEF 251710, processus couplés et stockage géologique du CO₂."),
-        ("2007–2010", "<b>MOHINI</b> — ANR-07-VULN-0008, ressources en eau et vulnérabilité des aquifères de socle."),
+        ("2026-", "<b>FutureFlow</b> - ANR PRCI France-Suisse, ANR-25-CE01-2963. Approche multi-fidélité pour quantifier la contribution des eaux souterraines aux bassins versants de tête. Coordination avec Clément Roques."),
+        ("2023-", "<b>OneWater - PC4 OWMS</b> - ANR-22-PEXO-0005. Empreinte eau et observation multidimensionnelle des hydrosystèmes ; programme OneWater lancé en 2022."),
+        ("2019-", "<b>Chaire Eaux & Territoires</b> - Fondation Université de Rennes. Programme actuel depuis 2024 ; ressources, usages et adaptation territoriale."),
+        ("2025-", "<b>ARCHANGE</b> - remontée de nappe et intrusion saline en baie du Mont-Saint-Michel, dans le prolongement de RIVAGES Normands 2100."),
+        ("2024-", "<b>NIRECAS</b> - MSCA-PF 101150996. Capacité de récupération vis-à-vis des nitrates sur 200 sites pilotes du Massif armoricain."),
+        ("2019-2025", "<b>RIVAGES Normands 2100</b> - risques hydrogéologiques littoraux, recherche transdisciplinaire et adaptation des territoires."),
+        ("2019-2026", "<b>EAUX 2050 / RIVIÈRES 2070 / CYDRE</b> - projections climatiques, dialogue territorial et prévision saisonnière sur 98 bassins."),
+        ("2014-2019", "<b>AquiFR-BZH</b> - évaluation régionale des ressources dans les aquifères de socle."),
+        ("2011-2013", "<b>MUIGECCOS</b> - Marie Curie IEF 251710, processus couplés et stockage géologique du CO₂."),
+        ("2007-2010", "<b>MOHINI</b> - ANR-07-VULN-0008, ressources en eau et vulnérabilité des aquifères de socle."),
     ], styles))
 
     story.append(section_title("Encadrement et logiciels", styles))
     story.append(bullet("Encadrement et co-encadrement de doctorants, postdoctorants, Masters et stagiaires en hydrogéologie, hydrologie, qualité de l’eau et modélisation.", styles))
-    story.append(bullet('<b>HydroModPy</b> — boîte à outils Python pour déployer des modèles d’aquifères peu profonds à l’échelle des bassins versants.', styles))
-    story.append(bullet('<b>PyAges</b> — boîte à outils extensible pour l’interprétation des âges des eaux souterraines par modèles à paramètres groupés.', styles))
+    story.append(bullet('<b>HydroModPy</b> - boîte à outils Python pour déployer des modèles d’aquifères peu profonds à l’échelle des bassins versants.', styles))
+    story.append(bullet('<b>PyAges</b> - boîte à outils extensible pour l’interprétation des âges des eaux souterraines par modèles à paramètres groupés.', styles))
 
     story.append(PageBreak())
     story.append(Paragraph("Activités scientifiques et publications", styles["Name"]))
     story.append(section_title("Activités éditoriales et animation", styles))
     for item in [
-        "<b>Hydrogeology Journal</b>, 2006–2011 — éditeur associé.",
-        "<b>Journal of Hydrology</b>, 2013–2018 — éditeur associé ; co-éditeur d’un numéro spécial sur les temps de résidence en 2016.",
-        "<b>Computational Methods in Water Resources</b>, 2018–2024 — membre du comité permanent.",
-        "<b>CMWR 2018, Saint-Malo</b> — co-organisateur de la XXIIe conférence internationale avec Jocelyne Erhel et Tanguy Le Borgne.",
+        "<b>Hydrogeology Journal</b>, 2006-2011 - éditeur associé.",
+        "<b>Journal of Hydrology</b>, 2013-2018 - éditeur associé ; co-éditeur d’un numéro spécial sur les temps de résidence en 2016.",
+        "<b>Computational Methods in Water Resources</b>, 2018-2024 - membre du comité permanent.",
+        "<b>CMWR 2018, Saint-Malo</b> - co-organisateur de la XXIIe conférence internationale avec Jocelyne Erhel et Tanguy Le Borgne.",
         "Participation à des conseils et comités d’évaluation nationaux en environnement, hydrologie et sciences de la Terre.",
     ]:
         story.append(bullet(item, styles))
 
-    story.append(section_title("Publications — repères", styles))
+    story.append(section_title("Publications - repères", styles))
     story.append(Paragraph(
         f"{PUBLICATION_COUNT} articles publiés référencés dans la bibliographie du site, auxquels s’ajoutent actes, chapitres, rapports et communications. "
         "Les travaux couvrent les réseaux de fractures, le transport en milieux hétérogènes, les temps de résidence, la réactivité des aquifères, "
-        "les échanges nappe–rivière et l’adaptation des ressources en eau.", styles["Body"],
+        "les échanges nappe-rivière et l’adaptation des ressources en eau.", styles["Body"],
     ))
     for item in [
         "Le Mesnil et al. (2026), <i>Rivages Normands 2100: transdisciplinary co-constructed knowledge for land-use adaptation to groundwater rise along Normandy coastline</i>, Sustainability Science.",
         "Gauvain et al. (2026), <i>Technical note: HydroModPy (v1.0)</i>, Hydrology and Earth System Sciences.",
-        "Abhervé et al. (2023), <i>Calibration of groundwater seepage against the spatial distribution of the stream network</i>, Hydrology and Earth System Sciences — Highlight paper.",
+        "Abhervé et al. (2023), <i>Calibration of groundwater seepage against the spatial distribution of the stream network</i>, Hydrology and Earth System Sciences - Highlight paper.",
         "Kolbe et al. (2019), <i>Stratification of reactivity determines nitrate removal in groundwater</i>, PNAS.",
         "Vergnes et al. (2020), <i>The AquiFR hydrometeorological modelling platform</i>, Hydrology and Earth System Sciences.",
         "Pichot, Erhel & de Dreuzy (2012), <i>A Generalized Mixed Hybrid Mortar Method for Solving Flow in Stochastic Discrete Fracture Networks</i>, SIAM Journal on Scientific Computing.",

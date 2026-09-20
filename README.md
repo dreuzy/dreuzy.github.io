@@ -21,7 +21,7 @@ La commande à lancer avant chaque publication est :
 make check
 ```
 
-Elle contrôle les fichiers générés, le miroir FR/EN, les liens et ancres internes, le SEO, l’accessibilité de base, le sitemap, les figures, les comptes bibliographiques et les doublons exacts ou probables.
+Elle contrôle les fichiers générés, le miroir FR/EN, les liens et ancres internes, le SEO, l’accessibilité de base, le sitemap, le décodage réel de tous les médias, les comptes bibliographiques et les doublons exacts ou probables.
 
 Pour prévisualiser localement :
 
@@ -35,20 +35,22 @@ Puis ouvrir <http://localhost:8000>.
 
 | Besoin | Source de référence | Reconstruction |
 | --- | --- | --- |
-| Contenu d’une page | page HTML FR et page HTML EN | aucune |
+| Contenu courant d’une page | page HTML FR et page HTML EN | `make content` pour les blocs structurés |
+| Accueil et améliorations éditoriales partagées | `scripts/build_curated_content.py` | `make content` |
 | Navigation, pied de page, coordonnées | `site-config.json` | `make layout` |
 | Couple de pages FR/EN | `mirror-map.json` | `make layout sitemap` |
 | Bibliographie complète | `data/bibliography.json` | `make bibliography` |
 | Exceptions de titres proches | `data/bibliography-duplicate-allowlist.json` | aucune, puis `make check` |
 | Figures fragmentées | fragments et `assets/figure-data/manifest.json` | `make figures` |
+| Portrait, diagrammes et cartes sociales | `scripts/build_visual_assets.py` | `make visuals` |
 | CV PDF | `scripts/build_cv_pdf.py` et bloc `cv` de `site-config.json` | `make cv` |
 | Styles | `styles.css` | aucune |
 
-Les pages `bibliographie.html`, `en/bibliography.html`, les deux SVG de l’historique des publications, leur JSON de données, le PDF du CV, le sitemap et les WebP déclarés dans le manifeste sont des sorties générées. Ne pas les éditer sans modifier également leur source.
+Les pages `bibliographie.html`, `en/bibliography.html`, les blocs « Dernières publications », les deux SVG de l’historique des publications, leur JSON de données, le PDF du CV, le sitemap, le portrait local, les cartes sociales et les WebP déclarés dans les générateurs sont des sorties générées. Ne pas les éditer sans modifier également leur source.
 
 ## Structure bilingue
 
-Le français est à la racine et l’anglais dans `en/`. Les 23 couples officiels sont décrits dans `mirror-map.json`. Toute modification éditoriale doit être faite dans les deux langues au cours de la même opération.
+Le français est à la racine et l’anglais dans `en/`. Les 24 couples officiels sont décrits dans `mirror-map.json`. Toute modification éditoriale doit être faite dans les deux langues au cours de la même opération.
 
 Les blocs communs sont générés par `scripts/sync_shared_layout.py`. Les titres et descriptions propres à chaque page restent dans son `<head>` ; leurs canonical, hreflang et `og:url` sont synchronisés depuis le manifeste.
 

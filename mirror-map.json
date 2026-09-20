@@ -64,7 +64,9 @@
       "id": "research-figures",
       "fr": "galerie-recherche.html",
       "en": "en/research-figures.html",
-      "navigation": true
+      "navigation": false,
+      "redirect": true,
+      "target": "science-society"
     },
     {
       "id": "projects",
@@ -107,6 +109,12 @@
       "fr": "logiciels.html",
       "en": "en/software.html",
       "navigation": true
+    },
+    {
+      "id": "hydromodpy",
+      "fr": "hydromodpy.html",
+      "en": "en/hydromodpy.html",
+      "navigation": false
     },
     {
       "id": "science-society",

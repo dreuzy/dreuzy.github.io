@@ -13,6 +13,8 @@ Le site est statique et servi directement par GitHub Pages depuis la branche `ma
 - `styles.css` est la feuille de style commune ;
 - `data/bibliography.json` est la source éditable de la bibliographie ;
 - `assets/figure-data/manifest.json` décrit toutes les figures reconstructibles à partir de fragments ;
+- `scripts/build_visual_assets.py` reconstruit le portrait local, les diagrammes directs et les cartes sociales ;
+- `scripts/build_curated_content.py` maintient les blocs éditoriaux structurés et bilingues des pages les plus évolutives ;
 - `requirements.txt` déclare toutes les dépendances Python ;
 - le `Makefile` fournit l’interface de maintenance.
 
@@ -51,11 +53,11 @@ La seconde exécution ne doit produire aucune différence supplémentaire.
 
 ## 3. Pages bilingues
 
-`mirror-map.json` contient 23 couples de pages. Deux d’entre eux, `a-propos.html` et `en/about.html`, sont des redirections techniques vers le CV. Les 22 autres couples sont indexables.
+`mirror-map.json` contient 24 couples de pages. Les couples `a-propos` et `research-figures` sont des redirections techniques ; les anciennes adresses de la galerie mènent désormais à la section « Images et médiation ». Les 22 autres couples sont indexables.
 
 ### Modifier une page
 
-1. modifier la page française et sa page anglaise ;
+1. modifier la page française et sa page anglaise ; pour l’accueil ou un bloc pris en charge par `build_curated_content.py`, modifier d’abord ce générateur ;
 2. conserver la même structure générale, les mêmes figures et des liens croisés réciproques ;
 3. lancer `make layout` si la navigation, les coordonnées ou les métadonnées d’URL ont changé ;
 4. lancer `make check`.
@@ -75,6 +77,8 @@ La seconde exécution ne doit produire aucune différence supplémentaire.
 - le sélecteur FR/EN ;
 - le pied de page ;
 - les canonical, hreflang et `og:url`.
+- les images Open Graph et Twitter par famille de pages ;
+- les profils externes du balisage `Person` de l’accueil.
 
 Le mode `--check` échoue si un bloc commun a été modifié à la main ou n’a pas été régénéré.
 
@@ -119,6 +123,8 @@ Le générateur produit :
 - `en/publications-au-fil-du-temps.svg` ;
 - `publications-au-fil-du-temps-data.json`.
 
+Il alimente également le bloc « Dernières publications » des pages de sélection. `bibliography-filter.js` fournit la recherche par mots-clés, type et année sans masquer le contenu lorsque JavaScript est désactivé.
+
 `bibliography-hal.js` reste un enrichissement facultatif. Une indisponibilité de HAL ne retire aucun contenu bibliographique.
 
 ### Doublons
@@ -135,9 +141,11 @@ Les paires proches mais réellement distinctes sont documentées dans `data/bibl
 
 ## 5. Figures
 
-### Assets directs
+### Assets directs et générés
 
-Les images ordinaires sont référencées directement dans les pages. FutureFlow utilise `assets/figures/futureflow-framework.webp` et OneWater `assets/figures/onewater.svg` ; leurs anciens fragments devenus inutiles ont été retirés.
+Les images ordinaires sont référencées directement dans les pages. `scripts/build_visual_assets.py` reconstruit le portrait local à partir de sa source encodée, le diagramme FutureFlow, la copie normalisée du visuel HydroModPy et les cartes sociales de 1200 × 630 pixels. OneWater utilise `assets/figures/onewater.svg`.
+
+`scripts/check_media_assets.py` décode entièrement chaque JPEG, PNG et WebP et parse chaque SVG. Une image tronquée ou un SVG XML invalide font donc échouer `make check` avant publication.
 
 Chaque balise `img` doit avoir :
 
@@ -225,15 +233,16 @@ Les générateurs sont déterministes : un workflow relancé sans modification d
 
 Dans l’ordre :
 
-1. intégrité des figures fragmentées ;
-2. synchronisation des pages de bibliographie ;
-3. synchronisation des graphiques et données temporelles ;
-4. synchronisation du CV PDF ;
-5. synchronisation des blocs partagés ;
-6. synchronisation du sitemap ;
-7. parité structurelle FR/EN ;
-8. liens, ressources et ancres internes ;
-9. SEO, accessibilité de base, inventaire des pages, bibliographie et doublons.
+1. reproductibilité des visuels et décodage de tous les médias ;
+2. intégrité des figures fragmentées et synchronisation du contenu structuré ;
+3. synchronisation des pages de bibliographie et des dernières publications ;
+4. synchronisation des graphiques et données temporelles ;
+5. synchronisation du CV PDF ;
+6. synchronisation des blocs partagés et des métadonnées sociales ;
+7. synchronisation du sitemap ;
+8. parité structurelle FR/EN ;
+9. liens, ressources et ancres internes ;
+10. SEO, accessibilité de base, inventaire des pages, bibliographie et doublons.
 
 Un échec indique le fichier concerné et, lorsque c’est pertinent, la commande de reconstruction.
 
@@ -251,13 +260,13 @@ Les codes `403`, `429` ou `999` renvoyés par certains sites externes à des rob
 
 ## 11. État de référence — septembre 2026
 
-- 47 fichiers HTML, dont 44 pages indexables, deux redirections et une page 404 ;
-- 23 couples FR/EN ;
+- 49 fichiers HTML, dont 44 pages indexables, quatre redirections et une page 404 ;
+- 24 couples FR/EN ;
 - 114 articles publiés ;
 - 256 abstracts de colloques ;
 - 14 actes de colloques ;
 - 10 figures WebP reconstructibles, dont PyAges ;
-- trois dossiers de contrats bilingues ;
+- trois dossiers de contrats et deux pages logicielles bilingues ;
 - un CV PDF A4 de quatre pages ;
 - quatre workflows permanents.
 
