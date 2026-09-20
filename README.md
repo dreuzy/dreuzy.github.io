@@ -42,7 +42,7 @@ Puis ouvrir <http://localhost:8000>.
 | Bibliographie complète | `data/bibliography.json` | `make bibliography` |
 | Exceptions de titres proches | `data/bibliography-duplicate-allowlist.json` | aucune, puis `make check` |
 | Figures fragmentées | fragments et `assets/figure-data/manifest.json` | `make figures` |
-| Portrait, diagrammes et cartes sociales | `scripts/build_visual_assets.py` | `make visuals` |
+| Portrait et cartes sociales | `scripts/build_visual_assets.py` | `make visuals` |
 | CV PDF | `scripts/build_cv_pdf.py` et bloc `cv` de `site-config.json` | `make cv` |
 | Styles | `styles.css` | aucune |
 

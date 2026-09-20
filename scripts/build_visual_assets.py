@@ -18,11 +18,9 @@ SOCIAL = ROOT / "assets" / "social"
 PORTRAIT = ROOT / "assets" / "portrait-jean-raynald-de-dreuzy.jpg"
 PORTRAIT_SOURCE = ROOT / "assets" / "figure-data" / "portrait-jrd.part-00.txt"
 FONT_REGULAR = Path("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf")
-FONT_BOLD = Path("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf")
 FONT_SERIF = Path("/usr/share/fonts/truetype/dejavu/DejaVuSerif-Bold.ttf")
 
 NAVY = "#17324a"
-INK = "#2f3e49"
 BLUE = "#3c789d"
 PALE = "#eef4f7"
 SOFT = "#f7f9fb"
@@ -48,63 +46,6 @@ def png_bytes(image: Image.Image) -> bytes:
 def portrait_bytes() -> bytes:
     encoded = "".join(PORTRAIT_SOURCE.read_text(encoding="ascii").split())
     return base64.b64decode(encoded, validate=True)
-
-
-def rounded_box(
-    draw: ImageDraw.ImageDraw,
-    xy: tuple[int, int, int, int],
-    title: str,
-    subtitle: str,
-    *,
-    fill: str,
-) -> None:
-    draw.rounded_rectangle(xy, radius=22, fill=fill, outline="#9eb4c2", width=3)
-    left, top, right, bottom = xy
-    draw.text((left + 28, top + 28), title, font=font(FONT_BOLD, 28), fill=NAVY)
-    draw.multiline_text(
-        (left + 28, top + 78),
-        subtitle,
-        font=font(FONT_REGULAR, 21),
-        fill=INK,
-        spacing=7,
-    )
-
-
-def arrow(draw: ImageDraw.ImageDraw, start: tuple[int, int], end: tuple[int, int]) -> None:
-    draw.line((start, end), fill=BLUE, width=6)
-    x, y = end
-    draw.polygon(((x, y), (x - 18, y - 11), (x - 18, y + 11)), fill=BLUE)
-
-
-def build_futureflow() -> bytes:
-    image = Image.new("RGB", (1200, 750), "white")
-    draw = ImageDraw.Draw(image)
-    draw.text((70, 58), "FutureFlow", font=font(FONT_SERIF, 54), fill=NAVY)
-    draw.text(
-        (72, 128),
-        "Multi-fidelity groundwater modelling for headwater catchments",
-        font=font(FONT_REGULAR, 27),
-        fill="#526570",
-    )
-
-    boxes = [
-        ((65, 235, 365, 455), "Low fidelity", "Fast regional\nscreening", PALE),
-        ((450, 235, 750, 455), "Medium fidelity", "Catchment\nensembles", SOFT),
-        ((835, 235, 1135, 455), "High fidelity", "Process insight\nand benchmarks", PALE),
-    ]
-    for xy, title, subtitle, fill in boxes:
-        rounded_box(draw, xy, title, subtitle, fill=fill)
-    arrow(draw, (375, 345), (438, 345))
-    arrow(draw, (760, 345), (823, 345))
-
-    draw.rounded_rectangle((150, 550, 1050, 665), radius=20, fill=NAVY)
-    draw.text(
-        (213, 579),
-        "Observations  ↔  calibration  ↔  uncertainty  ↔  regional assessment",
-        font=font(FONT_REGULAR, 24),
-        fill="white",
-    )
-    return webp_bytes(image)
 
 
 def build_hydromodpy_approved() -> bytes:
@@ -149,7 +90,6 @@ def expected_assets() -> dict[Path, bytes]:
         "science-society.png": ("Science & society · Science & société", "#846f43"),
     }
     outputs = {
-        FIGURES / "futureflow-framework.webp": build_futureflow(),
         FIGURES / "hydromodpy-approved.webp": build_hydromodpy_approved(),
         PORTRAIT: portrait_bytes(),
     }

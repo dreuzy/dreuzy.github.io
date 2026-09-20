@@ -13,7 +13,7 @@ Le site est statique et servi directement par GitHub Pages depuis la branche `ma
 - `styles.css` est la feuille de style commune ;
 - `data/bibliography.json` est la source éditable de la bibliographie ;
 - `assets/figure-data/manifest.json` décrit toutes les figures reconstructibles à partir de fragments ;
-- `scripts/build_visual_assets.py` reconstruit le portrait local, les diagrammes directs et les cartes sociales ;
+- `scripts/build_visual_assets.py` reconstruit le portrait local, le visuel HydroModPy normalisé et les cartes sociales ;
 - `scripts/build_curated_content.py` maintient les blocs éditoriaux structurés et bilingues des pages les plus évolutives ;
 - `requirements.txt` déclare toutes les dépendances Python ;
 - le `Makefile` fournit l’interface de maintenance.
@@ -143,7 +143,7 @@ Les paires proches mais réellement distinctes sont documentées dans `data/bibl
 
 ### Assets directs et générés
 
-Les images ordinaires sont référencées directement dans les pages. `scripts/build_visual_assets.py` reconstruit le portrait local à partir de sa source encodée, le diagramme FutureFlow, la copie normalisée du visuel HydroModPy et les cartes sociales de 1200 × 630 pixels. OneWater utilise `assets/figures/onewater.svg`.
+Les images ordinaires sont référencées directement dans les pages. `scripts/build_visual_assets.py` reconstruit le portrait local à partir de sa source encodée, la copie normalisée du visuel HydroModPy et les cartes sociales de 1200 × 630 pixels. Les visuels détaillés FutureFlow et OneWater sont reconstruits par `scripts/materialize_figure_assets.py` à partir de leurs fragments Base64 vérifiés.
 
 `scripts/check_media_assets.py` décode entièrement chaque JPEG, PNG et WebP et parse chaque SVG. Une image tronquée ou un SVG XML invalide font donc échouer `make check` avant publication.
 
@@ -265,12 +265,12 @@ Les codes `403`, `429` ou `999` renvoyés par certains sites externes à des rob
 - 114 articles publiés ;
 - 256 abstracts de colloques ;
 - 14 actes de colloques ;
-- 10 figures WebP reconstructibles, dont PyAges ;
+- 12 figures WebP reconstructibles, dont FutureFlow, OneWater et PyAges ;
 - trois dossiers de contrats et deux pages logicielles bilingues ;
 - un CV PDF A4 de quatre pages ;
 - quatre workflows permanents.
 
-Les anciens payloads opaques de bibliographie, les fragments FutureFlow/OneWater inutilisés et le script ponctuel de migration de l’audit ont été retirés. Ils restent récupérables dans l’historique Git si une enquête rétrospective est nécessaire.
+Les anciens payloads opaques de bibliographie et le script ponctuel de migration de l’audit ont été retirés. Les fragments FutureFlow et OneWater ont été conservés comme sources vérifiées des illustrations restaurées.
 
 ## 12. Reprise après une interruption
 

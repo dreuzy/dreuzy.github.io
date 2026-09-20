@@ -157,11 +157,12 @@ def render_page(
     source = replace_one(source, r'<a\s+class="skip-link".*?</a>', skip, "skip link", path)
     source = replace_one(source, r'<header\s+class="site-header".*?</header>', header, "site header", path)
     source = replace_one(source, r'<footer\s+class="preview-footer".*?</footer>', footer, "site footer", path)
+    source = source.replace("assets/figures/onewater.svg", "assets/figures/onewater-sentinel.webp")
     source = re.sub(
         r'<img\b[^>]*\bfutureflow-framework\.webp[^>]*>',
         lambda match: re.sub(
             r'\b(height|width)="\d+"',
-            lambda dimension: 'height="750"' if dimension.group(1) == "height" else 'width="1200"',
+            lambda dimension: 'height="540"' if dimension.group(1) == "height" else 'width="720"',
             match.group(0),
         ),
         source,

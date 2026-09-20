@@ -9,6 +9,13 @@
       "sha256": "a98e2e4f6e1bfe44dde714365f85eb8d5638c425ddf3d6c49947e405784c8329"
     },
     {
+      "name": "futureflow-illustration",
+      "parts": 3,
+      "output": "assets/figures/futureflow-framework.webp",
+      "bytes": 29402,
+      "sha256": "6d4a8c94031c6bd3f5a2b242dda4b63bd25d2c44f5a8749dbfe9ebefde18b6b2"
+    },
+    {
       "name": "gallery-breville-water-table",
       "parts": 1,
       "output": "assets/figures/embedded/gallery-breville-water-table.webp",
@@ -49,6 +56,13 @@
       "output": "assets/figures/embedded/hydromodpy-final.webp",
       "bytes": 86576,
       "sha256": "ab2bf575cae71dbce98d9909d645be101de9ac1fbdd53311c2b876d4eeb9c87d"
+    },
+    {
+      "name": "onewater-sentinel",
+      "parts": 4,
+      "output": "assets/figures/onewater-sentinel.webp",
+      "bytes": 41316,
+      "sha256": "8f8787acb4ada927f83f18d4d5dbc8116f6613994be7ac43d418864473ee291d"
     },
     {
       "name": "reactivity-illustration",
