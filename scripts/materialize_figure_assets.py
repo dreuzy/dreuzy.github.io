@@ -1,66 +1,77 @@
 #!/usr/bin/env python3
-"""Materialize fragmented Base64 figures as direct WebP assets and update pages."""
+"""Rebuild and verify direct WebP assets from their Base64 source fragments."""
 
 from __future__ import annotations
 
 import base64
+import hashlib
+import json
+import sys
+from argparse import ArgumentParser
 from pathlib import Path
-
-from bs4 import BeautifulSoup
 
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT / "assets" / "figures" / "embedded"
+DATA = ROOT / "assets" / "figure-data"
+MANIFEST = DATA / "manifest.json"
 
 
-def decode(name: str, count: int) -> Path:
+def decode(name: str, count: int) -> bytes:
     chunks = []
     for index in range(count):
-        path = ROOT / "assets" / "figure-data" / f"{name}.part-{index:02}.txt"
+        path = DATA / f"{name}.part-{index:02}.txt"
+        if not path.is_file():
+            raise RuntimeError(f"{name}: missing source fragment {path.relative_to(ROOT)}")
         chunks.append("".join(path.read_text(encoding="utf-8").split()))
     raw = base64.b64decode("".join(chunks), validate=True)
     if not (raw.startswith(b"RIFF") and raw[8:12] == b"WEBP"):
         raise RuntimeError(f"{name}: decoded data is not WebP")
-    OUT.mkdir(parents=True, exist_ok=True)
-    target = OUT / f"{name}.webp"
-    target.write_bytes(raw)
-    return target
+    return raw
 
 
-def update_page(path: Path) -> int:
-    soup = BeautifulSoup(path.read_text(encoding="utf-8"), "html.parser")
-    is_en = path.parent.name == "en"
+def verify(raw: bytes, item: dict[str, object]) -> None:
+    name = str(item["name"])
+    expected_size = int(item["bytes"])
+    expected_hash = str(item["sha256"])
+    actual_hash = hashlib.sha256(raw).hexdigest()
+    if len(raw) != expected_size:
+        raise RuntimeError(f"{name}: {len(raw)} bytes, expected {expected_size}")
+    if actual_hash != expected_hash:
+        raise RuntimeError(f"{name}: SHA-256 {actual_hash}, expected {expected_hash}")
+
+
+def main() -> int:
+    parser = ArgumentParser()
+    parser.add_argument("--check", action="store_true", help="verify outputs without rewriting them")
+    parser.add_argument("--name", action="append", default=[], help="limit processing to a figure name")
+    args = parser.parse_args()
+
+    manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
+    wanted = set(args.name)
+    selected = [item for item in manifest["figures"] if not wanted or item["name"] in wanted]
+    missing_names = wanted - {item["name"] for item in selected}
+    if missing_names:
+        print(f"Unknown figure(s): {', '.join(sorted(missing_names))}", file=sys.stderr)
+        return 2
+
     changed = 0
-    for image in soup.select("img[data-b64-name]"):
-        name = image["data-b64-name"]
-        count = int(image.get("data-b64-parts", "1"))
-        if name == "futureflow-illustration":
-            source = ("../" if is_en else "") + "assets/figures/futureflow-framework.webp"
-        elif name == "onewater-sentinel":
-            source = ("../" if is_en else "") + "assets/figures/onewater.svg"
-        else:
-            decode(name, count)
-            source = ("../" if is_en else "") + f"assets/figures/embedded/{name}.webp"
-        image["src"] = source
-        for attribute in ("data-b64-name", "data-b64-parts", "data-b64-mime"):
-            image.attrs.pop(attribute, None)
-        parent = image.parent
-        if parent and parent.name == "a" and not parent.get("href"):
-            parent.unwrap()
+    for item in selected:
+        raw = decode(str(item["name"]), int(item["parts"]))
+        verify(raw, item)
+        target = ROOT / str(item["output"])
+        if target.is_file() and target.read_bytes() == raw:
+            continue
+        if args.check:
+            print(f"Outdated or missing figure: {target.relative_to(ROOT)}", file=sys.stderr)
+            return 1
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(raw)
         changed += 1
-    for script in list(soup.select('script[src^="figure-loader.js"], script[src="../figure-loader.js"]')):
-        script.decompose()
-        changed += 1
-    if changed:
-        path.write_text(str(soup), encoding="utf-8")
-    return changed
 
-
-def main() -> None:
-    pages = sorted(ROOT.glob("*.html")) + sorted((ROOT / "en").glob("*.html"))
-    changes = sum(update_page(page) for page in pages)
-    print(f"Materialized embedded figures; applied {changes} page updates.")
+    verb = "verified" if args.check else "materialized"
+    print(f"Figure assets {verb}: {len(selected)} checked, {changed} rewritten.")
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

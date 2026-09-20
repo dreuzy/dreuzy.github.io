@@ -3,8 +3,14 @@
 
 from __future__ import annotations
 
+import argparse
+import json
+import os
+import tempfile
 from pathlib import Path
 
+import matplotlib
+from reportlab import rl_config
 from reportlab.lib import colors
 from reportlab.lib.enums import TA_LEFT, TA_RIGHT
 from reportlab.lib.pagesizes import A4
@@ -26,7 +32,12 @@ from reportlab.platypus import (
 
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT / "assets" / "cv" / "CV_Jean-Raynald_de_Dreuzy_2026.pdf"
+CONFIG = json.loads((ROOT / "site-config.json").read_text(encoding="utf-8"))
+OUT = ROOT / CONFIG["cv"]["pdf"]
+UPDATED = CONFIG["cv"]["updated"]
+UPDATED_SHORT = CONFIG["cv"]["updated_short"]
+PUBLICATION_COUNT = CONFIG["cv"]["publication_count"]
+rl_config.invariant = True
 NAVY = colors.HexColor("#17324A")
 BLUE = colors.HexColor("#0056B3")
 MUTED = colors.HexColor("#526975")
@@ -35,14 +46,15 @@ SOFT = colors.HexColor("#F3F7F9")
 
 
 def register_fonts() -> None:
+    font_root = Path(matplotlib.get_data_path()) / "fonts" / "ttf"
     paths = {
-        "DejaVu": "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
-        "DejaVu-Bold": "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
-        "DejaVu-Serif": "/usr/share/fonts/truetype/dejavu/DejaVuSerif.ttf",
-        "DejaVu-Serif-Bold": "/usr/share/fonts/truetype/dejavu/DejaVuSerif-Bold.ttf",
+        "DejaVu": font_root / "DejaVuSans.ttf",
+        "DejaVu-Bold": font_root / "DejaVuSans-Bold.ttf",
+        "DejaVu-Serif": font_root / "DejaVuSerif.ttf",
+        "DejaVu-Serif-Bold": font_root / "DejaVuSerif-Bold.ttf",
     }
     for name, path in paths.items():
-        pdfmetrics.registerFont(TTFont(name, path))
+        pdfmetrics.registerFont(TTFont(name, str(path)))
     pdfmetrics.registerFontFamily("DejaVu", normal="DejaVu", bold="DejaVu-Bold", italic="DejaVu", boldItalic="DejaVu-Bold")
     pdfmetrics.registerFontFamily("DejaVu-Serif", normal="DejaVu-Serif", bold="DejaVu-Serif-Bold", italic="DejaVu-Serif", boldItalic="DejaVu-Serif-Bold")
 
@@ -55,7 +67,7 @@ def page_chrome(canvas, doc) -> None:
     canvas.line(18 * mm, 14 * mm, width - 18 * mm, 14 * mm)
     canvas.setFont("DejaVu", 7.8)
     canvas.setFillColor(MUTED)
-    canvas.drawString(18 * mm, 9.2 * mm, "Jean-Raynald de Dreuzy · CV synthétique · septembre 2026")
+    canvas.drawString(18 * mm, 9.2 * mm, f"Jean-Raynald de Dreuzy · CV synthétique · {UPDATED_SHORT}")
     canvas.drawRightString(width - 18 * mm, 9.2 * mm, f"{doc.page}")
     canvas.restoreState()
 
@@ -141,17 +153,23 @@ def section_title(text: str, styles) -> KeepTogether:
     return KeepTogether([Spacer(1, 2.5 * mm), rule, Paragraph(text, styles["Section"])])
 
 
-def main() -> None:
+def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--check", action="store_true", help="fail instead of replacing a stale PDF")
+    args = parser.parse_args()
     register_fonts()
     styles = build_styles()
     OUT.parent.mkdir(parents=True, exist_ok=True)
+    handle, temporary_name = tempfile.mkstemp(prefix="cv-", suffix=".pdf", dir=OUT.parent)
+    os.close(handle)
+    temporary = Path(temporary_name)
     doc = BaseDocTemplate(
-        str(OUT), pagesize=A4,
+        str(temporary), pagesize=A4,
         leftMargin=20 * mm, rightMargin=20 * mm,
         topMargin=17 * mm, bottomMargin=19 * mm,
         title="CV — Jean-Raynald de Dreuzy",
         author="Jean-Raynald de Dreuzy",
-        subject="Curriculum vitae synthétique — septembre 2026",
+        subject=f"Curriculum vitae synthétique — {UPDATED_SHORT}",
     )
     frame = Frame(doc.leftMargin, doc.bottomMargin, doc.width, doc.height, id="normal", leftPadding=0, rightPadding=0, topPadding=0, bottomPadding=0)
     doc.addPageTemplates(PageTemplate(id="cv", frames=[frame], onPage=page_chrome))
@@ -269,7 +287,7 @@ def main() -> None:
 
     story.append(section_title("Publications — repères", styles))
     story.append(Paragraph(
-        "114 articles publiés référencés dans la bibliographie du site, auxquels s’ajoutent actes, chapitres, rapports et communications. "
+        f"{PUBLICATION_COUNT} articles publiés référencés dans la bibliographie du site, auxquels s’ajoutent actes, chapitres, rapports et communications. "
         "Les travaux couvrent les réseaux de fractures, le transport en milieux hétérogènes, les temps de résidence, la réactivité des aquifères, "
         "les échanges nappe–rivière et l’adaptation des ressources en eau.", styles["Body"],
     ))
@@ -293,11 +311,24 @@ def main() -> None:
     ]
     story.append(Paragraph(" &nbsp;·&nbsp; ".join(f'<link href="{url}" color="#0056B3">{label}</link>' for label, url in links), styles["Body"]))
     story.append(Spacer(1, 5 * mm))
-    story.append(Paragraph("Dernière mise à jour : 20 septembre 2026", styles["Small"]))
+    story.append(Paragraph(f"Dernière mise à jour : {UPDATED}", styles["Small"]))
 
-    doc.build(story)
+    try:
+        doc.build(story)
+        changed = not OUT.is_file() or OUT.read_bytes() != temporary.read_bytes()
+        if changed and not args.check:
+            os.replace(temporary, OUT)
+        else:
+            temporary.unlink()
+    finally:
+        if temporary.exists():
+            temporary.unlink()
     print(OUT)
+    if args.check and changed:
+        print("CV PDF is stale; run scripts/build_cv_pdf.py.")
+        return 1
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

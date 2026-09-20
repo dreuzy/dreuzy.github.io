@@ -1,0 +1,59 @@
+{
+  "base_url": "https://dreuzy.github.io",
+  "name": "Jean-Raynald de Dreuzy",
+  "contact": {
+    "email": "jean-raynald.de-dreuzy@univ-rennes.fr",
+    "orcid": "https://orcid.org/0000-0003-2993-2015",
+    "hal": "https://hal.science/search/index/?q=%22Jean-Raynald%20de%20Dreuzy%22"
+  },
+  "footer_organizations": [
+    "CNRS",
+    "Géosciences Rennes",
+    "ENS Rennes"
+  ],
+  "navigation": [
+    {"id": "home", "fr": "Accueil", "en": "Home"},
+    {"id": "research", "fr": "Recherche", "en": "Research"},
+    {"id": "projects", "fr": "Projets & contrats", "en": "Projects & grants"},
+    {"id": "team", "fr": "Équipe", "en": "Team"},
+    {"id": "publications", "fr": "Publications", "en": "Publications"},
+    {"id": "software", "fr": "Logiciels", "en": "Software"},
+    {"id": "science-society", "fr": "Science & société", "en": "Science & society"},
+    {"id": "cv", "fr": "CV", "en": "CV"}
+  ],
+  "page_sections": {
+    "home": "home",
+    "research": "research",
+    "scientific-results": "research",
+    "result-streams-subsurface": "research",
+    "result-transit-reactivity": "research",
+    "result-models-europe": "research",
+    "result-climate-water-resources": "research",
+    "result-fractured-media": "research",
+    "research-figures": "research",
+    "projects": "projects",
+    "futureflow": "projects",
+    "coastal-risks": "projects",
+    "water-programmes-brittany": "projects",
+    "team": "team",
+    "masters": "team",
+    "publications": "publications",
+    "bibliography": "publications",
+    "publications-over-time": "publications",
+    "software": "software",
+    "pyages": "software",
+    "science-society": "science-society",
+    "cv": "cv"
+  },
+  "cv": {
+    "pdf": "assets/cv/CV_Jean-Raynald_de_Dreuzy_2026.pdf",
+    "updated": "20 septembre 2026",
+    "updated_short": "septembre 2026",
+    "publication_count": 114
+  },
+  "bibliography_reference_counts": {
+    "published_articles": 114,
+    "conference_abstracts": 256,
+    "proceedings": 14
+  }
+}

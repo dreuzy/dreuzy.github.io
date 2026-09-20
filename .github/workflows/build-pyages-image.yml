@@ -6,10 +6,16 @@ on:
     paths:
       - ".github/workflows/build-pyages-image.yml"
       - "assets/figure-data/pyages-final-v2.part-*.txt"
+      - "assets/figure-data/manifest.json"
+      - "scripts/materialize_figure_assets.py"
   workflow_dispatch:
 
 permissions:
   contents: write
+
+concurrency:
+  group: build-pyages-image-main
+  cancel-in-progress: false
 
 jobs:
   build:
@@ -21,14 +27,13 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
       - name: Rebuild image from verified chunks
-        shell: bash
-        run: |
-          set -euo pipefail
-          cat assets/figure-data/pyages-final-v2.part-{00..08}.txt | tr -d '\r\n' | base64 --decode > assets/pyages-groundwater-age-v2.webp
-          test "$(stat -c%s assets/pyages-groundwater-age-v2.webp)" = "58538"
-          echo "54bbf9d165c92d15f6fe890ac6aecea2eff65dfc467b0e5b7e51326602745b50  assets/pyages-groundwater-age-v2.webp" | sha256sum --check --strict
-          file assets/pyages-groundwater-age-v2.webp
+        run: python scripts/materialize_figure_assets.py --name pyages-final-v2
 
       - name: Commit verified image
         shell: bash
@@ -42,4 +47,5 @@ jobs:
             exit 0
           fi
           git commit -m "Build verified PyAges image asset"
+          git pull --rebase
           git push

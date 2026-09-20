@@ -1,5 +1,6 @@
 {
-  "generated": "2026-09-20T16:14:44",
+  "source": "data/bibliography.json",
+  "through_year": 2026,
   "articles": {
     "2000": 1,
     "2001": 4,

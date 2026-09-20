@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "figures": [
+    {
+      "name": "climate-streams-illustration",
+      "parts": 2,
+      "output": "assets/figures/embedded/climate-streams-illustration.webp",
+      "bytes": 18378,
+      "sha256": "a98e2e4f6e1bfe44dde714365f85eb8d5638c425ddf3d6c49947e405784c8329"
+    },
+    {
+      "name": "gallery-breville-water-table",
+      "parts": 1,
+      "output": "assets/figures/embedded/gallery-breville-water-table.webp",
+      "bytes": 4674,
+      "sha256": "c7d8fc4551c0b6572ffa69e77e7b1eaa29db691a87124188fa9e4c6974c61044"
+    },
+    {
+      "name": "gallery-phes-poulain-2018",
+      "parts": 1,
+      "output": "assets/figures/embedded/gallery-phes-poulain-2018.webp",
+      "bytes": 4142,
+      "sha256": "c5367bbcba773f5bd807acfc438af3898e1a6f59b5291cbbf544db661eef450d"
+    },
+    {
+      "name": "gallery-ploemeur-transit-2014",
+      "parts": 1,
+      "output": "assets/figures/embedded/gallery-ploemeur-transit-2014.webp",
+      "bytes": 5952,
+      "sha256": "eb92e632c3250c7525fe05430c916f5df9624980c1b6824dae47520fa0367716"
+    },
+    {
+      "name": "gallery-surface-subsurface-marcais-2017",
+      "parts": 1,
+      "output": "assets/figures/embedded/gallery-surface-subsurface-marcais-2017.webp",
+      "bytes": 3988,
+      "sha256": "7512d11669dddc904a4fa3d9b7c729f2da67584632ceb2a42dbb7596dc80bb06"
+    },
+    {
+      "name": "gallery-thermal-bernardie-2018",
+      "parts": 1,
+      "output": "assets/figures/embedded/gallery-thermal-bernardie-2018.webp",
+      "bytes": 7694,
+      "sha256": "0788274a584765f96099bc09f0214d67e0414a054a4f0867030eea707aaf6e42"
+    },
+    {
+      "name": "hydromodpy-final",
+      "parts": 12,
+      "output": "assets/figures/embedded/hydromodpy-final.webp",
+      "bytes": 86576,
+      "sha256": "ab2bf575cae71dbce98d9909d645be101de9ac1fbdd53311c2b876d4eeb9c87d"
+    },
+    {
+      "name": "reactivity-illustration",
+      "parts": 2,
+      "output": "assets/figures/embedded/reactivity-illustration.webp",
+      "bytes": 20990,
+      "sha256": "f221a30b4d603e808e9a6c5f01e7be349337880a2f6fa0084bcf666568b50629"
+    },
+    {
+      "name": "stream-calibration-illustration",
+      "parts": 1,
+      "output": "assets/figures/embedded/stream-calibration-illustration.webp",
+      "bytes": 14352,
+      "sha256": "94d49232187f668bb4e8f3e666371814731b25a70838a748d2e38c7558cb2f2b"
+    },
+    {
+      "name": "pyages-final-v2",
+      "parts": 9,
+      "output": "assets/pyages-groundwater-age-v2.webp",
+      "bytes": 58538,
+      "sha256": "54bbf9d165c92d15f6fe890ac6aecea2eff65dfc467b0e5b7e51326602745b50"
+    }
+  ]
+}

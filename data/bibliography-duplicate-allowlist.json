@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "pairs": [
+    {
+      "ids": [
+        "articles-dans-des-revues-a-comite-de-lecture-articles-publies-073",
+        "articles-dans-des-revues-a-comite-de-lecture-articles-publies-084"
+      ],
+      "reason": "Deux méthodes distinctes : méthode généralisée et méthode mixte hybride initiale."
+    },
+    {
+      "ids": [
+        "articles-dans-des-revues-a-comite-de-lecture-articles-publies-093",
+        "articles-dans-des-revues-a-comite-de-lecture-articles-publies-094"
+      ],
+      "reason": "Réponse à un commentaire et article original distincts."
+    },
+    {
+      "ids": [
+        "articles-dans-des-revues-a-comite-de-lecture-articles-publies-108",
+        "articles-dans-des-revues-a-comite-de-lecture-articles-publies-111"
+      ],
+      "reason": "Articles distincts sur les propriétés hydrauliques, dont la partie 1 d’une série."
+    },
+    {
+      "ids": [
+        "articles-dans-des-revues-a-comite-de-lecture-articles-publies-108",
+        "articles-dans-des-revues-a-comite-de-lecture-articles-publies-112"
+      ],
+      "reason": "Articles distincts sur les propriétés hydrauliques, dont la partie 2 d’une série."
+    },
+    {
+      "ids": [
+        "articles-dans-des-revues-a-comite-de-lecture-articles-publies-111",
+        "articles-dans-des-revues-a-comite-de-lecture-articles-publies-112"
+      ],
+      "reason": "Parties 1 et 2 d’une même série, toutes deux à conserver."
+    }
+  ]
+}

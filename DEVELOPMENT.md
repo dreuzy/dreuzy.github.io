@@ -1,278 +1,275 @@
 # Maintenance et reprise du site
 
-Ce document est la mémoire technique du site personnel de Jean-Raynald de Dreuzy (`https://dreuzy.github.io/`). Il doit permettre de reprendre le site après plusieurs mois, par une autre personne ou par un assistant, sans dépendre d’un ancien fil de discussion.
+Ce document est la mémoire technique du site <https://dreuzy.github.io>. Le dépôt doit suffire à reprendre le site sans dépendre d’un ancien échange.
 
-Le site est volontairement statique, sans framework ni étape de compilation générale. La branche publiée est `main` et GitHub Pages sert directement les fichiers du dépôt.
+## 1. Architecture
 
-## 1. Principes à conserver
+Le site est statique et servi directement par GitHub Pages depuis la branche `main`.
 
-1. La version française est à la racine du dépôt ; la version anglaise correspondante est dans `en/`.
-2. Toute modification de contenu ou de structure d’une page FR doit être répercutée sur sa page EN dans la même opération logique.
-3. `mirror-map.json` est la référence des couples de pages FR/EN.
-4. Avant de considérer une modification terminée, exécuter :
+- les pages françaises sont à la racine ;
+- leurs équivalents anglais sont dans `en/` ;
+- `mirror-map.json` définit les couples de pages ;
+- `site-config.json` centralise la navigation, le pied de page, les coordonnées, la section active et les quelques valeurs partagées du CV ;
+- `styles.css` est la feuille de style commune ;
+- `data/bibliography.json` est la source éditable de la bibliographie ;
+- `assets/figure-data/manifest.json` décrit toutes les figures reconstructibles à partir de fragments ;
+- `requirements.txt` déclare toutes les dépendances Python ;
+- le `Makefile` fournit l’interface de maintenance.
 
-   ```bash
-   python scripts/check_bilingual_mirror.py
-   python scripts/check_local_links.py
-   ```
+Il n’existe ni framework client ni chargement obligatoire de données au démarrage. La bibliographie et les figures sont matérialisées dans les fichiers publiés.
 
-5. Ne pas supprimer un asset ou une famille `assets/figure-data/*.part-XX.txt` sans vérifier qu’elle n’est plus utilisée par les pages, les scripts ou les workflows.
-6. Les workflows `one-shot-*` sont des outils temporaires de maintenance : s’ils sont créés pour une intervention, ils doivent être supprimés après validation. En régime normal, seuls les quatre workflows permanents documentés plus bas doivent rester.
+## 2. Installation et commandes
 
-## 2. Organisation du dépôt
+Utiliser Python 3.12 ou plus récent :
 
-Principaux éléments :
-
-- `*.html` : pages françaises à la racine.
-- `en/*.html` : pages anglaises en miroir.
-- `styles.css` : feuille de style commune.
-- `assets/figures/` : images et schémas utilisés directement par les pages.
-- `assets/figures/embedded/` : WebP matérialisés à partir des anciennes familles Base64.
-- `assets/figure-data/` : fragments texte conservés comme sources de reconstruction, jamais chargés par le navigateur.
-- `assets/` : autres images visibles du site, notamment PyAges et les maquettes de la rubrique Science & société.
-- `mirror-map.json` : correspondance officielle FR/EN.
-- `scripts/check_bilingual_mirror.py` : contrôle de la cohérence du miroir bilingue.
-- `scripts/check_local_links.py` : contrôle des liens et ressources locales.
-- `scripts/materialize_figure_assets.py` : reconstruction des WebP directs depuis les fragments Base64 historiques.
-- `scripts/build_static_bibliography.py` : reconstruction de la bibliographie HTML statique FR/EN à partir des payloads.
-- `scripts/build_publications_over_time.py` : génération des graphiques « publications au fil du temps ».
-- `scripts/build_cv_pdf.py` : génération du CV PDF téléchargeable.
-- `bibliographie-payload-01.txt` à `bibliographie-payload-05.txt` : source compressée/encodée de la bibliographie complète.
-- `bibliography-hal.js` : enrichissement facultatif des entrées bibliographiques avec les notices HAL.
-- `sitemap.xml`, `robots.txt`, `.nojekyll` : fichiers de publication/SEO.
-- `.github/workflows/` : automatisations permanentes.
-
-## 3. Structure bilingue
-
-`mirror-map.json` décrit actuellement 23 couples de pages. Le français est la langue par défaut. La navigation principale comporte huit entrées : accueil, recherche, projets & contrats, équipe, publications, logiciels, science & société et CV.
-
-Les deux pages techniques suivantes sont des redirections vers le CV :
-
-- `a-propos.html`
-- `en/about.html`
-
-Elles doivent rester légères et ne sont pas des pages de contenu indépendantes.
-
-### Modification d’une page
-
-Lorsqu’une page est modifiée :
-
-1. modifier la page FR et sa page EN ;
-2. conserver le même ordre général des blocs et des figures ;
-3. vérifier les liens de langue réciproques ;
-4. conserver les balises `canonical` et `hreflang` cohérentes ;
-5. exécuter les deux scripts de contrôle.
-
-Si une nouvelle page est ajoutée, l’ajouter également à `mirror-map.json`, créer son équivalent dans l’autre langue et décider explicitement si elle doit figurer ou non dans `sitemap.xml`.
-
-## 4. Figures et images
-
-Il existe deux mécanismes différents.
-
-### 4.1 Images normales
-
-Les fichiers comme :
-
-- `assets/figures/fractured-media-channeling.webp`
-- `assets/figures/eau-territoire.webp`
-- `assets/figures/futureflow-framework.webp`
-- `assets/figures/hydromodpy-approved.webp`
-- `assets/figures/onewater.svg`
-- `assets/maquette-nappes.jpg`
-- `assets/maquette-fractures.jpg`
-
-sont référencés directement par `src=` dans les pages.
-
-Ne pas conserver d’anciennes variantes « au cas où » dans `assets/` : lors du nettoyage de septembre 2026, les fichiers non référencés ont été supprimés. Git conserve l’historique si une ancienne version doit être récupérée.
-
-### 4.2 Figures issues de `figure-data`
-
-Certaines figures ont pour source des fragments texte Base64 :
-
-`assets/figure-data/<nom>.part-00.txt`, `part-01.txt`, etc.
-
-Le script `scripts/materialize_figure_assets.py` concatène et décode ces fragments en fichiers WebP sous `assets/figures/embedded/`, puis remplace dans les pages les anciens attributs `data-b64-*` par un `src` direct. Les pages publiées ne dépendent donc plus de JavaScript ni de dizaines de requêtes texte pour afficher ces figures.
-
-Pour reconstruire les WebP après une modification volontaire des sources :
-
-- ne jamais supprimer un fragment isolé d’une série active ;
-- exécuter `python scripts/materialize_figure_assets.py` ;
-- contrôler les images produites, puis les liens locaux et le miroir bilingue ;
-- conserver les pages avec des références `src=` directes : le chargeur JavaScript historique ne doit pas être réintroduit.
-
-## 5. Cas particulier PyAges
-
-Deux images PyAges ont des fonctions différentes :
-
-- `assets/pyages-software-figure.webp` est utilisée sur les pages Logiciels / Software.
-- `assets/pyages-groundwater-age-v2.webp` est utilisée sur les pages PyAges.
-
-### Reconstruction de l’image groundwater-age
-
-Les neuf fichiers :
-
-`assets/figure-data/pyages-final-v2.part-00.txt` à `part-08.txt`
-
-sont les sources de reconstruction de `assets/pyages-groundwater-age-v2.webp`.
-
-Le workflow `.github/workflows/build-pyages-image.yml` :
-
-1. concatène et décode les neuf fragments ;
-2. reconstruit le WebP ;
-3. vérifie sa taille attendue et son SHA-256 ;
-4. committe l’image seulement si elle a changé.
-
-Ne pas modifier manuellement l’image reconstruite sans comprendre ce mécanisme : le workflow considère les neuf fragments comme la source vérifiée.
-
-### Vérification de l’image Logiciels
-
-`.github/workflows/verify-pyages-live.yml` vérifie après déploiement que `assets/pyages-software-figure.webp` est bien une image WebP substantielle et que les pages FR/EN la référencent correctement.
-
-## 6. Bibliographie complète
-
-La page `bibliographie.html` et son équivalent anglais contiennent la bibliographie complète directement dans le HTML. Le contenu principal reste donc lisible, indexable et exploitable sans JavaScript.
-
-### Source principale
-
-Les cinq fichiers `bibliographie-payload-01.txt` à `bibliographie-payload-05.txt` contiennent ensemble un document HTML compressé avec gzip puis encodé en Base64.
-
-`scripts/build_static_bibliography.py` :
-
-1. charge, concatène et décompresse les cinq fragments ;
-2. applique les normalisations et ajustements éditoriaux FR/EN ;
-3. fusionne les deux anciennes rubriques de proceedings sous une seule rubrique « Actes de colloques » ;
-4. ajoute les métadonnées locales vérifiées des publications récentes ;
-5. distingue les DOI d’articles réutilisés comme liens associés à des abstracts ;
-6. insère le résultat statique dans `bibliographie.html` et `en/bibliography.html`.
-
-Les payloads ne sont donc pas de simples fichiers texte à éditer ligne par ligne. Ne pas les modifier à la main sans reconstruire correctement le contenu gzip/Base64.
-
-### Ajustements et enrichissements
-
-Les métadonnées de RIVAGES Normands 2100 et d’HydroModPy sont conservées localement par le générateur : une panne de Crossref ne peut donc plus rétablir un ancien statut « accepté ».
-
-`bibliography-hal.js` interroge l’API HAL et ajoute, lorsque c’est possible, un lien `[HAL]` aux entrées correspondantes. Cette étape est volontairement facultative : si HAL est indisponible, la bibliographie doit rester utilisable.
-
-Après toute mise à jour des payloads ou des ajustements explicites du générateur, exécuter `python scripts/build_static_bibliography.py`, puis les deux contrôles du site. Vérifier en particulier les DOI, les titres proches et les listes d’auteurs proches afin d’éviter les faux doublons.
-
-## 7. Publications au fil du temps
-
-`scripts/build_publications_over_time.py` lit les cinq payloads de bibliographie et génère :
-
-- `publications-au-fil-du-temps.svg`
-- `en/publications-au-fil-du-temps.svg`
-- `publications-au-fil-du-temps-data.json`
-
-Le workflow `.github/workflows/update-publications-over-time.yml` se déclenche :
-
-- manuellement ;
-- lors d’une modification des payloads ou du script ;
-- une fois par an, le 1er janvier.
-
-Il installe `matplotlib` et `beautifulsoup4`, reconstruit les graphiques et les données, valide les liens locaux puis committe les sorties uniquement si elles ont changé.
-
-## 8. SEO et indexation
-
-Pour chaque vraie page de contenu, conserver :
-
-- un `<title>` non vide ;
-- une meta description ;
-- un canonical unique ;
-- un seul `<h1>` ;
-- les trois `hreflang` : `fr`, `en`, `x-default` ;
-- des `alt` non vides pour les images ;
-- un `og:url` cohérent avec le canonical lorsqu’il est présent.
-
-La galerie scientifique FR/EN contient désormais un contenu éditorial original, possède ses métadonnées sociales et est indexée comme les autres pages de contenu. Seules les pages techniques de redirection et `404.html` ne doivent pas être indexées.
-
-### Sitemap
-
-À l’état de référence du 20 septembre 2026, `sitemap.xml` contient exactement 44 URL, soit toutes les pages de contenu indexables et seulement celles-ci.
-
-`robots.txt` doit contenir :
-
-```text
-Sitemap: https://dreuzy.github.io/sitemap.xml
+```bash
+python -m venv .venv
+. .venv/bin/activate
+python -m pip install -r requirements.txt
 ```
 
-## 9. Workflows GitHub Actions permanents
+Commandes principales :
 
-En régime normal, `.github/workflows/` doit contenir exactement ces quatre fichiers :
+```bash
+make build       # reconstruit toutes les sorties
+make check       # contrôle sans modifier les sorties
+make all         # build, puis check
+make serve       # prévisualisation sur http://localhost:8000
+```
+
+Sous Windows PowerShell, activer l’environnement avec `.venv\Scripts\Activate.ps1`, puis utiliser `python` et `make` si GNU Make est installé. À défaut, les commandes du `Makefile` peuvent être exécutées une par une.
+
+Une construction reproductible doit respecter :
+
+```bash
+make all
+make all
+git diff --exit-code
+```
+
+La seconde exécution ne doit produire aucune différence supplémentaire.
+
+## 3. Pages bilingues
+
+`mirror-map.json` contient 23 couples de pages. Deux d’entre eux, `a-propos.html` et `en/about.html`, sont des redirections techniques vers le CV. Les 22 autres couples sont indexables.
+
+### Modifier une page
+
+1. modifier la page française et sa page anglaise ;
+2. conserver la même structure générale, les mêmes figures et des liens croisés réciproques ;
+3. lancer `make layout` si la navigation, les coordonnées ou les métadonnées d’URL ont changé ;
+4. lancer `make check`.
+
+### Ajouter une page
+
+1. créer les versions FR et EN ;
+2. ajouter le couple à `mirror-map.json` ;
+3. ajouter son rattachement à `page_sections` dans `site-config.json` ;
+4. ajouter un seul `h1`, `main#main-content`, une description, les métadonnées sociales et les dimensions intrinsèques de chaque image ;
+5. lancer `make layout sitemap`, puis `make check`.
+
+`scripts/sync_shared_layout.py` génère :
+
+- le lien d’évitement ;
+- la navigation et son état actif ;
+- le sélecteur FR/EN ;
+- le pied de page ;
+- les canonical, hreflang et `og:url`.
+
+Le mode `--check` échoue si un bloc commun a été modifié à la main ou n’a pas été régénéré.
+
+## 4. Bibliographie
+
+### Source
+
+`data/bibliography.json` remplace les anciens payloads gzip/Base64. Le fichier contient :
+
+- les sections ;
+- leurs groupes ;
+- l’ordre des listes ;
+- une entrée stable `id` pour chaque référence ;
+- le HTML localisé `fr` et `en`.
+
+Une entrée ressemble à :
+
+```json
+{
+  "id": "articles-...-115",
+  "html": {
+    "fr": "Auteurs (2026), <a href=\"...\">Titre</a>...",
+    "en": "Authors (2026), <a href=\"...\">Title</a>..."
+  }
+}
+```
+
+### Ajouter ou corriger une référence
+
+1. modifier `data/bibliography.json` ;
+2. conserver un identifiant unique et stable ;
+3. renseigner les deux variantes linguistiques ;
+4. pour un nouvel article, l’insérer à la bonne place dans le groupe `articles-publies` ;
+5. si le nombre total change volontairement, mettre à jour `bibliography_reference_counts` et `cv.publication_count` dans `site-config.json` ;
+6. lancer `make bibliography`, puis `make check`.
+
+Le générateur produit :
+
+- `bibliographie.html` ;
+- `en/bibliography.html` ;
+- `publications-au-fil-du-temps.svg` ;
+- `en/publications-au-fil-du-temps.svg` ;
+- `publications-au-fil-du-temps-data.json`.
+
+`bibliography-hal.js` reste un enrichissement facultatif. Une indisponibilité de HAL ne retire aucun contenu bibliographique.
+
+### Doublons
+
+`scripts/check_site_quality.py` détecte :
+
+- les identifiants en double ;
+- les DOI en double parmi les articles publiés ;
+- les titres exactement identiques ;
+- les titres fortement similaires ;
+- les titres assez similaires associés à des listes d’auteurs presque identiques.
+
+Les paires proches mais réellement distinctes sont documentées dans `data/bibliography-duplicate-allowlist.json` avec une justification. Ne jamais ajouter une exception uniquement pour faire passer le contrôle : comparer d’abord titre, auteurs, année, revue et DOI.
+
+## 5. Figures
+
+### Assets directs
+
+Les images ordinaires sont référencées directement dans les pages. FutureFlow utilise `assets/figures/futureflow-framework.webp` et OneWater `assets/figures/onewater.svg` ; leurs anciens fragments devenus inutiles ont été retirés.
+
+Chaque balise `img` doit avoir :
+
+- un texte alternatif utile ;
+- une largeur et une hauteur intrinsèques ;
+- un chemin qui existe dans le dépôt.
+
+### Figures reconstructibles
+
+`assets/figure-data/manifest.json` contient, pour chaque figure :
+
+- le nom commun des fragments ;
+- le nombre de fragments ;
+- le chemin de sortie ;
+- la taille attendue ;
+- le SHA-256 attendu.
+
+`scripts/materialize_figure_assets.py` concatène les fragments Base64, vérifie qu’ils produisent un WebP, puis vérifie taille et empreinte avant écriture.
+
+```bash
+make figures
+python scripts/materialize_figure_assets.py --check
+python scripts/materialize_figure_assets.py --name pyages-final-v2
+```
+
+Le navigateur ne charge jamais les fragments. Les attributs historiques `data-b64-*` et `figure-loader.js` sont interdits par le contrôle qualité.
+
+### PyAges
+
+- `assets/pyages-software-figure.webp` illustre les pages Logiciels / Software ;
+- `assets/pyages-groundwater-age-v2.webp` illustre les pages PyAges ;
+- les neuf fragments `pyages-final-v2.part-*.txt` sont la source vérifiée de la seconde image.
+
+Le workflow `build-pyages-image.yml` appelle le même script et le même manifeste que la maintenance locale : il n’existe plus de taille ou d’empreinte dupliquée dans le YAML.
+
+## 6. CV PDF
+
+`scripts/build_cv_pdf.py` génère le PDF indiqué par `cv.pdf` dans `site-config.json`. La date courte, la date complète et le nombre d’articles sont également centralisés dans ce bloc.
+
+```bash
+make cv
+python scripts/build_cv_pdf.py --check
+```
+
+Le mode invariant de ReportLab et l’écriture conditionnelle rendent le PDF reproductible. Après une évolution annuelle importante, mettre à jour ensemble :
+
+- le contenu du script ;
+- le nom de fichier si l’année change ;
+- le bloc `cv` de `site-config.json` ;
+- les liens de téléchargement des pages CV FR/EN.
+
+## 7. Sitemap, SEO et accessibilité
+
+`scripts/build_sitemap.py` dérive le sitemap directement de `mirror-map.json`. Les redirections et la page 404 n’y figurent pas.
+
+Chaque page de contenu doit conserver :
+
+- un titre non vide et une description substantielle ;
+- un canonical unique ;
+- les hreflang `fr`, `en` et `x-default` ;
+- les métadonnées Open Graph et Twitter ;
+- exactement un `h1` ;
+- `main#main-content` et le lien d’évitement ;
+- des identifiants HTML uniques ;
+- des images accessibles et dimensionnées.
+
+`scripts/check_local_links.py` contrôle les fichiers locaux et, désormais, les fragments d’URL comme `page.html#section`.
+
+Les redirections et `404.html` doivent rester en `noindex,follow`.
+
+## 8. Workflows GitHub Actions
+
+Quatre workflows permanents sont conservés :
 
 | Workflow | Rôle |
 | --- | --- |
-| `check-bilingual-mirror.yml` | Vérifie le miroir FR/EN et les liens locaux. Sur un push `main`, attend 120 s afin que des modifications FR/EN rapprochées puissent arriver avant le contrôle. |
-| `build-pyages-image.yml` | Reconstruit et vérifie l’image PyAges à partir des neuf fragments source. |
-| `verify-pyages-live.yml` | Vérifie sur le site publié l’image PyAges de la page Logiciels et ses références FR/EN. |
-| `update-publications-over-time.yml` | Régénère les figures et données « publications au fil du temps ». |
+| `check-bilingual-mirror.yml` | Installe les dépendances déclarées et lance `make check` à chaque push ou pull request. |
+| `build-pyages-image.yml` | Reconstruit l’image PyAges depuis le manifeste et committe uniquement une sortie réellement modifiée. |
+| `update-publications-over-time.yml` | Reconstruit la bibliographie et les graphiques après une modification de la source, ainsi que le 1er janvier. |
+| `verify-pyages-live.yml` | Vérifie après publication que l’image Logiciels est réellement disponible sur le site. |
 
-Les workflows temporaires `one-shot-*` ne doivent pas rester dans le dépôt après une opération de maintenance.
+Les générateurs sont déterministes : un workflow relancé sans modification de source ne doit plus créer de commit parasite.
 
-## 10. Checklist avant de terminer une modification
+## 9. Contrôles exécutés par `make check`
 
-### Contrôle local/source
+Dans l’ordre :
 
-```bash
-python scripts/check_bilingual_mirror.py
-python scripts/check_local_links.py
-```
+1. intégrité des figures fragmentées ;
+2. synchronisation des pages de bibliographie ;
+3. synchronisation des graphiques et données temporelles ;
+4. synchronisation du CV PDF ;
+5. synchronisation des blocs partagés ;
+6. synchronisation du sitemap ;
+7. parité structurelle FR/EN ;
+8. liens, ressources et ancres internes ;
+9. SEO, accessibilité de base, inventaire des pages, bibliographie et doublons.
 
-Puis vérifier selon la nature du changement :
+Un échec indique le fichier concerné et, lorsque c’est pertinent, la commande de reconstruction.
 
-- parité FR/EN ;
-- canonical / hreflang ;
-- `sitemap.xml` si une page a été ajoutée, retirée ou passée en `noindex` ;
-- intégrité des fragments `figure-data` si une figure matérialisée est reconstruite ;
-- payloads et scripts de bibliographie si la bibliographie change ;
-- absence d’asset devenu orphelin si une image est remplacée.
+## 10. Contrôle après publication
 
-### Après publication
+Après une modification importante :
 
-Pour une modification importante, contrôler au minimum :
+1. attendre la fin du déploiement GitHub Pages ;
+2. vérifier la page d’accueil et les pages modifiées en FR et EN ;
+3. ouvrir au moins un PDF et les figures modifiées ;
+4. vérifier le sitemap publié ;
+5. vérifier que les quatre workflows sont verts.
 
-- que les pages modifiées répondent en HTTP 200 ;
-- que les assets modifiés sont effectivement publiés ;
-- que les figures matérialisées répondent en HTTP 200 ;
-- que le sitemap publié correspond au fichier du dépôt.
+Les codes `403`, `429` ou `999` renvoyés par certains sites externes à des robots ne suffisent pas à conclure qu’un lien est mort. Les liens DOI, éditeurs, HAL, OSERen, Google Scholar ou LinkedIn doivent être vérifiés avec discernement.
 
-GitHub Pages peut avoir un court délai de propagation après un push.
+## 11. État de référence — septembre 2026
 
-## 11. Liens externes
+- 47 fichiers HTML, dont 44 pages indexables, deux redirections et une page 404 ;
+- 23 couples FR/EN ;
+- 114 articles publiés ;
+- 256 abstracts de colloques ;
+- 14 actes de colloques ;
+- 10 figures WebP reconstructibles, dont PyAges ;
+- trois dossiers de contrats bilingues ;
+- un CV PDF A4 de quatre pages ;
+- quatre workflows permanents.
 
-Un contrôle automatique des liens externes est utile, mais ses résultats doivent être interprétés avec prudence.
+Les anciens payloads opaques de bibliographie, les fragments FutureFlow/OneWater inutilisés et le script ponctuel de migration de l’audit ont été retirés. Ils restent récupérables dans l’historique Git si une enquête rétrospective est nécessaire.
 
-Des sites comme DOI/Crossref, LinkedIn, Google Scholar, OSERen, certains éditeurs scientifiques ou ResearchGate peuvent renvoyer `403`, `429` ou `999` à un robot tout en fonctionnant normalement dans un navigateur.
+## 12. Reprise après une interruption
 
-Ne jamais supprimer ou remplacer un lien externe uniquement parce qu’un test automatisé reçoit un refus anti-bot. Vérifier manuellement ou par une autre source lorsqu’un lien semble réellement mort.
-
-## 12. État de référence après l’audit du 20 septembre 2026
-
-Cet état sert de point de comparaison, pas d’invariant éternel : les nombres pourront légitimement évoluer si le site s’enrichit.
-
-- 47 fichiers HTML au total, dont `404.html`.
-- 23 couples de pages décrits dans `mirror-map.json`.
-- 44 pages indexables dans `sitemap.xml`.
-- 2 pages de redirection et 1 page d’erreur en `noindex,follow`.
-- Bibliographie complète statique : 114 articles publiés, 10 abstracts comportant un lien explicitement qualifié d’« article associé ».
-- 3 dossiers de contrats bilingues : FutureFlow ; RIVAGES → ARCHANGE ; EAUX 2050 / RIVIÈRES 2070 / CYDRE.
-- Toutes les images HTML ont des dimensions intrinsèques déclarées.
-- Les grandes images PNG de contenu ont été converties en WebP.
-- CV PDF A4 de 4 pages disponible sous `assets/cv/`.
-- 9 WebP sous `assets/figures/embedded/`, matérialisés depuis leurs familles `assets/figure-data` et référencés directement par le HTML.
-- 2 autres anciennes familles Base64 remplacées par des assets directs existants (FutureFlow et OneWater), après retrait de deux familles corrompues.
-- 9 fragments source PyAges supplémentaires utilisés pour reconstruire l’image WebP.
-- 4 workflows GitHub Actions permanents.
-
-## 13. Reprise après une longue interruption
-
-Pour reprendre le site après plusieurs mois :
-
-1. lire `README.md`, puis ce document ;
-2. regarder les derniers commits de `main` pour voir si l’état de référence a évolué ;
-3. lire `mirror-map.json` avant d’ajouter ou de renommer une page ;
-4. exécuter les deux scripts de contrôle avant toute modification importante ;
-5. vérifier les quatre workflows permanents ;
-6. effectuer les modifications par petites étapes et revalider après chaque étape ;
-7. pour une intervention lourde, faire un audit du dépôt puis un contrôle du site publié.
-
-L’ancien historique de conversation peut être utile pour comprendre des choix éditoriaux, mais il ne doit pas être nécessaire à la maintenance technique : ce dépôt et ce document doivent suffire à la reprise.
+1. lire `README.md` puis ce document ;
+2. installer les dépendances ;
+3. exécuter `make check` avant toute modification ;
+4. lire `mirror-map.json`, `site-config.json` et la source de données concernée ;
+5. effectuer la modification dans les deux langues ;
+6. exécuter `make all` ;
+7. examiner le diff, puis publier ;
+8. contrôler le site et les workflows en ligne.

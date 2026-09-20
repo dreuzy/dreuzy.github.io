@@ -1,0 +1,6 @@
+# Exact versions keep the generated SVG and PDF files reproducible in CI.
+beautifulsoup4==4.15.0
+matplotlib==3.11.2
+numpy==2.5.3
+Pillow==12.3.0
+reportlab==4.5.1
