@@ -50,19 +50,14 @@ HOME = {
     <h1>Jean-Raynald de Dreuzy</h1>
     <div class="institution-signature"><a href="https://www.ens-rennes.fr/">École normale supérieure de Rennes</a><span aria-hidden="true">✜</span><a href="https://www.univ-rennes.fr/">Université de Rennes</a></div>
     <div class="home-role"><strong>Président de l’École normale supérieure de Rennes</strong> · depuis 2026</div>
-    <div class="home-role"><strong>Directeur de recherche CNRS</strong><br/>Université de Rennes</div>
-    <p>Je travaille sur les ressources en eau et les écoulements souterrains, de l’échelle du versant à l’échelle régionale. Mes recherches associent hydrogéologie, hydrologie et modélisation pour comprendre les transferts d’eau et de contaminants, leurs relations avec les structures géologiques et géomorphologiques, et leur évolution sous l’effet du changement climatique.</p>
-    <p class="home-responsibilities">Auparavant vice-président Recherche de l’ENS Rennes (2021–2026) et directeur de l’OSUR, aujourd’hui OSERen (2017–2021), j’ai également coordonné l’équipe EAU et le groupe interdisciplinaire RISC-E.</p>
+    <div class="home-role"><strong>Directeur de recherche CNRS</strong><br/>Géosciences Rennes — Université de Rennes</div>
+    <p>Je travaille sur les ressources en eau et les écoulements souterrains, de l’échelle du versant à l’échelle régionale. Mes recherches associent hydrogéologie, hydrologie et modélisation pour comprendre les transferts d’eau et de contaminants, leur relation avec les structures géologiques et géomorphologiques, et leur évolution sous l’effet du changement climatique.</p>
+    <p class="home-responsibilities">Responsabilités actuelles et passées : président de l’ENS Rennes (depuis 2026) ; vice-président Recherche de l’ENS Rennes (2021–2026) ; directeur de l’OSERen (2017–2021) ; responsable de l’équipe EAU de Géosciences Rennes (2013–2016) et du groupe interdisciplinaire RISC-E (2014–2017).</p>
     <div class="tags"><span class="tag">Hydrogéologie</span><span class="tag">Bassins versants</span><span class="tag">Qualité de l’eau</span><span class="tag">Empreinte eau</span><span class="tag">Modélisation</span></div>
     <div class="quick-links"><a href="cv.html">CV</a><a href="https://hal.science/search/index/?q=%22Jean-Raynald%20de%20Dreuzy%22">HAL</a><a href="https://scholar.google.com/citations?hl=en&amp;user=5oB48GcAAAAJ">Google Scholar</a><a href="https://orcid.org/0000-0003-2993-2015">ORCID</a><a href="mailto:jean-raynald.de-dreuzy@ens-rennes.fr">Contact</a></div>
   </div>
   <div class="home-photo"><img alt="Portrait de Jean-Raynald de Dreuzy" decoding="async" height="460" src="assets/portrait-jean-raynald-de-dreuzy.jpg" width="460"/></div>
 </div>
-<section class="section-block" aria-labelledby="current-highlights"><h2 id="current-highlights">Travaux en cours</h2><div class="home-highlights">
-  <article class="home-highlight"><h2>FutureFlow</h2><p>Modèles multi-fidélité pour quantifier la contribution des eaux souterraines aux bassins versants de tête.</p><a href="futureflow.html">Voir le projet →</a></article>
-  <article class="home-highlight"><h2>HydroModPy</h2><p>Une chaîne Python reproductible pour construire, calibrer et comparer des modèles hydrogéologiques.</p><a href="hydromodpy.html">Découvrir le logiciel →</a></article>
-  <article class="home-highlight"><h2>Empreinte Eau &amp; Eau Sentinelle</h2><p>Relier usages, transferts, expositions et effets observables dans les socio-hydrosystèmes.</p><a href="projets.html#onewater">Voir dans les projets →</a></article>
-</div></section>
 <div class="home-sections"><a href="recherche.html">Recherche</a><a href="projets.html">Projets</a><a href="equipe.html">Équipe</a><a href="publications.html">Publications</a><a href="logiciels.html">Logiciels</a><a href="science-societe.html">Science &amp; société</a><a href="cv.html">CV</a></div>
 """,
     "en": """
@@ -72,19 +67,14 @@ HOME = {
     <h1>Jean-Raynald de Dreuzy</h1>
     <div class="institution-signature"><a href="https://www.ens-rennes.fr/">École normale supérieure de Rennes</a><span aria-hidden="true">✜</span><a href="https://www.univ-rennes.fr/">University of Rennes</a></div>
     <div class="home-role"><strong>President of École normale supérieure de Rennes</strong> · since 2026</div>
-    <div class="home-role"><strong>CNRS Research Director</strong><br/>University of Rennes</div>
+    <div class="home-role"><strong>CNRS Research Director</strong><br/>Géosciences Rennes — University of Rennes</div>
     <p>I work on water resources and groundwater flow, from hillslope to regional scales. My research combines hydrogeology, hydrology and modelling to understand water and contaminant transport, its relationship with geological and geomorphological structures, and how it evolves under climate change.</p>
-    <p class="home-responsibilities">Previously Vice-President for Research at ENS Rennes (2021–2026) and Director of OSUR, now OSERen (2017–2021), I also coordinated the EAU team and the interdisciplinary RISC-E group.</p>
+    <p class="home-responsibilities">Current and previous responsibilities: President of ENS Rennes (since 2026); Vice-President for Research at ENS Rennes (2021–2026); Director of OSERen (2017–2021); Head of the EAU team at Géosciences Rennes (2013–2016) and of the interdisciplinary RISC-E group (2014–2017).</p>
     <div class="tags"><span class="tag">Hydrogeology</span><span class="tag">Catchments</span><span class="tag">Water quality</span><span class="tag">Water footprint</span><span class="tag">Modelling</span></div>
     <div class="quick-links"><a href="cv.html">CV</a><a href="https://hal.science/search/index/?q=%22Jean-Raynald%20de%20Dreuzy%22">HAL</a><a href="https://scholar.google.com/citations?hl=en&amp;user=5oB48GcAAAAJ">Google Scholar</a><a href="https://orcid.org/0000-0003-2993-2015">ORCID</a><a href="mailto:jean-raynald.de-dreuzy@ens-rennes.fr">Contact</a></div>
   </div>
   <div class="home-photo"><img alt="Portrait of Jean-Raynald de Dreuzy" decoding="async" height="460" src="../assets/portrait-jean-raynald-de-dreuzy.jpg" width="460"/></div>
 </div>
-<section class="section-block" aria-labelledby="current-highlights"><h2 id="current-highlights">Current work</h2><div class="home-highlights">
-  <article class="home-highlight"><h2>FutureFlow</h2><p>Multi-fidelity models for quantifying groundwater contributions to headwater catchments.</p><a href="futureflow.html">View the project →</a></article>
-  <article class="home-highlight"><h2>HydroModPy</h2><p>A reproducible Python workflow for building, calibrating and comparing groundwater models.</p><a href="hydromodpy.html">Explore the software →</a></article>
-  <article class="home-highlight"><h2>Water Footprint &amp; Sentinel Water</h2><p>Linking uses, transfers, exposure and observable effects across socio-hydrological systems.</p><a href="projects.html#onewater">View within projects →</a></article>
-</div></section>
 <div class="home-sections"><a href="research.html">Research</a><a href="projects.html">Projects</a><a href="team.html">Team</a><a href="publications.html">Publications</a><a href="software.html">Software</a><a href="science-society.html">Science &amp; society</a><a href="cv.html">CV</a></div>
 """,
 }
@@ -92,24 +82,10 @@ HOME = {
 
 COLLABORATIONS = {
     "fr": """
-<div class="collaboration-grid">
-  <article class="collaboration-group"><h3>Université de Rennes</h3><p><strong>Luc Aquilina, Laurent Longuevergne, Tanguy Le Borgne, Thierry Labasque, Jean de Brémond d’Ars, Camille Bouchez, Hélène Hivert, Camille Vautier et Pierre Brigode</strong> — hydrogéologie, traceurs, qualité de l’eau et modélisation.</p></article>
-  <article class="collaboration-group"><h3>INRAE</h3><p><strong>Ronan Abhervé, Rémi Dupas, Jean Marçais, Arnaud Chaumot, Florentina Moatar et Gilles Pinay</strong> — hydrologie, têtes de bassin, transferts et biogéochimie.</p></article>
-  <article class="collaboration-group"><h3>Calcul scientifique et agences</h3><p><strong>Arnaud Blouin, Benoît Combemale, Alexandre Boisson, Anne Togola et Konstantin Brenner</strong> — architecture logicielle, méthodes numériques et ressources régionales.</p></article>
-  <article class="collaboration-group"><h3>Partenaires nationaux</h3><p><strong>Florence Habets, Hélène Budzinski, Nicolas Massei, Sarah Leray, Hélène Fenet et Alexandre Gauvain</strong> — modélisation nationale, micropolluants, risques côtiers et temps de résidence.</p></article>
-  <article class="collaboration-group"><h3>Partenaires suisses et européens</h3><p><strong>Clément Roques, Philip Brunner, Oliver Schilling, Susana Bernal et Josep Ramoneda</strong> — bassins de tête, interactions nappe–rivière et changement climatique.</p></article>
-  <article class="collaboration-group"><h3>Partenaires internationaux</h3><p><strong>Étienne Bresciani et Matt Ross</strong> — hydrogéologie quantitative, qualité de l’eau et fonctionnement des bassins versants.</p></article>
-</div>
+<p class="collab-list"><strong>Luc Aquilina</strong> · <strong>Laurent Longuevergne</strong> · <strong>Tanguy Le Borgne</strong> · <strong>Thierry Labasque</strong> · <strong>Jean de Brémond d'Ars</strong> · <strong>Camille Bouchez</strong> · <strong>Hélène Hivert</strong> · <strong>Camille Vautier</strong> · <strong>Pierre Brigode</strong> (Géosciences Rennes, Université de Rennes), <strong>Ronan Abhervé</strong> · <strong>Rémi Dupas</strong> (SAS, INRAE), <strong>Arnaud Blouin</strong> · <strong>Benoît Combemale</strong> (DIVERSE, IRISA, Inria), <strong>Alexandre Boisson</strong> · <strong>Anne Togola</strong> (BRGM), <strong>Clément Roques</strong> · <strong>Philip Brunner</strong> (CHYN, Université de Neuchâtel, Suisse), <strong>Florence Habets</strong> (Laboratoire de Géologie de l’ENS, ENS-PSL), <strong>Oliver Schilling</strong> (Eawag / Université de Bâle, Suisse), <strong>Hélène Budzinski</strong> (EPOC, Université de Bordeaux), <strong>Nicolas Massei</strong> (M2C, Université de Rouen Normandie), <strong>Konstantin Brenner</strong> (Laboratoire de Mathématiques J.-A. Dieudonné, Université Côte d’Azur), <strong>Jean Marçais</strong> · <strong>Arnaud Chaumot</strong> · <strong>Florentina Moatar</strong> (RiverLy, INRAE), <strong>Gilles Pinay</strong> (LEHNA, Université Claude Bernard Lyon 1), <strong>Sarah Leray</strong> · <strong>Hélène Fenet</strong> (HydroSciences Montpellier, CNRS / Université de Montpellier), <strong>Alexandre Gauvain</strong> (LMD, CNRS / Sorbonne Université), <strong>Étienne Bresciani</strong> (Universidad de O’Higgins, Chili), <strong>Susana Bernal</strong> · <strong>Josep Ramoneda</strong> (CEAB-CSIC, Blanes, Espagne), <strong>Matt Ross</strong> (Department of Ecosystem Science and Sustainability, Colorado State University, États-Unis).</p>
 """,
     "en": """
-<div class="collaboration-grid">
-  <article class="collaboration-group"><h3>University of Rennes</h3><p><strong>Luc Aquilina, Laurent Longuevergne, Tanguy Le Borgne, Thierry Labasque, Jean de Brémond d’Ars, Camille Bouchez, Hélène Hivert, Camille Vautier and Pierre Brigode</strong> — hydrogeology, tracers, water quality and modelling.</p></article>
-  <article class="collaboration-group"><h3>INRAE</h3><p><strong>Ronan Abhervé, Rémi Dupas, Jean Marçais, Arnaud Chaumot, Florentina Moatar and Gilles Pinay</strong> — hydrology, headwaters, transfers and biogeochemistry.</p></article>
-  <article class="collaboration-group"><h3>Scientific computing and agencies</h3><p><strong>Arnaud Blouin, Benoît Combemale, Alexandre Boisson, Anne Togola and Konstantin Brenner</strong> — software architecture, numerical methods and regional resources.</p></article>
-  <article class="collaboration-group"><h3>French partners</h3><p><strong>Florence Habets, Hélène Budzinski, Nicolas Massei, Sarah Leray, Hélène Fenet and Alexandre Gauvain</strong> — national modelling, micropollutants, coastal risks and residence times.</p></article>
-  <article class="collaboration-group"><h3>Swiss and European partners</h3><p><strong>Clément Roques, Philip Brunner, Oliver Schilling, Susana Bernal and Josep Ramoneda</strong> — headwaters, groundwater–stream interactions and climate change.</p></article>
-  <article class="collaboration-group"><h3>International partners</h3><p><strong>Étienne Bresciani and Matt Ross</strong> — quantitative hydrogeology, water quality and catchment functioning.</p></article>
-</div>
+<p class="collab-list"><strong>Luc Aquilina</strong> · <strong>Laurent Longuevergne</strong> · <strong>Tanguy Le Borgne</strong> · <strong>Thierry Labasque</strong> · <strong>Jean de Brémond d'Ars</strong> · <strong>Camille Bouchez</strong> · <strong>Hélène Hivert</strong> · <strong>Camille Vautier</strong> · <strong>Pierre Brigode</strong> (Géosciences Rennes, University of Rennes), <strong>Ronan Abhervé</strong> · <strong>Rémi Dupas</strong> (SAS, INRAE), <strong>Arnaud Blouin</strong> · <strong>Benoît Combemale</strong> (DIVERSE, IRISA, Inria), <strong>Alexandre Boisson</strong> · <strong>Anne Togola</strong> (BRGM), <strong>Clément Roques</strong> · <strong>Philip Brunner</strong> (CHYN, University of Neuchâtel, Switzerland), <strong>Florence Habets</strong> (Laboratoire de Géologie de l’ENS, ENS-PSL), <strong>Oliver Schilling</strong> (Eawag / University of Basel, Switzerland), <strong>Hélène Budzinski</strong> (EPOC, University of Bordeaux), <strong>Nicolas Massei</strong> (M2C, University of Rouen Normandy), <strong>Konstantin Brenner</strong> (Laboratoire de Mathématiques J.-A. Dieudonné, Université Côte d’Azur), <strong>Jean Marçais</strong> · <strong>Arnaud Chaumot</strong> · <strong>Florentina Moatar</strong> (RiverLy, INRAE), <strong>Gilles Pinay</strong> (LEHNA, Université Claude Bernard Lyon 1), <strong>Sarah Leray</strong> · <strong>Hélène Fenet</strong> (HydroSciences Montpellier, CNRS / University of Montpellier), <strong>Alexandre Gauvain</strong> (LMD, CNRS / Sorbonne University), <strong>Étienne Bresciani</strong> (Universidad de O’Higgins, Chile), <strong>Susana Bernal</strong> · <strong>Josep Ramoneda</strong> (CEAB-CSIC, Blanes, Spain), <strong>Matt Ross</strong> (Department of Ecosystem Science and Sustainability, Colorado State University, United States).</p>
 """,
 }
 
@@ -138,9 +114,9 @@ def update_home(page: BeautifulSoup, lang: str) -> None:
     replace_contents(page.find("main", id="main-content"), HOME[lang])
     description = page.find("meta", attrs={"name": "description"})
     description["content"] = (
-        "Jean-Raynald de Dreuzy, président de l’ENS Rennes et directeur de recherche CNRS à l’Université de Rennes. Hydrogéologie, ressources en eau, qualité de l’eau et modélisation."
+        "Jean-Raynald de Dreuzy, président de l’ENS Rennes et directeur de recherche CNRS à Géosciences Rennes. Hydrogéologie, ressources en eau, qualité de l’eau et modélisation."
         if lang == "fr"
-        else "Jean-Raynald de Dreuzy, President of ENS Rennes and CNRS Research Director at the University of Rennes. Hydrogeology, water resources, water quality and modelling."
+        else "Jean-Raynald de Dreuzy, President of ENS Rennes and CNRS Research Director at Géosciences Rennes. Hydrogeology, water resources, water quality and modelling."
     )
     for meta in page.find_all("meta"):
         if meta.get("property") == "og:description" or meta.get("name") == "twitter:description":
@@ -232,63 +208,46 @@ def update_projects(page: BeautifulSoup, lang: str) -> None:
             current.find("h2").insert_after(soup_fragment(markup).div)
 
 
-def wrap_archive(section: Tag, heading: str, summary: str) -> None:
-    section.find("h2").string = heading
-    if section.find("details", class_="data-details"):
-        return
-    details = soup_fragment(f'<details class="data-details"><summary>{summary}</summary></details>').details
-    for child in list(section.contents):
-        if isinstance(child, Tag) and child.name == "h2":
-            continue
-        details.append(child.extract())
-    section.append(details)
-
-
 def update_team(page: BeautifulSoup, lang: str) -> None:
     main = page.find("main", id="main-content")
-    main.find("h1").string = "Encadrements & collaborations" if lang == "fr" else "Supervision & collaborations"
-    if not main.select_one("p.lead"):
-        lead = soup_fragment(
-            '<p class="lead">Doctorants, postdoctorants et étudiants actuellement encadrés, collaborations scientifiques, puis archives des anciens membres de l’équipe.</p>'
-            if lang == "fr"
-            else '<p class="lead">Current PhD students, postdoctoral researchers and Master’s students, scientific collaborations, followed by an archive of former team members.</p>'
-        ).p
-        main.find("h1").insert_after(lead)
+    main.find("h1").string = "Équipe" if lang == "fr" else "Team"
+    lead = main.select_one("p.lead")
+    if lead:
+        lead.decompose()
     title = page.title
-    title.string = ("Encadrements & collaborations" if lang == "fr" else "Supervision & collaborations") + " — Jean-Raynald de Dreuzy"
+    title.string = ("Équipe" if lang == "fr" else "Team") + " — Jean-Raynald de Dreuzy"
     description = page.find("meta", attrs={"name": "description"})
     description["content"] = (
-        "Doctorants, postdoctorants, étudiants, anciens membres et collaborations scientifiques de Jean-Raynald de Dreuzy."
+        "Doctorants, postdoctorants, ingénieurs, masters et anciens membres encadrés par Jean-Raynald de Dreuzy."
         if lang == "fr"
-        else "PhD students, postdoctoral researchers, students, alumni and scientific collaborations of Jean-Raynald de Dreuzy."
+        else "PhD students, postdoctoral researchers, engineers, Master's students and former members supervised by Jean-Raynald de Dreuzy."
     )
-    current_phd = heading_section(page, r"^Doctorants$|^PhD students$")
-    current_postdocs = heading_section(page, r"^Postdoctorants$|^Postdoctoral researchers$")
+    current_phd = heading_section(page, r"^Doctorants(?: en cours)?$|^(?:Current )?PhD students$")
+    current_postdocs = heading_section(page, r"^Postdoctorants(?: en cours)?$|^(?:Current )?Postdoctoral researchers$")
     if current_phd:
-        current_phd.find("h2").string = "Doctorants en cours" if lang == "fr" else "Current PhD students"
+        current_phd.find("h2").string = "Doctorants" if lang == "fr" else "PhD students"
     if current_postdocs:
-        current_postdocs.find("h2").string = "Postdoctorants en cours" if lang == "fr" else "Current postdoctoral researchers"
-        for name in current_postdocs.select(".people-entry .name"):
-            if not name.select_one(".status-badge"):
-                append_fragment(name, '<span class="status-badge">En cours</span>' if lang == "fr" else '<span class="status-badge">Current</span>')
-    collab = main.select_one(".collab-list")
+        current_postdocs.find("h2").string = "Postdoctorants" if lang == "fr" else "Postdoctoral researchers"
+        for badge in current_postdocs.select(".status-badge"):
+            badge.decompose()
+    collab = main.select_one(".collaboration-grid, .collab-list")
     if collab:
-        replacement = soup_fragment(COLLABORATIONS[lang]).div
+        replacement = soup_fragment(COLLABORATIONS[lang]).p
         collab.replace_with(replacement)
-    former_phd = heading_section(page, r"Anciens doctorants|Former PhD students")
+    former_phd = heading_section(page, r"Anciens doctorants|Archives doctorales|Former PhD students|Doctoral supervision archive")
     if former_phd:
-        wrap_archive(
-            former_phd,
-            "Archives doctorales" if lang == "fr" else "Doctoral supervision archive",
-            "Afficher les anciens doctorants et autres parcours doctoraux encadrés" if lang == "fr" else "Show former PhD students and other supervised doctoral paths",
-        )
-    former_postdocs = heading_section(page, r"Anciens postdoctorants|Former postdoctoral researchers")
+        former_phd.find("h2").string = "Anciens doctorants" if lang == "fr" else "Former PhD students"
+        details = former_phd.find("details", class_="data-details")
+        if details:
+            details.find("summary").decompose()
+            details.unwrap()
+    former_postdocs = heading_section(page, r"Anciens postdoctorants|Archives postdoctorales|Former postdoctoral researchers|Postdoctoral supervision archive")
     if former_postdocs:
-        wrap_archive(
-            former_postdocs,
-            "Archives postdoctorales" if lang == "fr" else "Postdoctoral supervision archive",
-            "Afficher les anciens postdoctorants" if lang == "fr" else "Show former postdoctoral researchers",
-        )
+        former_postdocs.find("h2").string = "Anciens postdoctorants" if lang == "fr" else "Former postdoctoral researchers"
+        details = former_postdocs.find("details", class_="data-details")
+        if details:
+            details.find("summary").decompose()
+            details.unwrap()
     for section in list(main.find_all("section", recursive=False)):
         if not section.get_text(" ", strip=True):
             section.decompose()
