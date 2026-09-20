@@ -58,6 +58,9 @@
 
       host.querySelectorAll('li, p').forEach(entry => {
         if (entry.querySelector('.hal-link') || !entry.textContent.trim()) return;
+        const entryKey = normalize(entry.textContent);
+        if (entryKey.includes('well test flow responses of highly heterogeneous porous and fractured media') &&
+            entryKey.includes('agu fall meeting 2006')) return;
         const title = titleFromEntry(entry);
         const doi = doiFromEntry(entry);
         const exact = (doi && byDoi.get(doi)) || byTitle.get(normalize(title));

@@ -26,22 +26,25 @@ Principaux éléments :
 - `*.html` : pages françaises à la racine.
 - `en/*.html` : pages anglaises en miroir.
 - `styles.css` : feuille de style commune.
-- `figure-loader.js` et `en/figure-loader.js` : reconstruction côté navigateur des figures stockées sous forme de fragments Base64.
 - `assets/figures/` : images et schémas utilisés directement par les pages.
-- `assets/figure-data/` : fragments texte de certaines figures reconstruites dynamiquement.
+- `assets/figures/embedded/` : WebP matérialisés à partir des anciennes familles Base64.
+- `assets/figure-data/` : fragments texte conservés comme sources de reconstruction, jamais chargés par le navigateur.
 - `assets/` : autres images visibles du site, notamment PyAges et les maquettes de la rubrique Science & société.
 - `mirror-map.json` : correspondance officielle FR/EN.
 - `scripts/check_bilingual_mirror.py` : contrôle de la cohérence du miroir bilingue.
 - `scripts/check_local_links.py` : contrôle des liens et ressources locales.
+- `scripts/materialize_figure_assets.py` : reconstruction des WebP directs depuis les fragments Base64 historiques.
+- `scripts/build_static_bibliography.py` : reconstruction de la bibliographie HTML statique FR/EN à partir des payloads.
 - `scripts/build_publications_over_time.py` : génération des graphiques « publications au fil du temps ».
+- `scripts/build_cv_pdf.py` : génération du CV PDF téléchargeable.
 - `bibliographie-payload-01.txt` à `bibliographie-payload-05.txt` : source compressée/encodée de la bibliographie complète.
-- `bibliography-loader.js`, `bibliography-updates.js`, `bibliography-hal.js` : chargement et enrichissement de la bibliographie.
+- `bibliography-hal.js` : enrichissement facultatif des entrées bibliographiques avec les notices HAL.
 - `sitemap.xml`, `robots.txt`, `.nojekyll` : fichiers de publication/SEO.
 - `.github/workflows/` : automatisations permanentes.
 
 ## 3. Structure bilingue
 
-`mirror-map.json` décrit actuellement 20 couples de pages. Le français est la langue par défaut. La navigation principale comporte huit entrées : accueil, recherche, projets, équipe, publications, logiciels, science & société et CV.
+`mirror-map.json` décrit actuellement 23 couples de pages. Le français est la langue par défaut. La navigation principale comporte huit entrées : accueil, recherche, projets & contrats, équipe, publications, logiciels, science & société et CV.
 
 Les deux pages techniques suivantes sont des redirections vers le CV :
 
@@ -70,8 +73,8 @@ Il existe deux mécanismes différents.
 
 Les fichiers comme :
 
-- `assets/figures/fractured-media-channeling.png`
-- `assets/figures/eau-territoire.png`
+- `assets/figures/fractured-media-channeling.webp`
+- `assets/figures/eau-territoire.webp`
 - `assets/figures/futureflow-framework.webp`
 - `assets/figures/hydromodpy-approved.webp`
 - `assets/figures/onewater.svg`
@@ -82,32 +85,26 @@ sont référencés directement par `src=` dans les pages.
 
 Ne pas conserver d’anciennes variantes « au cas où » dans `assets/` : lors du nettoyage de septembre 2026, les fichiers non référencés ont été supprimés. Git conserve l’historique si une ancienne version doit être récupérée.
 
-### 4.2 Figures reconstruites depuis `figure-data`
+### 4.2 Figures issues de `figure-data`
 
-Certaines figures sont stockées sous forme de fragments texte Base64 :
+Certaines figures ont pour source des fragments texte Base64 :
 
 `assets/figure-data/<nom>.part-00.txt`, `part-01.txt`, etc.
 
-Une page les appelle avec des attributs de type :
+Le script `scripts/materialize_figure_assets.py` concatène et décode ces fragments en fichiers WebP sous `assets/figures/embedded/`, puis remplace dans les pages les anciens attributs `data-b64-*` par un `src` direct. Les pages publiées ne dépendent donc plus de JavaScript ni de dizaines de requêtes texte pour afficher ces figures.
 
-```html
-<img data-b64-name="nom-de-la-figure" data-b64-parts="3" data-b64-mime="image/webp" ...>
-```
-
-`figure-loader.js` récupère tous les fragments, les concatène, décode le Base64, crée un `Blob` et remplace la source de l’image. La version anglaise utilise `en/figure-loader.js`, identique dans son fonctionnement mais avec le chemin relatif `../assets/figure-data/`.
-
-Conséquences importantes :
+Pour reconstruire les WebP après une modification volontaire des sources :
 
 - ne jamais supprimer un fragment isolé d’une série active ;
-- `data-b64-parts` doit correspondre au nombre exact de fragments attendus ;
-- une figure peut être absente des références `src=` classiques tout en étant indispensable au site ;
-- après toute intervention sur `figure-data`, vérifier que toutes les séquences demandées par le HTML sont complètes et non vides.
+- exécuter `python scripts/materialize_figure_assets.py` ;
+- contrôler les images produites, puis les liens locaux et le miroir bilingue ;
+- conserver les pages avec des références `src=` directes : le chargeur JavaScript historique ne doit pas être réintroduit.
 
 ## 5. Cas particulier PyAges
 
 Deux images PyAges ont des fonctions différentes :
 
-- `assets/pyages-software-figure.png` est utilisée sur les pages Logiciels / Software.
+- `assets/pyages-software-figure.webp` est utilisée sur les pages Logiciels / Software.
 - `assets/pyages-groundwater-age-v2.webp` est utilisée sur les pages PyAges.
 
 ### Reconstruction de l’image groundwater-age
@@ -129,34 +126,34 @@ Ne pas modifier manuellement l’image reconstruite sans comprendre ce mécanism
 
 ### Vérification de l’image Logiciels
 
-`.github/workflows/verify-pyages-live.yml` vérifie après déploiement que `assets/pyages-software-figure.png` est bien une image PNG substantielle et que les pages FR/EN la référencent correctement.
+`.github/workflows/verify-pyages-live.yml` vérifie après déploiement que `assets/pyages-software-figure.webp` est bien une image WebP substantielle et que les pages FR/EN la référencent correctement.
 
 ## 6. Bibliographie complète
 
-La page `bibliographie.html` et son équivalent anglais chargent la bibliographie côté navigateur.
+La page `bibliographie.html` et son équivalent anglais contiennent la bibliographie complète directement dans le HTML. Le contenu principal reste donc lisible, indexable et exploitable sans JavaScript.
 
 ### Source principale
 
 Les cinq fichiers `bibliographie-payload-01.txt` à `bibliographie-payload-05.txt` contiennent ensemble un document HTML compressé avec gzip puis encodé en Base64.
 
-`bibliography-loader.js` :
+`scripts/build_static_bibliography.py` :
 
-1. charge les cinq fragments ;
-2. concatène et décode le Base64 ;
-3. décompresse le gzip via `DecompressionStream` ;
-4. insère le HTML dans la page ;
-5. applique plusieurs normalisations et ajustements éditoriaux FR/EN ;
-6. gère actuellement certains éléments « en préparation », « soumis », « en révision » et quelques ajouts récents explicites.
+1. charge, concatène et décompresse les cinq fragments ;
+2. applique les normalisations et ajustements éditoriaux FR/EN ;
+3. fusionne les deux anciennes rubriques de proceedings sous une seule rubrique « Actes de colloques » ;
+4. ajoute les métadonnées locales vérifiées des publications récentes ;
+5. distingue les DOI d’articles réutilisés comme liens associés à des abstracts ;
+6. insère le résultat statique dans `bibliographie.html` et `en/bibliography.html`.
 
 Les payloads ne sont donc pas de simples fichiers texte à éditer ligne par ligne. Ne pas les modifier à la main sans reconstruire correctement le contenu gzip/Base64.
 
 ### Ajustements et enrichissements
 
-`bibliography-updates.js` contient des mises à jour ciblées et des enrichissements éditoriaux. Il interroge notamment Crossref pour une publication précise et ajoute des liens contextuels à certaines publications.
+Les métadonnées de RIVAGES Normands 2100 et d’HydroModPy sont conservées localement par le générateur : une panne de Crossref ne peut donc plus rétablir un ancien statut « accepté ».
 
 `bibliography-hal.js` interroge l’API HAL et ajoute, lorsque c’est possible, un lien `[HAL]` aux entrées correspondantes. Cette étape est volontairement facultative : si HAL est indisponible, la bibliographie doit rester utilisable.
 
-Lors d’une future mise à jour bibliographique, vérifier non seulement les payloads mais aussi les ajustements explicites présents dans `bibliography-loader.js` et `bibliography-updates.js`, afin d’éviter doublons ou informations devenues obsolètes.
+Après toute mise à jour des payloads ou des ajustements explicites du générateur, exécuter `python scripts/build_static_bibliography.py`, puis les deux contrôles du site. Vérifier en particulier les DOI, les titres proches et les listes d’auteurs proches afin d’éviter les faux doublons.
 
 ## 7. Publications au fil du temps
 
@@ -186,18 +183,11 @@ Pour chaque vraie page de contenu, conserver :
 - des `alt` non vides pour les images ;
 - un `og:url` cohérent avec le canonical lorsqu’il est présent.
 
-### Pages volontairement non indexées
-
-Les galeries scientifiques :
-
-- `galerie-recherche.html`
-- `en/research-figures.html`
-
-sont volontairement en `noindex,follow`. Elles restent accessibles depuis le site mais ne doivent **pas** être présentes dans `sitemap.xml`.
+La galerie scientifique FR/EN contient désormais un contenu éditorial original, possède ses métadonnées sociales et est indexée comme les autres pages de contenu. Seules les pages techniques de redirection et `404.html` ne doivent pas être indexées.
 
 ### Sitemap
 
-À l’état de référence de septembre 2026, `sitemap.xml` contient exactement 36 URL, soit toutes les pages indexables et seulement celles-ci.
+À l’état de référence du 20 septembre 2026, `sitemap.xml` contient exactement 44 URL, soit toutes les pages de contenu indexables et seulement celles-ci.
 
 `robots.txt` doit contenir :
 
@@ -232,7 +222,7 @@ Puis vérifier selon la nature du changement :
 - parité FR/EN ;
 - canonical / hreflang ;
 - `sitemap.xml` si une page a été ajoutée, retirée ou passée en `noindex` ;
-- intégrité des fragments `figure-data` si une figure dynamique est concernée ;
+- intégrité des fragments `figure-data` si une figure matérialisée est reconstruite ;
 - payloads et scripts de bibliographie si la bibliographie change ;
 - absence d’asset devenu orphelin si une image est remplacée.
 
@@ -242,7 +232,7 @@ Pour une modification importante, contrôler au minimum :
 
 - que les pages modifiées répondent en HTTP 200 ;
 - que les assets modifiés sont effectivement publiés ;
-- que les figures dynamiques chargent leurs fragments ;
+- que les figures matérialisées répondent en HTTP 200 ;
 - que le sitemap publié correspond au fichier du dépôt.
 
 GitHub Pages peut avoir un court délai de propagation après un push.
@@ -255,23 +245,23 @@ Des sites comme DOI/Crossref, LinkedIn, Google Scholar, OSERen, certains éditeu
 
 Ne jamais supprimer ou remplacer un lien externe uniquement parce qu’un test automatisé reçoit un refus anti-bot. Vérifier manuellement ou par une autre source lorsqu’un lien semble réellement mort.
 
-## 12. État de référence après l’audit du 14 septembre 2026
+## 12. État de référence après l’audit du 20 septembre 2026
 
 Cet état sert de point de comparaison, pas d’invariant éternel : les nombres pourront légitimement évoluer si le site s’enrichit.
 
-- 40 fichiers HTML au total.
-- 20 pages FR et 20 pages EN.
-- 20 couples de pages décrits dans `mirror-map.json`.
-- 38 pages de contenu et 2 pages de redirection.
-- 36 pages indexables dans `sitemap.xml`.
-- 2 pages `noindex,follow` : les galeries scientifiques FR/EN.
-- 674 références locales validées.
-- 0 asset normal orphelin.
-- 14 familles `assets/figure-data` utilisées.
-- 13 familles de figures dynamiques chargées par le HTML, représentant 34 fragments actifs.
+- 47 fichiers HTML au total, dont `404.html`.
+- 23 couples de pages décrits dans `mirror-map.json`.
+- 44 pages indexables dans `sitemap.xml`.
+- 2 pages de redirection et 1 page d’erreur en `noindex,follow`.
+- Bibliographie complète statique : 114 articles publiés, 10 abstracts comportant un lien explicitement qualifié d’« article associé ».
+- 3 dossiers de contrats bilingues : FutureFlow ; RIVAGES → ARCHANGE ; EAUX 2050 / RIVIÈRES 2070 / CYDRE.
+- Toutes les images HTML ont des dimensions intrinsèques déclarées.
+- Les grandes images PNG de contenu ont été converties en WebP.
+- CV PDF A4 de 4 pages disponible sous `assets/cv/`.
+- 9 WebP sous `assets/figures/embedded/`, matérialisés depuis leurs familles `assets/figure-data` et référencés directement par le HTML.
+- 2 autres anciennes familles Base64 remplacées par des assets directs existants (FutureFlow et OneWater), après retrait de deux familles corrompues.
 - 9 fragments source PyAges supplémentaires utilisés pour reconstruire l’image WebP.
 - 4 workflows GitHub Actions permanents.
-- Lors du dernier audit, 158 URL externes distinctes étaient présentes ; les refus automatisés provenaient essentiellement de mécanismes anti-bot et non de liens manifestement cassés.
 
 ## 13. Reprise après une longue interruption
 

@@ -1,85 +1,83 @@
-<!doctype html>
+<!DOCTYPE html>
+
 <html lang="fr">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Logiciels — Jean-Raynald de Dreuzy</title>
-  <meta name="description" content="Logiciels scientifiques open source de Jean-Raynald de Dreuzy : HydroModPy pour la modélisation hydrogéologique et PyAges pour l’interprétation des âges des eaux souterraines.">
-  <link rel="canonical" href="https://dreuzy.github.io/logiciels.html">
-  <link rel="alternate" hreflang="fr" href="https://dreuzy.github.io/logiciels.html">
-  <link rel="alternate" hreflang="en" href="https://dreuzy.github.io/en/software.html">
-  <link rel="alternate" hreflang="x-default" href="https://dreuzy.github.io/logiciels.html">
-  <meta property="og:type" content="website">
-  <meta property="og:site_name" content="Jean-Raynald de Dreuzy">
-  <meta property="og:title" content="Logiciels — Jean-Raynald de Dreuzy">
-  <meta property="og:description" content="HydroModPy et PyAges : outils open source pour la modélisation hydrogéologique, les traceurs et les temps de transfert.">
-  <meta property="og:url" content="https://dreuzy.github.io/logiciels.html">
-  <meta property="og:locale" content="fr_FR">
-  <meta property="og:locale:alternate" content="en_US">
-  <link rel="stylesheet" href="styles.css">
-  <script src="figure-loader.js" defer></script>
-</head>
-<body>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>Logiciels — Jean-Raynald de Dreuzy</title>
+<meta content="Logiciels scientifiques open source de Jean-Raynald de Dreuzy : HydroModPy pour la modélisation hydrogéologique et PyAges pour l’interprétation des âges des eaux souterraines." name="description"/>
+<link href="https://dreuzy.github.io/logiciels.html" rel="canonical"/>
+<link href="https://dreuzy.github.io/logiciels.html" hreflang="fr" rel="alternate"/>
+<link href="https://dreuzy.github.io/en/software.html" hreflang="en" rel="alternate"/>
+<link href="https://dreuzy.github.io/logiciels.html" hreflang="x-default" rel="alternate"/>
+<meta content="website" property="og:type"/>
+<meta content="Jean-Raynald de Dreuzy" property="og:site_name"/>
+<meta content="Logiciels — Jean-Raynald de Dreuzy" property="og:title"/>
+<meta content="HydroModPy et PyAges : outils open source pour la modélisation hydrogéologique, les traceurs et les temps de transfert." property="og:description"/>
+<meta content="https://dreuzy.github.io/logiciels.html" property="og:url"/>
+<meta content="fr_FR" property="og:locale"/>
+<meta content="en_US" property="og:locale:alternate"/>
+<link href="styles.css" rel="stylesheet"/>
+<link href="favicon.svg" rel="icon" type="image/svg+xml"/><meta content="https://dreuzy.github.io/assets/figures/futureflow-framework.webp" property="og:image"/><meta content="1000" property="og:image:width"/><meta content="625" property="og:image:height"/><meta content="Cadre de modélisation multi-fidélité de FutureFlow" property="og:image:alt"/><meta content="summary_large_image" name="twitter:card"/><meta content="Logiciels — Jean-Raynald de Dreuzy" name="twitter:title"/><meta content="Logiciels scientifiques open source de Jean-Raynald de Dreuzy : HydroModPy pour la modélisation hydrogéologique et PyAges pour l’interprétation des âges des eaux souterraines." name="twitter:description"/><meta content="https://dreuzy.github.io/assets/figures/futureflow-framework.webp" name="twitter:image"/><meta content="Cadre de modélisation multi-fidélité de FutureFlow" name="twitter:image:alt"/></head>
+<body><a class="skip-link" href="#main-content">Aller au contenu</a>
 <header class="site-header">
-  <div class="inner">
-    <a class="brand-link" href="index.html">Jean-Raynald de Dreuzy</a>
-    <nav class="nav-links">
-      <a href="index.html">Accueil</a>
-      <a href="recherche.html">Recherche</a>
-      <a href="projets.html">Projets</a>
-      <a href="equipe.html">Équipe</a>
-      <a href="publications.html">Publications</a>
-      <a class="active" href="logiciels.html">Logiciels</a>
-      <a href="science-societe.html">Science &amp; société</a>
-      <a href="cv.html">CV</a>
-      <span><strong>FR</strong> | <a href="en/software.html">EN</a></span>
-    </nav>
-  </div>
+<div class="inner">
+<a class="brand-link" href="index.html">Jean-Raynald de Dreuzy</a>
+<nav aria-label="Navigation principale" class="nav-links">
+<a href="index.html">Accueil</a>
+<a href="recherche.html">Recherche</a>
+<a href="projets.html">Projets &amp; contrats</a>
+<a href="equipe.html">Équipe</a>
+<a href="publications.html">Publications</a>
+<a aria-current="page" class="active" href="logiciels.html">Logiciels</a>
+<a href="science-societe.html">Science &amp; société</a>
+<a href="cv.html">CV</a>
+<span><strong>FR</strong> | <a href="en/software.html">EN</a></span>
+</nav>
+</div>
 </header>
-<main class="preview-content">
-  <h1>Logiciels</h1>
-  <p class="lead">Développements logiciels open source pour la modélisation hydrogéologique, l’analyse des traceurs et l’interprétation des temps de transfert.</p>
-
-  <section class="research-row" id="hydromodpy">
-    <div>
-      <div class="meta-line">Modélisation hydrogéologique · Python</div>
-      <h2>HydroModPy</h2>
-      <p>HydroModPy est une boîte à outils Python pour construire, exécuter, calibrer et analyser de façon reproductible des modèles d’aquifères peu profonds à l’échelle des bassins versants.</p>
-      <p>Le workflow automatise la délimitation des bassins, la préparation des données spatiales et temporelles, la paramétrisation des modèles, les simulations MODFLOW, le suivi de particules et le transport de solutés, ainsi que l’export et la visualisation des résultats.</p>
-      <div class="software-links">
-        <a href="https://docs.hydromodpy.fr/v1.0/">Documentation v1.0</a>
-        <a href="https://docs.hydromodpy.fr/main/">Documentation v2</a>
-        <a href="https://github.com/HydroModPy/HydroModPy">Code GitHub</a>
-        <a href="https://pypi.org/project/hydromodpy/">PyPI</a>
-        <a href="https://hess.copernicus.org/articles/30/5571/2026/">Article HESS</a>
-      </div>
-      <p class="small">A. Gauvain et al. (2026) · <span class="smallcaps">Hydrology and Earth System Sciences</span>, 30, 5571.</p>
-    </div>
-    <figure class="figure-panel actual-figure generated-figure">
-      <a class="generated-figure-link"><img data-b64-name="hydromodpy-final" data-b64-parts="12" alt="Workflow HydroModPy : bassin versant, données, modèle, calcul et sorties" loading="lazy" decoding="async"></a>
-      <figcaption>HydroModPy : organisation synthétique du workflow, du bassin versant aux sorties et visualisations.</figcaption>
-    </figure>
-  </section>
-
-  <section class="research-row" id="pyages">
-    <div>
-      <div class="meta-line">Âges des eaux souterraines · Python</div>
-      <h2>PyAges</h2>
-      <p>PyAges est un environnement Python open source pour modéliser et interpréter les âges des eaux souterraines à partir de traceurs environnementaux et de modèles à paramètres globaux (Lumped-Parameter Models, LPMs).</p>
-      <p>Il associe modèles de temps de transit, convolution et méthodes de calibration déterministes ou bayésiennes afin d’estimer les paramètres, leurs incertitudes et leurs limites d’identifiabilité.</p>
-      <div class="software-links">
-        <a href="pyages.html">Page PyAges</a>
-        <a href="https://pyage-gw.readthedocs.io/en/latest/">Documentation</a>
-        <a href="https://pypi.org/project/pyages/">PyPI</a>
-      </div>
-      <p class="small">J.-R. de Dreuzy, S. Leray &amp; J. Marçais (2026) · soumis à <span class="smallcaps">Geoscientific Model Development</span>.</p>
-    </div>
-    <figure class="figure-panel actual-figure">
-      <a href="pyages.html"><img src="assets/pyages-software-figure.png" alt="PyAges : des traceurs environnementaux aux âges des eaux souterraines" loading="lazy" decoding="async"></a>
-      <figcaption>PyAges : des traceurs environnementaux aux âges des eaux souterraines.</figcaption>
-    </figure>
-  </section>
+<main class="preview-content" id="main-content">
+<h1>Logiciels</h1>
+<p class="lead">Développements logiciels open source pour la modélisation hydrogéologique, l’analyse des traceurs et l’interprétation des temps de transfert.</p>
+<section class="research-row" id="hydromodpy">
+<div>
+<div class="meta-line">Modélisation hydrogéologique · Python</div>
+<h2>HydroModPy</h2>
+<p>HydroModPy est une boîte à outils Python pour construire, exécuter, calibrer et analyser de façon reproductible des modèles d’aquifères peu profonds à l’échelle des bassins versants.</p>
+<p>Le workflow automatise la délimitation des bassins, la préparation des données spatiales et temporelles, la paramétrisation des modèles, les simulations MODFLOW, le suivi de particules et le transport de solutés, ainsi que l’export et la visualisation des résultats.</p>
+<div class="software-links">
+<a href="https://docs.hydromodpy.fr/v1.0/">Documentation v1.0</a>
+<a href="https://docs.hydromodpy.fr/main/">Documentation v2</a>
+<a href="https://github.com/HydroModPy/HydroModPy">Code GitHub</a>
+<a href="https://pypi.org/project/hydromodpy/">PyPI</a>
+<a href="https://hess.copernicus.org/articles/30/5571/2026/">Article HESS</a>
+</div>
+<p class="small">A. Gauvain et al. (2026) · <span class="smallcaps">Hydrology and Earth System Sciences</span>, 30, 5571.</p>
+</div>
+<figure class="figure-panel actual-figure generated-figure">
+<img alt="Workflow HydroModPy : bassin versant, données, modèle, calcul et sorties" decoding="async" height="540" loading="lazy" src="assets/figures/embedded/hydromodpy-final.webp" width="720"/>
+<figcaption>HydroModPy : organisation synthétique du workflow, du bassin versant aux sorties et visualisations.</figcaption>
+</figure>
+</section>
+<section class="research-row" id="pyages">
+<div>
+<div class="meta-line">Âges des eaux souterraines · Python</div>
+<h2>PyAges</h2>
+<p>PyAges est un environnement Python open source pour modéliser et interpréter les âges des eaux souterraines à partir de traceurs environnementaux et de modèles à paramètres globaux (Lumped-Parameter Models, LPMs).</p>
+<p>Il associe modèles de temps de transit, convolution et méthodes de calibration déterministes ou bayésiennes afin d’estimer les paramètres, leurs incertitudes et leurs limites d’identifiabilité.</p>
+<div class="software-links">
+<a href="pyages.html">Page PyAges</a>
+<a href="https://pyage-gw.readthedocs.io/en/latest/">Documentation</a>
+<a href="https://pypi.org/project/pyages/">PyPI</a>
+</div>
+<p class="small">J.-R. de Dreuzy, S. Leray &amp; J. Marçais (2026) · soumis à <span class="smallcaps">Geoscientific Model Development</span>.</p>
+</div>
+<figure class="figure-panel actual-figure">
+<a href="pyages.html"><img alt="PyAges : des traceurs environnementaux aux âges des eaux souterraines" decoding="async" height="1086" loading="lazy" src="assets/pyages-software-figure.webp" width="1448"/></a>
+<figcaption>PyAges : des traceurs environnementaux aux âges des eaux souterraines.</figcaption>
+</figure>
+</section>
 </main>
-<footer class="preview-footer"><div class="inner">Jean-Raynald de Dreuzy · CNRS · Géosciences Rennes · ENS Rennes</div></footer>
+<footer class="preview-footer"><div class="inner"><span>Jean-Raynald de Dreuzy · CNRS · Géosciences Rennes · ENS Rennes</span><span class="footer-contact"><a href="mailto:jean-raynald.de-dreuzy@univ-rennes.fr">Courriel</a> · <a href="https://orcid.org/0000-0003-2993-2015" rel="me noopener" target="_blank">ORCID</a> · <a href="https://hal.science/search/index/?q=%22Jean-Raynald%20de%20Dreuzy%22" rel="noopener" target="_blank">HAL</a></span></div></footer>
 </body>
 </html>

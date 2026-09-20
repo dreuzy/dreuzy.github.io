@@ -73,6 +73,24 @@
       "navigation": true
     },
     {
+      "id": "futureflow",
+      "fr": "futureflow.html",
+      "en": "en/futureflow.html",
+      "navigation": false
+    },
+    {
+      "id": "coastal-risks",
+      "fr": "risques-cotiers.html",
+      "en": "en/coastal-risks.html",
+      "navigation": false
+    },
+    {
+      "id": "water-programmes-brittany",
+      "fr": "eaux-2050-rivieres-2070-cydre.html",
+      "en": "en/water-2050-rivers-2070-cydre.html",
+      "navigation": false
+    },
+    {
       "id": "team",
       "fr": "equipe.html",
       "en": "en/team.html",

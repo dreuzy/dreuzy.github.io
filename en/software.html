@@ -1,85 +1,83 @@
-<!doctype html>
+<!DOCTYPE html>
+
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Software — Jean-Raynald de Dreuzy</title>
-  <meta name="description" content="Open-source scientific software by Jean-Raynald de Dreuzy: HydroModPy for groundwater modelling and PyAges for interpreting groundwater ages from environmental tracers.">
-  <link rel="canonical" href="https://dreuzy.github.io/en/software.html">
-  <link rel="alternate" hreflang="fr" href="https://dreuzy.github.io/logiciels.html">
-  <link rel="alternate" hreflang="en" href="https://dreuzy.github.io/en/software.html">
-  <link rel="alternate" hreflang="x-default" href="https://dreuzy.github.io/logiciels.html">
-  <meta property="og:type" content="website">
-  <meta property="og:site_name" content="Jean-Raynald de Dreuzy">
-  <meta property="og:title" content="Software — Jean-Raynald de Dreuzy">
-  <meta property="og:description" content="HydroModPy and PyAges: open-source tools for groundwater modelling, tracers and transit-time interpretation.">
-  <meta property="og:url" content="https://dreuzy.github.io/en/software.html">
-  <meta property="og:locale" content="en_US">
-  <meta property="og:locale:alternate" content="fr_FR">
-  <link rel="stylesheet" href="../styles.css">
-  <script src="figure-loader.js" defer></script>
-</head>
-<body>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>Software — Jean-Raynald de Dreuzy</title>
+<meta content="Open-source scientific software by Jean-Raynald de Dreuzy: HydroModPy for groundwater modelling and PyAges for interpreting groundwater ages from environmental tracers." name="description"/>
+<link href="https://dreuzy.github.io/en/software.html" rel="canonical"/>
+<link href="https://dreuzy.github.io/logiciels.html" hreflang="fr" rel="alternate"/>
+<link href="https://dreuzy.github.io/en/software.html" hreflang="en" rel="alternate"/>
+<link href="https://dreuzy.github.io/logiciels.html" hreflang="x-default" rel="alternate"/>
+<meta content="website" property="og:type"/>
+<meta content="Jean-Raynald de Dreuzy" property="og:site_name"/>
+<meta content="Software — Jean-Raynald de Dreuzy" property="og:title"/>
+<meta content="HydroModPy and PyAges: open-source tools for groundwater modelling, tracers and transit-time interpretation." property="og:description"/>
+<meta content="https://dreuzy.github.io/en/software.html" property="og:url"/>
+<meta content="en_US" property="og:locale"/>
+<meta content="fr_FR" property="og:locale:alternate"/>
+<link href="../styles.css" rel="stylesheet"/>
+<link href="../favicon.svg" rel="icon" type="image/svg+xml"/><meta content="https://dreuzy.github.io/assets/figures/futureflow-framework.webp" property="og:image"/><meta content="1000" property="og:image:width"/><meta content="625" property="og:image:height"/><meta content="FutureFlow multi-fidelity groundwater modelling framework" property="og:image:alt"/><meta content="summary_large_image" name="twitter:card"/><meta content="Software — Jean-Raynald de Dreuzy" name="twitter:title"/><meta content="Open-source scientific software by Jean-Raynald de Dreuzy: HydroModPy for groundwater modelling and PyAges for interpreting groundwater ages from environmental tracers." name="twitter:description"/><meta content="https://dreuzy.github.io/assets/figures/futureflow-framework.webp" name="twitter:image"/><meta content="FutureFlow multi-fidelity groundwater modelling framework" name="twitter:image:alt"/></head>
+<body><a class="skip-link" href="#main-content">Skip to content</a>
 <header class="site-header">
-  <div class="inner">
-    <a class="brand-link" href="index.html">Jean-Raynald de Dreuzy</a>
-    <nav class="nav-links">
-      <a href="index.html">Home</a>
-      <a href="research.html">Research</a>
-      <a href="projects.html">Projects</a>
-      <a href="team.html">Team</a>
-      <a href="publications.html">Publications</a>
-      <a class="active" href="software.html">Software</a>
-      <a href="science-society.html">Science &amp; society</a>
-      <a href="cv.html">CV</a>
-      <span><a href="../logiciels.html">FR</a> | <strong>EN</strong></span>
-    </nav>
-  </div>
+<div class="inner">
+<a class="brand-link" href="index.html">Jean-Raynald de Dreuzy</a>
+<nav aria-label="Main navigation" class="nav-links">
+<a href="index.html">Home</a>
+<a href="research.html">Research</a>
+<a href="projects.html">Projects &amp; grants</a>
+<a href="team.html">Team</a>
+<a href="publications.html">Publications</a>
+<a aria-current="page" class="active" href="software.html">Software</a>
+<a href="science-society.html">Science &amp; society</a>
+<a href="cv.html">CV</a>
+<span><a href="../logiciels.html">FR</a> | <strong>EN</strong></span>
+</nav>
+</div>
 </header>
-<main class="preview-content">
-  <h1>Software</h1>
-  <p class="lead">Open-source tools for groundwater modelling, tracer analysis and the interpretation of transit times.</p>
-
-  <section class="research-row" id="hydromodpy">
-    <div>
-      <div class="meta-line">Groundwater modelling · Python</div>
-      <h2>HydroModPy</h2>
-      <p>HydroModPy is a Python toolbox for building, running, calibrating and analysing catchment-scale shallow-groundwater models in a reproducible way.</p>
-      <p>The workflow automates catchment delineation; the preparation of spatial and temporal data; model parameterisation; MODFLOW simulations; particle tracking and solute transport; and the export and visualisation of results.</p>
-      <div class="software-links">
-        <a href="https://docs.hydromodpy.fr/v1.0/">Documentation v1.0</a>
-        <a href="https://docs.hydromodpy.fr/main/">Documentation v2</a>
-        <a href="https://github.com/HydroModPy/HydroModPy">GitHub code</a>
-        <a href="https://pypi.org/project/hydromodpy/">PyPI</a>
-        <a href="https://hess.copernicus.org/articles/30/5571/2026/">HESS article</a>
-      </div>
-      <p class="small">A. Gauvain et al. (2026) · <span class="smallcaps">Hydrology and Earth System Sciences</span>, 30, 5571.</p>
-    </div>
-    <figure class="figure-panel actual-figure generated-figure">
-      <a class="generated-figure-link"><img data-b64-name="hydromodpy-final" data-b64-parts="12" alt="HydroModPy workflow linking watershed, data, model, computation and outputs" loading="lazy" decoding="async"></a>
-      <figcaption>HydroModPy: a synthesis of the workflow from watershed and data to modelling, computation, outputs and visualisation.</figcaption>
-    </figure>
-  </section>
-
-  <section class="research-row" id="pyages">
-    <div>
-      <div class="meta-line">Groundwater-age interpretation · Python</div>
-      <h2>PyAges</h2>
-      <p>PyAges is an open-source Python environment for modelling and interpreting groundwater ages from environmental tracers and lumped-parameter models (LPMs).</p>
-      <p>It combines transit-time models, convolution and deterministic or Bayesian calibration methods to estimate parameters, their uncertainties and their identifiability limits.</p>
-      <div class="software-links">
-        <a href="pyages.html">PyAges page</a>
-        <a href="https://pyage-gw.readthedocs.io/en/latest/">Documentation</a>
-        <a href="https://pypi.org/project/pyages/">PyPI</a>
-      </div>
-      <p class="small">J.-R. de Dreuzy, S. Leray &amp; J. Marçais (2026) · submitted to <span class="smallcaps">Geoscientific Model Development</span>.</p>
-    </div>
-    <figure class="figure-panel actual-figure">
-      <a href="pyages.html"><img src="../assets/pyages-software-figure.png" alt="PyAges: from environmental tracers to groundwater ages" loading="lazy" decoding="async"></a>
-      <figcaption>PyAges: from environmental tracers to groundwater ages.</figcaption>
-    </figure>
-  </section>
+<main class="preview-content" id="main-content">
+<h1>Software</h1>
+<p class="lead">Open-source tools for groundwater modelling, tracer analysis and the interpretation of transit times.</p>
+<section class="research-row" id="hydromodpy">
+<div>
+<div class="meta-line">Groundwater modelling · Python</div>
+<h2>HydroModPy</h2>
+<p>HydroModPy is a Python toolbox for building, running, calibrating and analysing catchment-scale shallow-groundwater models in a reproducible way.</p>
+<p>The workflow automates catchment delineation; the preparation of spatial and temporal data; model parameterisation; MODFLOW simulations; particle tracking and solute transport; and the export and visualisation of results.</p>
+<div class="software-links">
+<a href="https://docs.hydromodpy.fr/v1.0/">Documentation v1.0</a>
+<a href="https://docs.hydromodpy.fr/main/">Documentation v2</a>
+<a href="https://github.com/HydroModPy/HydroModPy">GitHub code</a>
+<a href="https://pypi.org/project/hydromodpy/">PyPI</a>
+<a href="https://hess.copernicus.org/articles/30/5571/2026/">HESS article</a>
+</div>
+<p class="small">A. Gauvain et al. (2026) · <span class="smallcaps">Hydrology and Earth System Sciences</span>, 30, 5571.</p>
+</div>
+<figure class="figure-panel actual-figure generated-figure">
+<img alt="HydroModPy workflow linking watershed, data, model, computation and outputs" decoding="async" height="540" loading="lazy" src="../assets/figures/embedded/hydromodpy-final.webp" width="720"/>
+<figcaption>HydroModPy: a synthesis of the workflow from watershed and data to modelling, computation, outputs and visualisation.</figcaption>
+</figure>
+</section>
+<section class="research-row" id="pyages">
+<div>
+<div class="meta-line">Groundwater-age interpretation · Python</div>
+<h2>PyAges</h2>
+<p>PyAges is an open-source Python environment for modelling and interpreting groundwater ages from environmental tracers and lumped-parameter models (LPMs).</p>
+<p>It combines transit-time models, convolution and deterministic or Bayesian calibration methods to estimate parameters, their uncertainties and their identifiability limits.</p>
+<div class="software-links">
+<a href="pyages.html">PyAges page</a>
+<a href="https://pyage-gw.readthedocs.io/en/latest/">Documentation</a>
+<a href="https://pypi.org/project/pyages/">PyPI</a>
+</div>
+<p class="small">J.-R. de Dreuzy, S. Leray &amp; J. Marçais (2026) · submitted to <span class="smallcaps">Geoscientific Model Development</span>.</p>
+</div>
+<figure class="figure-panel actual-figure">
+<a href="pyages.html"><img alt="PyAges: from environmental tracers to groundwater ages" decoding="async" height="1086" loading="lazy" src="../assets/pyages-software-figure.webp" width="1448"/></a>
+<figcaption>PyAges: from environmental tracers to groundwater ages.</figcaption>
+</figure>
+</section>
 </main>
-<footer class="preview-footer"><div class="inner">Jean-Raynald de Dreuzy · CNRS · Géosciences Rennes · ENS Rennes</div></footer>
+<footer class="preview-footer"><div class="inner"><span>Jean-Raynald de Dreuzy · CNRS · Géosciences Rennes · ENS Rennes</span><span class="footer-contact"><a href="mailto:jean-raynald.de-dreuzy@univ-rennes.fr">Email</a> · <a href="https://orcid.org/0000-0003-2993-2015" rel="me noopener" target="_blank">ORCID</a> · <a href="https://hal.science/search/index/?q=%22Jean-Raynald%20de%20Dreuzy%22" rel="noopener" target="_blank">HAL</a></span></div></footer>
 </body>
 </html>

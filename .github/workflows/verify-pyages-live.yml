@@ -7,7 +7,7 @@ on:
       - ".github/workflows/verify-pyages-live.yml"
       - "logiciels.html"
       - "en/software.html"
-      - "assets/pyages-software-figure.png"
+      - "assets/pyages-software-figure.webp"
   workflow_dispatch:
 
 permissions:
@@ -25,12 +25,12 @@ jobs:
           ok=0
           for i in $(seq 1 30); do
             echo "Attempt $i/30"
-            if curl -fsSL -H 'Cache-Control: no-cache' "https://dreuzy.github.io/assets/pyages-software-figure.png?verify=${GITHUB_SHA}-${i}" -o /tmp/pyages-software.png; then
-              size=$(stat -c%s /tmp/pyages-software.png)
-              kind=$(file -b /tmp/pyages-software.png)
+            if curl -fsSL -H 'Cache-Control: no-cache' "https://dreuzy.github.io/assets/pyages-software-figure.webp?verify=${GITHUB_SHA}-${i}" -o /tmp/pyages-software.webp; then
+              size=$(stat -c%s /tmp/pyages-software.webp)
+              kind=$(file -b /tmp/pyages-software.webp)
               echo "size=$size"
               echo "type=$kind"
-              if [ "$size" -gt "100000" ] && echo "$kind" | grep -qi 'PNG image data'; then
+              if [ "$size" -gt "40000" ] && echo "$kind" | grep -qi 'Web/P image'; then
                 ok=1
                 break
               fi
@@ -45,5 +45,5 @@ jobs:
           set -euo pipefail
           curl -fsSL -H 'Cache-Control: no-cache' "https://dreuzy.github.io/logiciels.html?verify=${GITHUB_SHA}" -o /tmp/fr.html
           curl -fsSL -H 'Cache-Control: no-cache' "https://dreuzy.github.io/en/software.html?verify=${GITHUB_SHA}" -o /tmp/en.html
-          grep -F 'src="assets/pyages-software-figure.png"' /tmp/fr.html
-          grep -F 'src="../assets/pyages-software-figure.png"' /tmp/en.html
+          grep -F 'src="assets/pyages-software-figure.webp"' /tmp/fr.html
+          grep -F 'src="../assets/pyages-software-figure.webp"' /tmp/en.html
