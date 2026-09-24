@@ -126,13 +126,6 @@
           ],
           "entries": [
             {
-              "id": "articles-dans-des-revues-a-comite-de-lecture-in-review-001",
-              "html": {
-                "fr": "F. Sergeant, J.-R. de Dreuzy, S. Bernal, M. R. V. Ross, J. Ramoneda, G. Pinay (2026), Using landscape information to assess nutrient recycling in freshwater catchments. <span class=\"smallcaps\">Hydrological Processes</span>, en révision.",
-                "en": "F. Sergeant, J.-R. de Dreuzy, S. Bernal, M. R. V. Ross, J. Ramoneda, G. Pinay (2026), Using landscape information to assess nutrient recycling in freshwater catchments. <span class=\"smallcaps\">Hydrological Processes</span>, in revision."
-              }
-            },
-            {
               "id": "articles-dans-des-revues-a-comite-de-lecture-in-review-002",
               "html": {
                 "fr": "J.-R. de Dreuzy, C. Bouchez, J. Marçais, B. Yvard, A. Sedel, V. Vergnaud, E. Chatton, T. Labasque, L. Aquilina, Using long-term CFC monitoring to support the interpretation of tracer data and groundwater dynamics in a fractured crystalline aquifer, <em>soumis à Hydrological Processes</em>",
@@ -144,6 +137,27 @@
               "html": {
                 "fr": "C. Vautier, E. Le Carrer, A. Coche, J.-R. de Dreuzy, G. Pinay,<em> </em>Reading the aquifer in the stream: a unified framework to infer subsurface denitrification from low flow stream chemistry, , <em>soumis à Journal of Hydrology</em>",
                 "en": "C. Vautier, E. Le Carrer, A. Coche, J.-R. de Dreuzy, G. Pinay,<em> </em>Reading the aquifer in the stream: a unified framework to infer subsurface denitrification from low flow stream chemistry, , <em>submitted to Journal of Hydrology</em>"
+              }
+            }
+          ]
+        },
+        {
+          "id": "accepted",
+          "title": {
+            "fr": "Acceptés",
+            "en": "Accepted"
+          },
+          "ordered": false,
+          "classes": [
+            "bib-list",
+            "bib-unnumbered"
+          ],
+          "entries": [
+            {
+              "id": "articles-dans-des-revues-a-comite-de-lecture-accepted-001",
+              "html": {
+                "fr": "F. Sergeant, J.-R. de Dreuzy, S. Bernal, M. R. V. Ross, J. Ramoneda, G. Pinay (2026), Using landscape information to assess nutrient recycling in freshwater catchments. <span class=\"smallcaps\">Hydrological Processes</span>, accepté.",
+                "en": "F. Sergeant, J.-R. de Dreuzy, S. Bernal, M. R. V. Ross, J. Ramoneda, G. Pinay (2026), Using landscape information to assess nutrient recycling in freshwater catchments. <span class=\"smallcaps\">Hydrological Processes</span>, accepted."
               }
             }
           ]
