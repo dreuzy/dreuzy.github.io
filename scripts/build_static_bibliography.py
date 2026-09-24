@@ -20,6 +20,7 @@ STATUS_GROUPS = {
     "en-preparation": {"fr": "En préparation", "en": "In preparation", "class": "preparation"},
     "articles-soumis": {"fr": "Soumis", "en": "Submitted", "class": "submitted"},
     "in-review": {"fr": "En révision", "en": "In revision", "class": "review"},
+    "accepted": {"fr": "Accepté", "en": "Accepted", "class": "accepted"},
 }
 
 
