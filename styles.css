@@ -580,6 +580,10 @@ a {
   border-color: #b69662;
   color: #73561f;
 }
+.status-accepted {
+  border-color: #7a9d87;
+  color: #356145;
+}
 .recent-publications {
   margin-top: 2.4rem;
 }
