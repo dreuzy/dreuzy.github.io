@@ -1007,8 +1007,8 @@
             {
               "id": "proceedings-references-dans-web-of-knowledge-entries-003",
               "html": {
-                "fr": "Pichot, G., B. Poirriez, J. Erhel, J.-R. de Dreuzy (2014), <a class=\"bib-link\" href=\"https://hal.inria.fr/hal-00853248/file/pichotg_plenary.pdf\">A Mortar BDD Method for Solving Flow in Stochastic Discrete Fracture Networks, Domain Decomposition Methods in Science and Engineering</a> Xxi, 98, 99-112.",
-                "en": "Pichot, G., B. Poirriez, J. Erhel, J.-R. de Dreuzy (2014), <a class=\"bib-link\" href=\"https://hal.inria.fr/hal-00853248/file/pichotg_plenary.pdf\">A Mortar BDD Method for Solving Flow in Stochastic Discrete Fracture Networks, Domain Decomposition Methods in Science and Engineering</a> Xxi, 98, 99-112."
+                "fr": "Pichot, G., B. Poirriez, J. Erhel, J.-R. de Dreuzy (2014), <a class=\"bib-link\" href=\"https://inria.hal.science/hal-00853248/file/pichotg_plenary.pdf\">A Mortar BDD Method for Solving Flow in Stochastic Discrete Fracture Networks, Domain Decomposition Methods in Science and Engineering</a> Xxi, 98, 99-112.",
+                "en": "Pichot, G., B. Poirriez, J. Erhel, J.-R. de Dreuzy (2014), <a class=\"bib-link\" href=\"https://inria.hal.science/hal-00853248/file/pichotg_plenary.pdf\">A Mortar BDD Method for Solving Flow in Stochastic Discrete Fracture Networks, Domain Decomposition Methods in Science and Engineering</a> Xxi, 98, 99-112."
               }
             },
             {
@@ -2807,8 +2807,8 @@
             {
               "id": "abstracts-de-colloques-entries-224",
               "html": {
-                "fr": "J. Erhel, J.-R. de Dreuzy, A. Beaudoin, E. Bresciani, D. Tromeur-Dervout, <a class=\"bib-link\" href=\"https://doi.org/10.1007/978-3-540-92744-0-5\">A parallel scientific software for heterogeneous hydrogeology</a>, International Conference on Parallel Computational Fluid Dynamics (Parallel CFD 2007), Antalya, Turkey, May 2007.",
-                "en": "J. Erhel, J.-R. de Dreuzy, A. Beaudoin, E. Bresciani, D. Tromeur-Dervout, <a class=\"bib-link\" href=\"https://doi.org/10.1007/978-3-540-92744-0-5\">A parallel scientific software for heterogeneous hydrogeology</a>, International Conference on Parallel Computational Fluid Dynamics (Parallel CFD 2007), Antalya, Turkey, May 2007."
+                "fr": "J. Erhel, J.-R. de Dreuzy, A. Beaudoin, E. Bresciani, D. Tromeur-Dervout, <a class=\"bib-link\" href=\"https://doi.org/10.1007/978-3-540-92744-0_5\">A parallel scientific software for heterogeneous hydrogeology</a>, International Conference on Parallel Computational Fluid Dynamics (Parallel CFD 2007), Antalya, Turkey, May 2007.",
+                "en": "J. Erhel, J.-R. de Dreuzy, A. Beaudoin, E. Bresciani, D. Tromeur-Dervout, <a class=\"bib-link\" href=\"https://doi.org/10.1007/978-3-540-92744-0_5\">A parallel scientific software for heterogeneous hydrogeology</a>, International Conference on Parallel Computational Fluid Dynamics (Parallel CFD 2007), Antalya, Turkey, May 2007."
               }
             },
             {

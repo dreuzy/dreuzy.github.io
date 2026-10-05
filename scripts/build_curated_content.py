@@ -280,6 +280,7 @@ def update_publications(page: BeautifulSoup, lang: str) -> None:
         "preparation": ("En préparation", "In preparation"),
         "submitted": ("Soumis", "Submitted"),
         "review": ("En révision", "In revision"),
+        "accepted": ("Accepté", "Accepted"),
     }
     for entry in page.select("main .pub-entry"):
         for badge in entry.select(".status-badge"):
@@ -292,6 +293,8 @@ def update_publications(page: BeautifulSoup, lang: str) -> None:
             state = "review"
         elif "soumis" in text or "submitted" in text:
             state = "submitted"
+        elif "accepté" in text or "accepted" in text:
+            state = "accepted"
         if state:
             meta = entry.select_one(".pub-meta")
             if meta:
