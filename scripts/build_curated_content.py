@@ -437,9 +437,9 @@ def update_cv(page: BeautifulSoup, lang: str) -> None:
     structuring = heading_section(page, r"Responsabilités et structuration scientifique|Responsibilities and research structuring")
     if structuring:
         structuring.find("h2").string = (
-            "Responsabilités et structuration scientifique — sélection"
+            "Responsabilités et structuration scientifique antérieures — sélection"
             if lang == "fr"
-            else "Responsibilities and research structuring — selected"
+            else "Previous responsibilities and research structuring — selected"
         )
         for row in structuring.select(".timeline-row"):
             if "2017–2021" in row.get_text():
