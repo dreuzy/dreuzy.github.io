@@ -230,6 +230,13 @@ def update_team(page: BeautifulSoup, lang: str) -> None:
         current_postdocs.find("h2").string = "Postdoctorants" if lang == "fr" else "Postdoctoral researchers"
         for badge in current_postdocs.select(".status-badge"):
             badge.decompose()
+    collaborations_section = heading_section(page, r"Collaborations scientifiques|Scientific collaborations")
+    if collaborations_section:
+        collaborations_section.find("h2").string = (
+            "Collaborations scientifiques actuelles et récentes — sélection"
+            if lang == "fr"
+            else "Current and recent scientific collaborations — selected"
+        )
     collab = main.select_one(".collaboration-grid, .collab-list")
     if collab:
         replacement = soup_fragment(COLLABORATIONS[lang]).p
