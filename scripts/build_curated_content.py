@@ -434,7 +434,17 @@ def update_cv(page: BeautifulSoup, lang: str) -> None:
                     if lang == "fr"
                     else "<strong>Research Director, CNRS</strong> — University of Rennes",
                 )
-    structuring = heading_section(page, r"Responsabilités et structuration scientifique|Responsibilities and research structuring")
+    scientific = heading_section(page, r"^Responsabilités scientifiques$|^Scientific responsibilities$")
+    if scientific:
+        entries = scientific.find_all("div", class_="people-entry", recursive=False)
+        futureflow_link = scientific.find("a", href="futureflow.html")
+        if futureflow_link and len(entries) >= 4:
+            futureflow_entry = futureflow_link.find_parent("div", class_="people-entry")
+            if futureflow_entry in entries and entries.index(futureflow_entry) != 3:
+                futureflow_entry.extract()
+                remaining = [entry for entry in entries if entry is not futureflow_entry]
+                remaining[2].insert_after(futureflow_entry)
+    structuring = heading_section(page, r"Responsabilités et structuration scientifique|Responsibilities and research structuring|Previous responsibilities and research structuring")
     if structuring:
         structuring.find("h2").string = (
             "Responsabilités et structuration scientifique antérieures — sélection"
@@ -460,6 +470,9 @@ def update_cv(page: BeautifulSoup, lang: str) -> None:
             if structuring.find(attrs={"data-curated-role": str(index)}):
                 continue
             append_fragment(structuring, f'<div class="timeline-row" data-curated-role="{index}"><div class="timeline-year">{year}</div><div>{text}</div></div>')
+    previous_positions = heading_section(page, r"^Positions antérieures$|^Previous positions$")
+    if previous_positions and structuring:
+        structuring.insert_before(previous_positions.extract())
     previous = heading_section(page, r"Responsabilités antérieures|Selected previous responsibilities")
     if previous:
         previous.decompose()
