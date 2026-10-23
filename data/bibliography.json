@@ -983,6 +983,27 @@
       },
       "groups": [
         {
+          "id": "proceedings-soumis",
+          "title": {
+            "fr": "Soumis",
+            "en": "Submitted"
+          },
+          "ordered": false,
+          "classes": [
+            "bib-list",
+            "bib-unnumbered"
+          ],
+          "entries": [
+            {
+              "id": "proceedings-references-dans-web-of-knowledge-proceedings-soumis-001",
+              "html": {
+                "fr": "I. Issolah, B. Boivin, D.-E. Khelladi, B. Combemale, J.-R. de Dreuzy (2026), On LLM-Assisted Modernization of a Legacy Scientific Hydrology Model: An Experience Report. Soumis à la <span class=\"smallcaps\">49th International Conference on Software Engineering (ICSE 2027), Software Engineering in Society (SEIS) Track</span>.",
+                "en": "I. Issolah, B. Boivin, D.-E. Khelladi, B. Combemale, J.-R. de Dreuzy (2026), On LLM-Assisted Modernization of a Legacy Scientific Hydrology Model: An Experience Report. Submitted to the <span class=\"smallcaps\">49th International Conference on Software Engineering (ICSE 2027), Software Engineering in Society (SEIS) Track</span>."
+              }
+            }
+          ]
+        },
+        {
           "id": "entries",
           "title": null,
           "ordered": true,
