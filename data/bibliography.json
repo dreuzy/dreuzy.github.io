@@ -142,27 +142,6 @@
           ]
         },
         {
-          "id": "accepted",
-          "title": {
-            "fr": "Acceptés",
-            "en": "Accepted"
-          },
-          "ordered": false,
-          "classes": [
-            "bib-list",
-            "bib-unnumbered"
-          ],
-          "entries": [
-            {
-              "id": "articles-dans-des-revues-a-comite-de-lecture-accepted-001",
-              "html": {
-                "fr": "F. Sergeant, J.-R. de Dreuzy, S. Bernal, M. R. V. Ross, J. Ramoneda, G. Pinay (2026), Using landscape information to assess nutrient recycling in freshwater catchments. <span class=\"smallcaps\">Hydrological Processes</span>, accepté.",
-                "en": "F. Sergeant, J.-R. de Dreuzy, S. Bernal, M. R. V. Ross, J. Ramoneda, G. Pinay (2026), Using landscape information to assess nutrient recycling in freshwater catchments. <span class=\"smallcaps\">Hydrological Processes</span>, accepted."
-              }
-            }
-          ]
-        },
-        {
           "id": "articles-publies",
           "title": {
             "fr": "Publiés",
@@ -173,6 +152,13 @@
             "bib-list"
           ],
           "entries": [
+            {
+              "id": "articles-dans-des-revues-a-comite-de-lecture-accepted-001",
+              "html": {
+                "fr": "F. Sergeant, J.-R. de Dreuzy, S. Bernal, M. R. V. Ross, J. Ramoneda, G. Pinay (2026), <a class=\"bib-link\" href=\"https://doi.org/10.1002/hyp.70718\">Using Landscape Information to Assess Nutrient Recycling in Freshwater Catchments</a>, <span class=\"smallcaps\">Hydrological Processes</span>, 40(10), e70718.",
+                "en": "F. Sergeant, J.-R. de Dreuzy, S. Bernal, M. R. V. Ross, J. Ramoneda, G. Pinay (2026), <a class=\"bib-link\" href=\"https://doi.org/10.1002/hyp.70718\">Using Landscape Information to Assess Nutrient Recycling in Freshwater Catchments</a>, <span class=\"smallcaps\">Hydrological Processes</span>, 40(10), e70718."
+              }
+            },
             {
               "id": "articles-dans-des-revues-a-comite-de-lecture-articles-publies-001",
               "html": {
