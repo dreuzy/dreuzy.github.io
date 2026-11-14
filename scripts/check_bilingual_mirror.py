@@ -243,7 +243,15 @@ def main() -> int:
                 f"  EN: {format_counts(en.class_counts)}"
             )
 
-        if fr.figures != en.figures:
+        # The same scientific diagram may have language-specific label artwork.
+        # Keep figure parity strict, with one explicit translated-asset alias.
+        english_figures = [
+            ("image", "onewater-footprint-fingerprint.svg")
+            if figure == ("image", "onewater-footprint-fingerprint-en.svg")
+            else figure
+            for figure in en.figures
+        ]
+        if fr.figures != english_figures:
             errors.append(
                 f"[{page_id}] figure references differ\n"
                 f"  FR: {fr.figures}\n"
