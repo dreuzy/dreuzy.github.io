@@ -1,333 +1,166 @@
 #!/usr/bin/env python3
-"""Generate the downloadable French CV used by the website."""
-
+"""Build a conventional scientific CV, with restrained typography and layout."""
 from __future__ import annotations
-
 import argparse
 import json
 import os
 import tempfile
 from pathlib import Path
-
 import matplotlib
 from reportlab import rl_config
 from reportlab.lib import colors
-from reportlab.lib.enums import TA_LEFT, TA_RIGHT
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import mm
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
-from reportlab.platypus import (
-    BaseDocTemplate,
-    Frame,
-    KeepTogether,
-    PageBreak,
-    PageTemplate,
-    Paragraph,
-    Spacer,
-    Table,
-    TableStyle,
-)
+from reportlab.platypus import BaseDocTemplate, Frame, KeepTogether, PageTemplate, Paragraph, Spacer, Table, TableStyle
 
+ROOT=Path(__file__).resolve().parents[1]
+CONFIG=json.loads((ROOT/"site-config.json").read_text(encoding="utf-8"))
+OUT=ROOT/CONFIG["cv"]["pdf"]
+UPDATED=CONFIG["cv"]["updated"]
+PUBLICATION_COUNT=int(CONFIG["cv"]["publication_count"])
+rl_config.invariant=True
+INK=colors.HexColor("#222222")
+MUTED=colors.HexColor("#555555")
+HAIRLINE=colors.HexColor("#B9BEC2")
+PAGE_WIDTH,PAGE_HEIGHT=A4
+BODY_WIDTH=166*mm
 
-ROOT = Path(__file__).resolve().parents[1]
-CONFIG = json.loads((ROOT / "site-config.json").read_text(encoding="utf-8"))
-OUT = ROOT / CONFIG["cv"]["pdf"]
-UPDATED = CONFIG["cv"]["updated"]
-UPDATED_SHORT = CONFIG["cv"]["updated_short"]
-PUBLICATION_COUNT = CONFIG["cv"]["publication_count"]
-rl_config.invariant = True
-NAVY = colors.HexColor("#17324A")
-BLUE = colors.HexColor("#0056B3")
-MUTED = colors.HexColor("#526975")
-LINE = colors.HexColor("#D9E2E8")
-SOFT = colors.HexColor("#F3F7F9")
+def register_fonts():
+    base=Path(matplotlib.get_data_path())/"fonts"/"ttf"
+    for name,file in [("DejaVu","DejaVuSans.ttf"),("DejaVu-Bold","DejaVuSans-Bold.ttf"),("DejaVu-Serif","DejaVuSerif.ttf"),("DejaVu-Serif-Bold","DejaVuSerif-Bold.ttf")]:
+        pdfmetrics.registerFont(TTFont(name,str(base/file)))
+    pdfmetrics.registerFontFamily("DejaVu",normal="DejaVu",bold="DejaVu-Bold",italic="DejaVu",boldItalic="DejaVu-Bold")
 
+def styles():
+    s=getSampleStyleSheet()
+    for name,kw in [
+        ("CVName",dict(fontName="DejaVu-Bold",fontSize=17.6,leading=22,textColor=INK,spaceAfter=4)),
+        ("CVPosition",dict(fontName="DejaVu",fontSize=9.1,leading=13,textColor=INK,spaceAfter=3)),
+        ("CVContact",dict(fontName="DejaVu",fontSize=8.3,leading=11.4,textColor=MUTED,spaceAfter=12)),
+        ("CVSection",dict(fontName="DejaVu-Bold",fontSize=10.7,leading=14.7,textColor=INK,spaceBefore=8,spaceAfter=5,keepWithNext=True)),
+        ("CVText",dict(fontName="DejaVu",fontSize=8.65,leading=12.5,textColor=INK,spaceAfter=4)),
+        ("CVSmall",dict(fontName="DejaVu",fontSize=8.2,leading=11.7,textColor=MUTED,spaceAfter=3)),
+        ("CVDate",dict(fontName="DejaVu",fontSize=8.45,leading=12.5,textColor=MUTED)),
+    ]: s.add(ParagraphStyle(name,**kw))
+    return s
 
-def register_fonts() -> None:
-    font_root = Path(matplotlib.get_data_path()) / "fonts" / "ttf"
-    paths = {
-        "DejaVu": font_root / "DejaVuSans.ttf",
-        "DejaVu-Bold": font_root / "DejaVuSans-Bold.ttf",
-        "DejaVu-Serif": font_root / "DejaVuSerif.ttf",
-        "DejaVu-Serif-Bold": font_root / "DejaVuSerif-Bold.ttf",
-    }
-    for name, path in paths.items():
-        pdfmetrics.registerFont(TTFont(name, str(path)))
-    pdfmetrics.registerFontFamily("DejaVu", normal="DejaVu", bold="DejaVu-Bold", italic="DejaVu", boldItalic="DejaVu-Bold")
-    pdfmetrics.registerFontFamily("DejaVu-Serif", normal="DejaVu-Serif", bold="DejaVu-Serif-Bold", italic="DejaVu-Serif", boldItalic="DejaVu-Serif-Bold")
+def link(label,url):
+    return f'<link href="{url}" color="#294C66">{label}</link>'
 
+def section(label,s):
+    line=Table([[""]],colWidths=[BODY_WIDTH],rowHeights=[0.25*mm])
+    line.setStyle(TableStyle([("BACKGROUND",(0,0),(-1,-1),HAIRLINE),("TOPPADDING",(0,0),(-1,-1),0),("BOTTOMPADDING",(0,0),(-1,-1),0)]))
+    return KeepTogether([Paragraph(label,s["CVSection"]),line,Spacer(1,4)])
 
-def page_chrome(canvas, doc) -> None:
+def para(t,s): return Paragraph(t,s["CVText"])
+
+def role_table(items,s,date_w=32*mm):
+    t=Table([[Paragraph(date,s["CVDate"]),para(txt,s)] for date,txt in items],colWidths=[date_w,BODY_WIDTH-date_w],hAlign="LEFT")
+    t.setStyle(TableStyle([("VALIGN",(0,0),(-1,-1),"TOP"),("LEFTPADDING",(0,0),(-1,-1),0),("RIGHTPADDING",(0,0),(0,-1),7),("RIGHTPADDING",(1,0),(1,-1),0),("TOPPADDING",(0,0),(-1,-1),1),("BOTTOMPADDING",(0,0),(-1,-1),4.4)]))
+    return t
+
+def bullets(items,s): return [para("&#8226; "+x,s) for x in items]
+
+def footer(canvas,doc):
     canvas.saveState()
-    width, height = A4
-    canvas.setStrokeColor(LINE)
-    canvas.setLineWidth(0.6)
-    canvas.line(18 * mm, 14 * mm, width - 18 * mm, 14 * mm)
-    canvas.setFont("DejaVu", 7.8)
-    canvas.setFillColor(MUTED)
-    canvas.drawString(18 * mm, 9.2 * mm, f"Jean-Raynald de Dreuzy · CV synthétique · {UPDATED_SHORT}")
-    canvas.drawRightString(width - 18 * mm, 9.2 * mm, f"{doc.page}")
+    canvas.setFillColor(MUTED);canvas.setFont("DejaVu",7.4)
+    canvas.drawString(22*mm,13*mm,"Jean-Raynald de Dreuzy")
+    canvas.drawRightString(PAGE_WIDTH-22*mm,13*mm,str(doc.page))
     canvas.restoreState()
 
-
-def bullet(text: str, styles, level: int = 0) -> Paragraph:
-    return Paragraph(text, styles["CvBullet" if level == 0 else "CvSubBullet"], bulletText="•")
-
-
-def timeline(rows: list[tuple[str, str]], styles) -> Table:
-    data = [[Paragraph(year, styles["Year"]), Paragraph(text, styles["Body"])] for year, text in rows]
-    table = Table(data, colWidths=[31 * mm, 139 * mm], hAlign="LEFT", repeatRows=0)
-    table.setStyle(TableStyle([
-        ("VALIGN", (0, 0), (-1, -1), "TOP"),
-        ("LEFTPADDING", (0, 0), (-1, -1), 0),
-        ("RIGHTPADDING", (0, 0), (0, -1), 4 * mm),
-        ("RIGHTPADDING", (1, 0), (1, -1), 0),
-        ("TOPPADDING", (0, 0), (-1, -1), 2.2 * mm),
-        ("BOTTOMPADDING", (0, 0), (-1, -1), 2.2 * mm),
-        ("LINEBELOW", (0, 0), (-1, -2), 0.35, LINE),
-    ]))
-    return table
-
-
-def build_styles():
-    styles = getSampleStyleSheet()
-    styles.add(ParagraphStyle(
-        "Name", fontName="DejaVu-Serif-Bold", fontSize=25, leading=29,
-        textColor=NAVY, spaceAfter=2 * mm,
-    ))
-    styles.add(ParagraphStyle(
-        "Role", fontName="DejaVu", fontSize=11.2, leading=15,
-        textColor=MUTED, spaceAfter=3 * mm,
-    ))
-    styles.add(ParagraphStyle(
-        "Contact", fontName="DejaVu", fontSize=8.4, leading=12,
-        textColor=NAVY, spaceAfter=6 * mm,
-    ))
-    styles.add(ParagraphStyle(
-        "Section", fontName="DejaVu-Serif-Bold", fontSize=15, leading=18,
-        textColor=NAVY, spaceBefore=5 * mm, spaceAfter=2.3 * mm,
-        borderWidth=0, borderPadding=0,
-    ))
-    styles.add(ParagraphStyle(
-        "Subsection", fontName="DejaVu-Bold", fontSize=10.2, leading=13,
-        textColor=NAVY, spaceBefore=3 * mm, spaceAfter=1 * mm,
-    ))
-    styles.add(ParagraphStyle(
-        "Body", fontName="DejaVu", fontSize=8.7, leading=12.2,
-        textColor=colors.HexColor("#2F3E49"), spaceAfter=1.5 * mm,
-    ))
-    styles.add(ParagraphStyle(
-        "Lead", fontName="DejaVu", fontSize=10.2, leading=14.2,
-        textColor=colors.HexColor("#40525E"), spaceAfter=4 * mm,
-    ))
-    styles.add(ParagraphStyle(
-        "CvBullet", fontName="DejaVu", fontSize=8.6, leading=12,
-        leftIndent=4.5 * mm, firstLineIndent=-3.2 * mm, bulletIndent=0,
-        textColor=colors.HexColor("#2F3E49"), spaceAfter=1.2 * mm,
-    ))
-    styles.add(ParagraphStyle(
-        "CvSubBullet", fontName="DejaVu", fontSize=8.2, leading=11.5,
-        leftIndent=8 * mm, firstLineIndent=-3.2 * mm, bulletIndent=3.5 * mm,
-        textColor=colors.HexColor("#40525E"), spaceAfter=1 * mm,
-    ))
-    styles.add(ParagraphStyle(
-        "Year", fontName="DejaVu-Bold", fontSize=8.4, leading=12,
-        textColor=NAVY,
-    ))
-    styles.add(ParagraphStyle(
-        "Kicker", fontName="DejaVu-Bold", fontSize=7.4, leading=10,
-        textColor=colors.HexColor("#497A9C"), spaceBefore=1.5 * mm, spaceAfter=.5 * mm,
-    ))
-    styles.add(ParagraphStyle(
-        "Small", fontName="DejaVu", fontSize=7.7, leading=10.5,
-        textColor=MUTED,
-    ))
-    return styles
-
-
-def section_title(text: str, styles) -> KeepTogether:
-    rule = Table([[""]], colWidths=[170 * mm], rowHeights=[0.55 * mm])
-    rule.setStyle(TableStyle([("BACKGROUND", (0, 0), (-1, -1), LINE)]))
-    return KeepTogether([Spacer(1, 2.5 * mm), rule, Paragraph(text, styles["Section"])])
-
-
-def main() -> int:
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--check", action="store_true", help="fail instead of replacing a stale PDF")
-    args = parser.parse_args()
-    register_fonts()
-    styles = build_styles()
-    OUT.parent.mkdir(parents=True, exist_ok=True)
-    handle, temporary_name = tempfile.mkstemp(prefix="cv-", suffix=".pdf", dir=OUT.parent)
-    os.close(handle)
-    temporary = Path(temporary_name)
-    doc = BaseDocTemplate(
-        str(temporary), pagesize=A4,
-        leftMargin=20 * mm, rightMargin=20 * mm,
-        topMargin=17 * mm, bottomMargin=19 * mm,
-        title="CV - Jean-Raynald de Dreuzy",
-        author="Jean-Raynald de Dreuzy",
-        subject=f"Curriculum vitae synthétique - {UPDATED_SHORT}",
-    )
-    frame = Frame(doc.leftMargin, doc.bottomMargin, doc.width, doc.height, id="normal", leftPadding=0, rightPadding=0, topPadding=0, bottomPadding=0)
-    doc.addPageTemplates(PageTemplate(id="cv", frames=[frame], onPage=page_chrome))
-
-    story = []
-    story.append(Paragraph("Jean-Raynald de Dreuzy", styles["Name"]))
-    story.append(Paragraph("Hydrogéologue · Directeur de recherche CNRS · Président de l’École normale supérieure de Rennes", styles["Role"]))
-    story.append(Paragraph(
-        '<link href="mailto:jean-raynald.de-dreuzy@ens-rennes.fr" color="#0056B3">jean-raynald.de-dreuzy@ens-rennes.fr</link> &nbsp;·&nbsp; '
-        '<link href="https://dreuzy.github.io/" color="#0056B3">dreuzy.github.io</link> &nbsp;·&nbsp; '
-        '<link href="https://orcid.org/0000-0003-2993-2015" color="#0056B3">ORCID 0000-0003-2993-2015</link> &nbsp;·&nbsp; '
-        '<link href="https://hal.science/search/index/?q=%22Jean-Raynald%20de%20Dreuzy%22" color="#0056B3">HAL</link>',
-        styles["Contact"],
-    ))
-    story.append(Paragraph(
-        "Mes recherches portent sur le fonctionnement des aquifères peu profonds et des bassins versants de tête, "
-        "les temps de transfert et la qualité de l’eau, ainsi que l’évolution des ressources sous changement climatique. "
-        "Elles associent observations, traceurs, modélisation hydrogéologique, méthodes numériques et co-construction avec les territoires.",
-        styles["Lead"],
-    ))
-
-    story.append(section_title("Positions actuelles", styles))
-    story.append(timeline([
-        ("Depuis 2026", "<b>Président</b> - École normale supérieure de Rennes"),
-        ("Depuis 2013", "<b>Directeur de recherche CNRS</b> - Université de Rennes"),
-    ], styles))
-
-    story.append(section_title("Axes scientifiques", styles))
-    for item in [
-        "Aquifères peu profonds, bassins versants de tête et échanges surface-souterrain.",
-        "Temps de résidence, transferts de nitrates, réactivité et résilience de la qualité de l’eau.",
-        "Effets du changement climatique sur les ressources, les faibles débits et les risques côtiers.",
-        "Modèles multi-fidélité, méthodes numériques et chaînes reproductibles de simulation.",
-        "Interface entre recherche, observation, gestion de l’eau et décision territoriale.",
-    ]:
-        story.append(bullet(item, styles))
-
-    story.append(section_title("Responsabilités scientifiques actuelles", styles))
-    for item in [
-        "<b>OneWater - Eau Bien Commun</b> : co-animation du Défi 2 « Empreinte eau » avec Hélène Fenet et coordination scientifique du PC4 avec Hélène Budzinski.",
-        "<b>Chaire Eaux & Territoires</b> : co-titulaire avec Luc Aquilina, Fondation Université de Rennes.",
-        "<b>ANDRA</b> : membre du conseil scientifique depuis 2025.",
-        "<b>OREME</b> : président du conseil depuis 2025.",
-        "<b>GIEC des Pays de la Loire</b> : membre depuis 2024.",
-    ]:
-        story.append(bullet(item, styles))
-
-    story.append(PageBreak())
-    story.append(Paragraph("Parcours et structuration scientifique", styles["Name"]))
-    story.append(section_title("Positions antérieures", styles))
-    story.append(timeline([
-        ("2021-2026", "Vice-président Recherche - École normale supérieure de Rennes"),
-        ("2017-2021", "Directeur de l’Observatoire des Sciences de l’Univers de Rennes (OSUR, aujourd’hui OSERen)"),
-        ("2013-2016", "Chercheur associé à Inria, Rennes"),
-        ("2011-2013", "Mobilité Marie Curie - IDAEA-CSIC / Universitat Politècnica de Catalunya, Barcelone"),
-        ("2001-2010", "Chargé de recherche CNRS - Géosciences Rennes"),
-        ("2000-2001", "Postdoctorat - Institut Weizmann, Israël"),
-    ], styles))
-
-    story.append(section_title("Formation", styles))
-    story.append(timeline([
-        ("2008", "Habilitation à diriger des recherches - modélisation des écoulements et du transport dans les milieux fortement hétérogènes et fracturés, Université de Rennes 1"),
-        ("1996-1999", "Doctorat - Géosciences Rennes, CNRS / Université de Rennes 1"),
-        ("1995", "DEA d’Hydrologie et d’Hydrogéologie - Université Paris VI"),
-        ("1992-1994", "École polytechnique"),
-    ], styles))
-
-    story.append(section_title("Structuration de la recherche", styles))
-    for year, text in [
-        ("Jusqu’en 2026", "<b>IRIS-E</b> : co-responsabilité du WP2 « Recherches interdisciplinaires et co-construites » avec Jean-Marc Roussel (INRAE)."),
-        ("Depuis 2021", "Contribution au montage de OneWater, avec un accent sur l’interdisciplinarité et la co-construction."),
-        ("2018-2021", "Portage du CPER GLAZ Environnement et développement d’une plateforme régionale d’observation."),
-        ("2017-2021", "Direction de l’OSUR, aujourd’hui OSERen : plateformes, observatoires, projets interdisciplinaires et partenariats territoriaux."),
-        ("2014-2017", "Création et animation de RISC-E et de l’Observatoire Virtuel de l’Environnement."),
-        ("2013-2016", "Responsabilité de l’équipe EAU de Géosciences Rennes."),
-    ]:
-        story.append(bullet(f"<b>{year}</b> - {text}", styles))
-
-    story.append(PageBreak())
-    story.append(Paragraph("Principaux contrats de recherche", styles["Name"]))
-    story.append(Paragraph(
-        'Détails, partenaires et liens officiels : <link href="https://dreuzy.github.io/projets.html" color="#0056B3">dreuzy.github.io/projets.html</link>',
-        styles["Lead"],
-    ))
-    story.append(timeline([
-        ("2026-", "<b>FutureFlow</b> - ANR PRCI France-Suisse, ANR-25-CE01-2963. Approche multi-fidélité pour quantifier la contribution des eaux souterraines aux bassins versants de tête. Coordination avec Clément Roques."),
-        ("2023-", "<b>OneWater - PC4 OWMS</b> - ANR-22-PEXO-0005. Empreinte eau et observation multidimensionnelle des hydrosystèmes ; programme OneWater lancé en 2022."),
-        ("2019-", "<b>Chaire Eaux & Territoires</b> - Fondation Université de Rennes. Programme actuel depuis 2024 ; ressources, usages et adaptation territoriale."),
-        ("2025-", "<b>ARCHANGE</b> - remontée de nappe et intrusion saline en baie du Mont-Saint-Michel, dans le prolongement de RIVAGES Normands 2100."),
-        ("2024-", "<b>NIRECAS</b> - MSCA-PF 101150996. Capacité de récupération vis-à-vis des nitrates sur 200 sites pilotes du Massif armoricain."),
-        ("2019-2025", "<b>RIVAGES Normands 2100</b> - risques hydrogéologiques littoraux, recherche transdisciplinaire et adaptation des territoires."),
-        ("2019-2026", "<b>EAUX 2050 / RIVIÈRES 2070 / CYDRE</b> - projections climatiques, dialogue territorial et prévision saisonnière sur 98 bassins."),
-        ("2014-2019", "<b>AquiFR-BZH</b> - évaluation régionale des ressources dans les aquifères de socle."),
-        ("2011-2013", "<b>MUIGECCOS</b> - Marie Curie IEF 251710, processus couplés et stockage géologique du CO₂."),
-        ("2007-2010", "<b>MOHINI</b> - ANR-07-VULN-0008, ressources en eau et vulnérabilité des aquifères de socle."),
-    ], styles))
-
-    story.append(section_title("Encadrement et logiciels", styles))
-    story.append(bullet("Encadrement et co-encadrement de doctorants, postdoctorants, Masters et stagiaires en hydrogéologie, hydrologie, qualité de l’eau et modélisation.", styles))
-    story.append(bullet('<b>HydroModPy</b> - boîte à outils Python pour déployer des modèles d’aquifères peu profonds à l’échelle des bassins versants.', styles))
-    story.append(bullet('<b>PyAges</b> - boîte à outils extensible pour l’interprétation des âges des eaux souterraines par modèles à paramètres groupés.', styles))
-
-    story.append(PageBreak())
-    story.append(Paragraph("Activités scientifiques et publications", styles["Name"]))
-    story.append(section_title("Activités éditoriales et animation", styles))
-    for item in [
-        "<b>Hydrogeology Journal</b>, 2006-2011 - éditeur associé.",
-        "<b>Journal of Hydrology</b>, 2013-2018 - éditeur associé ; co-éditeur d’un numéro spécial sur les temps de résidence en 2016.",
-        "<b>Computational Methods in Water Resources</b>, 2018-2024 - membre du comité permanent.",
-        "<b>CMWR 2018, Saint-Malo</b> - co-organisateur de la XXIIe conférence internationale avec Jocelyne Erhel et Tanguy Le Borgne.",
-        "Participation à des conseils et comités d’évaluation nationaux en environnement, hydrologie et sciences de la Terre.",
-    ]:
-        story.append(bullet(item, styles))
-
-    story.append(section_title("Publications - repères", styles))
-    story.append(Paragraph(
-        f"{PUBLICATION_COUNT} articles publiés référencés dans la bibliographie du site, auxquels s’ajoutent actes, chapitres, rapports et communications. "
-        "Les travaux couvrent les réseaux de fractures, le transport en milieux hétérogènes, les temps de résidence, la réactivité des aquifères, "
-        "les échanges nappe-rivière et l’adaptation des ressources en eau.", styles["Body"],
-    ))
-    for item in [
-        "Le Mesnil et al. (2026), <i>Rivages Normands 2100: transdisciplinary co-constructed knowledge for land-use adaptation to groundwater rise along Normandy coastline</i>, Sustainability Science.",
-        "Gauvain et al. (2026), <i>Technical note: HydroModPy (v1.0)</i>, Hydrology and Earth System Sciences.",
-        "Abhervé et al. (2023), <i>Calibration of groundwater seepage against the spatial distribution of the stream network</i>, Hydrology and Earth System Sciences - Highlight paper.",
-        "Kolbe et al. (2019), <i>Stratification of reactivity determines nitrate removal in groundwater</i>, PNAS.",
-        "Vergnes et al. (2020), <i>The AquiFR hydrometeorological modelling platform</i>, Hydrology and Earth System Sciences.",
-        "Pichot, Erhel & de Dreuzy (2012), <i>A Generalized Mixed Hybrid Mortar Method for Solving Flow in Stochastic Discrete Fracture Networks</i>, SIAM Journal on Scientific Computing.",
-    ]:
-        story.append(bullet(item, styles))
-
-    story.append(section_title("Liens", styles))
-    links = [
-        ("Publications sélectionnées", "https://dreuzy.github.io/publications.html"),
-        ("Bibliographie complète", "https://dreuzy.github.io/bibliographie.html"),
-        ("Équipe et encadrements", "https://dreuzy.github.io/equipe.html"),
-        ("Projets et contrats", "https://dreuzy.github.io/projets.html"),
-        ("Logiciels", "https://dreuzy.github.io/logiciels.html"),
+def main():
+    p=argparse.ArgumentParser();p.add_argument("--check",action="store_true");args=p.parse_args()
+    register_fonts();s=styles();OUT.parent.mkdir(parents=True,exist_ok=True)
+    fd,name=tempfile.mkstemp(prefix="cv-academic-",suffix=".pdf",dir=OUT.parent);os.close(fd);tmp=Path(name)
+    doc=BaseDocTemplate(str(tmp),pagesize=A4,leftMargin=22*mm,rightMargin=22*mm,topMargin=20*mm,bottomMargin=20*mm,title="Curriculum vitae - Jean-Raynald de Dreuzy",author="Jean-Raynald de Dreuzy",subject=f"Curriculum vitae scientifique, actualisé le {UPDATED}")
+    frame=Frame(doc.leftMargin,doc.bottomMargin,doc.width,doc.height,leftPadding=0,rightPadding=0,topPadding=0,bottomPadding=0,id="main")
+    doc.addPageTemplates(PageTemplate(id="academic",frames=[frame],onPage=footer))
+    story=[
+        Paragraph("Jean-Raynald de Dreuzy",s["CVName"]),
+        Paragraph("Directeur de recherche CNRS, Géosciences Rennes (UMR 6118) · Président de l’École normale supérieure de Rennes",s["CVPosition"]),
+        Paragraph(link("jean-raynald.de-dreuzy@ens-rennes.fr","mailto:jean-raynald.de-dreuzy@ens-rennes.fr")+" &nbsp; | &nbsp; "+link("Site personnel","https://dreuzy.github.io/")+" &nbsp; | &nbsp; "+link("ORCID","https://orcid.org/0000-0003-2993-2015")+" &nbsp; | &nbsp; "+link("HAL","https://hal.science/search/index/?q=%22Jean-Raynald%20de%20Dreuzy%22"),s["CVContact"]),
+        section("Fonctions et parcours",s),
+        role_table([
+            ("Depuis 2026","Président de l’École normale supérieure de Rennes."),
+            ("Depuis 2013","Directeur de recherche CNRS, Géosciences Rennes, Université de Rennes."),
+            ("2021–2026","Vice-président Recherche, ENS Rennes."),
+            ("2017–2021","Directeur de l’Observatoire des Sciences de l’Univers de Rennes (OSUR, aujourd’hui OSERen)."),
+            ("2013–2016","Chercheur associé à Inria, Rennes."),
+            ("2011–2013","Mobilité Marie Curie, IDAEA-CSIC / Universitat Politècnica de Catalunya, Barcelone."),
+            ("2001–2010","Chargé de recherche CNRS, Géosciences Rennes."),
+            ("2000–2001","Postdoctorant, Institut Weizmann, Israël."),
+        ],s),
+        section("Formation",s),
+        role_table([
+            ("2008","Habilitation à diriger des recherches, Université de Rennes 1. Modélisation des écoulements et du transport dans les milieux fortement hétérogènes et fracturés."),
+            ("1999","Doctorat, Géosciences Rennes, Université de Rennes 1."),
+            ("1995","DEA d’hydrologie et d’hydrogéologie, Université Paris VI."),
+            ("1992–1994","École polytechnique."),
+        ],s),
+        section("Domaines de recherche",s),
+        *bullets([
+            "Aquifères peu profonds, bassins versants de tête et échanges eaux souterraines–eaux de surface.",
+            "Temps de transit, traceurs environnementaux, réactivité et qualité de l’eau.",
+            "Modélisation hydrogéologique, hétérogénéité, changement d’échelle et incertitudes.",
+            "Changement climatique, ressources en eau et articulation entre hydrosystèmes et empreinte eau.",
+        ],s),
+        section("Responsabilités scientifiques actuelles",s),
+        role_table([
+            ("Depuis 2023","PEPR OneWater – Eau Bien Commun : coordination scientifique du PC4 « Empreinte Eau &amp; Eau Sentinelle » avec Hélène Budzinski ; co-animation du Défi 2 « Empreinte eau » avec Hélène Fenet."),
+            ("Depuis 2019","Chaire Eaux &amp; Territoires, co-titulaire avec Luc Aquilina, Fondation Université de Rennes."),
+            ("Depuis 2025","Conseil scientifique de l’ANDRA ; présidence du conseil de l’OREME."),
+            ("Depuis 2024","Membre du GIEC des Pays de la Loire."),
+        ],s),
+        section("Responsabilités scientifiques antérieures",s),
+        role_table([
+            ("Jusqu’en 2026","IRIS-E, co-responsable du WP2 « Recherches interdisciplinaires et co-construites » avec Jean-Marc Roussel (INRAE)."),
+            ("2018–2024","Président du conseil de l’Observatoire Ecce-Terra, Sorbonne Université."),
+            ("2014–2017","Création et animation de RISC-E, groupe interdisciplinaire sur les systèmes complexes en environnement."),
+            ("2021–2024","Membre de la commission scientifique spécialisée STEA de l’INRAE."),
+        ],s),
+        section("Projets de recherche (sélection)",s),
+        role_table([
+            ("2026–","<b>FutureFlow</b>, ANR PRCI France–Suisse ; coordination avec Clément Roques, modélisation multi-fidélité des bassins de tête."),
+            ("2023–","<b>OneWater PC4</b>, France 2030 ; empreinte eau, ACV, fingerprint et eau sentinelle dans les socio-hydrosystèmes."),
+            ("2025–","<b>ARCHANGE</b>, risques hydrogéologiques côtiers et changement climatique."),
+            ("2024–","<b>NIRECAS</b>, résilience de la qualité de l’eau et nitrates."),
+            ("2019–2026","<b>EAUX 2050 / RIVIÈRES 2070 / CYDRE</b>, ressources en eau, scénarios climatiques et prévision saisonnière."),
+            ("2019–2025","<b>RIVAGES Normands 2100</b>, remontées de nappes et adaptation des territoires littoraux."),
+            ("2014–2019","<b>AquiFR-BZH</b>, évaluation régionale des ressources dans les aquifères de socle."),
+        ],s),
+        section("Activités éditoriales et responsabilités dans la communauté",s),
+        role_table([
+            ("2006–2011",link("Hydrogeology Journal","https://link.springer.com/journal/10040")+" : éditeur associé."),
+            ("2013–2018",link("Journal of Hydrology","https://www.sciencedirect.com/journal/journal-of-hydrology")+" : éditeur associé."),
+            ("2016",link("Journal of Hydrology, numéro spécial","https://doi.org/10.1016/j.jhydrol.2016.11.046")+" : co-éditeur avec Timothy R. Ginn de <i>Residence times in subsurface hydrological systems: signature of hydrological processes and impact on environmental applications</i>."),
+            ("2018–2024",link("Computational Methods in Water Resources (CMWR)","https://has.arizona.edu/events/25th-biennial-conference-computational-methods-water-resources")+" : membre du CMWR Committee, chargé de la continuité du cycle international biennal de conférences."),
+            ("2018","Co-organisateur de la conférence CMWR à Saint-Malo avec Jocelyne Erhel et Tanguy Le Borgne."),
+        ],s),
+        section("Encadrement et logiciels",s),
+        para("Encadrement et co-encadrement de doctorants, postdoctorants, étudiants de master et stagiaires. Développement de méthodes et de logiciels scientifiques ouverts, notamment "+link("HydroModPy","https://dreuzy.github.io/hydromodpy.html")+" et "+link("PyAges","https://dreuzy.github.io/pyages.html")+".",s),
+        section("Publications (sélection)",s),
+        Paragraph(f"<b>{PUBLICATION_COUNT} articles publiés</b> référencés dans la bibliographie du site. Liste complète : "+link("bibliographie en ligne","https://dreuzy.github.io/bibliographie.html")+".",s["CVText"]),
+        *bullets([
+            "Sergeant et al. (2026), <i>Using Landscape Information to Assess Nutrient Recycling in Freshwater Catchments</i>, "+link("Hydrological Processes","https://doi.org/10.1002/hyp.70718")+".",
+            "Le Mesnil et al. (2026), <i>Rivages Normands 2100: transdisciplinary co-constructed knowledge for land-use adaptation to groundwater rise along Normandy coastline</i>, "+link("Sustainability Science","https://doi.org/10.1007/s11625-026-01896-8")+".",
+            "Gauvain et al. (2026), <i>Technical note: HydroModPy (v1.0)</i>, "+link("Hydrology and Earth System Sciences","https://hess.copernicus.org/articles/30/5571/2026/")+".",
+            "Baioni et al. (2026), <i>A regionally based method to identify lithology-specific hydraulic conductivity distributions in shallow aquifers</i>, "+link("Journal of Hydrology","https://doi.org/10.1016/j.jhydrol.2026.135264")+".",
+            "Kolbe et al. (2019), <i>Stratification of reactivity determines nitrate removal in groundwater</i>, "+link("PNAS","https://doi.org/10.1073/pnas.1816892116")+".",
+        ],s),
+        Spacer(1,5),
+        Paragraph(f"Actualisé le {UPDATED}",s["CVSmall"]),
     ]
-    story.append(Paragraph(" &nbsp;·&nbsp; ".join(f'<link href="{url}" color="#0056B3">{label}</link>' for label, url in links), styles["Body"]))
-    story.append(Spacer(1, 5 * mm))
-    story.append(Paragraph(f"Dernière mise à jour : {UPDATED}", styles["Small"]))
-
     try:
         doc.build(story)
-        changed = not OUT.is_file() or OUT.read_bytes() != temporary.read_bytes()
-        if changed and not args.check:
-            os.replace(temporary, OUT)
-        else:
-            temporary.unlink()
+        changed=not OUT.exists() or OUT.read_bytes()!=tmp.read_bytes()
+        if changed and not args.check: os.replace(tmp,OUT)
+        else: tmp.unlink()
     finally:
-        if temporary.exists():
-            temporary.unlink()
-    print(OUT)
+        if tmp.exists(): tmp.unlink()
     if args.check and changed:
-        print("CV PDF is stale; run scripts/build_cv_pdf.py.")
-        return 1
-    return 0
-
-
-if __name__ == "__main__":
-    raise SystemExit(main())
+        print("CV PDF is stale; run scripts/build_cv_pdf.py.");return 1
+    print(OUT);return 0
+if __name__=="__main__": raise SystemExit(main())
