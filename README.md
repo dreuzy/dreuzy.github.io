@@ -50,7 +50,7 @@ Les pages `bibliographie.html`, `en/bibliography.html`, les blocs « Dernières 
 
 ## Structure bilingue
 
-Le français est à la racine et l’anglais dans `en/`. Les 24 couples officiels sont décrits dans `mirror-map.json`. Toute modification éditoriale doit être faite dans les deux langues au cours de la même opération.
+Le français est à la racine et l’anglais dans `en/`. Les 25 couples officiels sont décrits dans `mirror-map.json`. Toute modification éditoriale doit être faite dans les deux langues au cours de la même opération.
 
 Les blocs communs sont générés par `scripts/sync_shared_layout.py`. Les titres et descriptions propres à chaque page restent dans son `<head>` ; leurs canonical, hreflang et `og:url` sont synchronisés depuis le manifeste.
 
