@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 700" role="img" aria-labelledby="figtitle figdesc">
+<title id="figtitle">Empreinte eau : footprint et fingerprint, deux regards sur l’hydrosystème</title>
+<desc id="figdesc">Au-dessus d’un bassin versant avec sols, rivière et nappe, une flèche bleue relie usages et pressions aux impacts potentiels : footprint et ACV. En dessous, une flèche ocre relie les signaux observés aux sources et processus : fingerprint et eau sentinelle.</desc>
+<defs>
+<linearGradient id="sky" x2="0" y2="1"><stop stop-color="#f0f8fc"/><stop offset="1" stop-color="#fff"/></linearGradient>
+<linearGradient id="soil" x2="0" y2="1"><stop stop-color="#e7d4a9"/><stop offset="1" stop-color="#b9956a"/></linearGradient>
+<linearGradient id="groundwater" x2="0" y2="1"><stop stop-color="#d7f1fc"/><stop offset="1" stop-color="#80bcdd"/></linearGradient>
+<marker id="right" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 0 10Z" fill="#287eb0"/></marker>
+<marker id="left" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 0 10Z" fill="#c17a21"/></marker>
+</defs>
+<rect width="1100" height="700" fill="white"/>
+<rect x="25" y="25" width="1050" height="650" rx="22" fill="url(#sky)" stroke="#d9e6ed" stroke-width="2"/>
+<rect x="56" y="48" width="258" height="80" rx="14" fill="#e1f0f9" stroke="#6db2d6" stroke-width="2"/>
+<rect x="786" y="48" width="258" height="80" rx="14" fill="#e1f4ef" stroke="#70b9aa" stroke-width="2"/>
+<text x="185" y="81" text-anchor="middle" fill="#184f73" font-family="Arial,sans-serif" font-size="22" font-weight="700">Usages et pressions</text>
+<text x="185" y="105" text-anchor="middle" fill="#456777" font-family="Arial,sans-serif" font-size="16">prélèvements, rejets</text>
+<text x="915" y="81" text-anchor="middle" fill="#176b64" font-family="Arial,sans-serif" font-size="22" font-weight="700">Impacts potentiels</text>
+<text x="915" y="105" text-anchor="middle" fill="#456777" font-family="Arial,sans-serif" font-size="16">milieux, écosystèmes, usages</text>
+<path d="M326 88 H773" stroke="#287eb0" stroke-width="12" fill="none" marker-end="url(#right)" stroke-linecap="round"/>
+<rect x="414" y="62" width="270" height="52" rx="26" fill="#267bb1"/>
+<text x="549" y="95" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="700" fill="white">FOOTPRINT · ACV</text>
+<!-- hills and catchment section -->
+<path d="M58 337 Q160 227 279 276 Q386 206 476 271 Q588 239 674 291 Q794 248 910 313 Q980 305 1042 339 L1042 440 L58 440Z" fill="#add3b1"/>
+<path d="M58 375 Q190 302 312 354 Q414 318 518 360 Q615 326 732 365 Q872 337 1042 385 L1042 444 L58 444Z" fill="#8cbe91"/>
+<path d="M58 402 Q270 397 420 416 Q560 436 681 416 Q838 391 1042 420 L1042 526 L58 526Z" fill="url(#soil)"/>
+<path d="M58 449 Q250 434 419 466 Q585 497 743 467 Q898 445 1042 475 L1042 548 Q848 530 698 557 Q532 574 369 551 Q191 525 58 549Z" fill="url(#groundwater)" stroke="#65a6cc" stroke-width="2"/>
+<path d="M58 548 Q230 522 370 550 Q550 579 696 557 Q875 526 1042 548 L1042 570 L58 570Z" fill="#a5a9a5"/>
+<!-- agricultural rows -->
+<path d="M90 355 L295 383 M103 344 L301 370 M120 334 L306 357" stroke="#bda553" stroke-width="8" stroke-linecap="round"/>
+<path d="M167 283 L167 328" stroke="#6f8660" stroke-width="11"/><circle cx="167" cy="273" r="32" fill="#5b9e70"/><circle cx="141" cy="282" r="23" fill="#83b87a"/><circle cx="188" cy="283" r="22" fill="#6ba66e"/>
+<path d="M791 323 L791 384" stroke="#6d8b61" stroke-width="12"/><circle cx="791" cy="309" r="35" fill="#5fa277"/><circle cx="764" cy="321" r="23" fill="#80b67c"/><circle cx="818" cy="325" r="25" fill="#7ab27c"/>
+<path d="M916 325 L916 392" stroke="#6d8b61" stroke-width="11"/><circle cx="916" cy="307" r="34" fill="#6aaa81"/><circle cx="894" cy="322" r="23" fill="#80bd8b"/><circle cx="942" cy="321" r="24" fill="#71ae75"/>
+<!-- village -->
+<rect x="430" y="328" width="56" height="65" fill="#f4e7d7" stroke="#8e8a7c"/><path d="M421 331 L459 307 L496 331Z" fill="#b86e62"/>
+<rect x="498" y="345" width="49" height="52" fill="#fff3dc" stroke="#8e8a7c"/><path d="M489 348 L523 323 L558 348Z" fill="#b86e62"/>
+<rect x="456" y="352" width="15" height="20" fill="#9ac9db"/><rect x="518" y="363" width="13" height="34" fill="#be9776"/>
+<!-- river and ground-water paths -->
+<path d="M642 389 Q725 370 788 405 T942 404 T1040 423" fill="none" stroke="#ecfaff" stroke-width="32" stroke-linecap="round"/>
+<path d="M642 389 Q725 370 788 405 T942 404 T1040 423" fill="none" stroke="#4ca9cd" stroke-width="22" stroke-linecap="round"/>
+<path d="M240 427 C340 458 443 453 535 473 S773 508 857 448" fill="none" stroke="#298cbf" stroke-width="6" stroke-linecap="round" stroke-dasharray="15 9" marker-end="url(#right)"/>
+<path d="M390 389 L423 456" fill="none" stroke="#287eb0" stroke-width="5" stroke-dasharray="8 6" marker-end="url(#right)"/>
+<path d="M600 448 L603 404" fill="none" stroke="#287eb0" stroke-width="5" stroke-dasharray="8 6" marker-end="url(#right)"/>
+<!-- small pressure label -->
+<rect x="72" y="384" rx="9" width="180" height="35" fill="#fff7e8" stroke="#c3a16a"/>
+<text x="162" y="407" text-anchor="middle" font-family="Arial,sans-serif" font-size="16" fill="#754a2d">Apports diffus</text>
+<rect x="450" y="408" rx="9" width="192" height="33" fill="#eff8ff" stroke="#7bb8d0"/>
+<text x="546" y="430" text-anchor="middle" font-family="Arial,sans-serif" font-size="15" fill="#245c78">Stockage · transferts</text>
+<rect x="822" y="460" rx="9" width="192" height="34" fill="#f2fff4" stroke="#79b89a"/>
+<text x="918" y="482" text-anchor="middle" font-family="Arial,sans-serif" font-size="15" fill="#276757">Milieux exposés</text>
+<rect x="238" y="560" width="626" height="39" rx="19" fill="#e3edf3" stroke="#8fb8ce"/>
+<text x="551" y="586" text-anchor="middle" font-family="Arial,sans-serif" font-size="18" fill="#30566f">Hydrosystème : transferts · transformations · expositions</text>
+<rect x="56" y="613" width="268" height="48" rx="12" fill="#fff2db" stroke="#daa35b" stroke-width="2"/>
+<rect x="776" y="613" width="268" height="48" rx="12" fill="#fff2db" stroke="#daa35b" stroke-width="2"/>
+<text x="190" y="643" text-anchor="middle" font-family="Arial,sans-serif" font-weight="700" font-size="19" fill="#8b591d">Sources et processus</text>
+<text x="910" y="643" text-anchor="middle" font-family="Arial,sans-serif" font-weight="700" font-size="19" fill="#8b591d">Signaux observés</text>
+<path d="M766 638 H335" stroke="#c17a21" stroke-width="11" fill="none" stroke-linecap="round" marker-end="url(#left)"/>
+<rect x="412" y="614" width="282" height="47" rx="23" fill="#c17a21"/>
+<text x="553" y="643" text-anchor="middle" fill="white" font-family="Arial,sans-serif" font-size="20" font-weight="700">FINGERPRINT</text>
+</svg>
