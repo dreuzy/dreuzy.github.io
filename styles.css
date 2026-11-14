@@ -1364,3 +1364,85 @@ summary:focus-visible,
     break-inside: avoid;
   }
 }
+
+/* Classic scientific CV: restrained typography and a simple chronological grid. */
+.cv-classic {
+  max-width: 1000px;
+  padding-top: 2.6rem;
+}
+.cv-classic h1 {
+  font-size: clamp(1.85rem, 3vw, 2.45rem);
+  line-height: 1.15;
+  margin-bottom: 0.4rem;
+}
+.cv-classic .cv-person {
+  margin: 0.1rem 0;
+  font-size: 1.16rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+.cv-classic .cv-affiliation {
+  margin: 0.1rem 0 1.1rem;
+  color: var(--muted);
+  font-size: 0.94rem;
+}
+.cv-classic .download-cv {
+  margin: 0 0 1.6rem;
+}
+.cv-classic .download-cv a {
+  padding: 0;
+  border: 0;
+  text-decoration: underline;
+  font-weight: 500;
+}
+.cv-classic .section-block {
+  margin: 1.75rem 0 0;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+}
+.cv-classic .section-block h2 {
+  font-size: 1.18rem;
+  font-weight: 650;
+  line-height: 1.35;
+  margin: 0 0 0.8rem;
+}
+.cv-classic .timeline-row {
+  grid-template-columns: minmax(105px, 145px) minmax(0, 1fr);
+  gap: 1.1rem;
+  padding: 0.4rem 0;
+  font-size: 0.96rem;
+}
+.cv-classic .timeline-year {
+  font-weight: 400;
+  color: var(--muted);
+}
+.cv-classic .people-entry {
+  padding: 0.4rem 0;
+  border: 0;
+}
+.cv-classic .people-entry .name {
+  font-size: 0.96rem;
+  font-weight: 600;
+}
+.cv-classic .people-entry .position {
+  font-size: 0.94rem;
+  line-height: 1.5;
+}
+.cv-classic .section-block > p {
+  max-width: 86ch;
+  line-height: 1.55;
+  margin: 0.5rem 0;
+}
+.cv-classic .collaboration-group {
+  padding: 0.35rem 0;
+  border: 0;
+  background: transparent;
+}
+.cv-classic .collaboration-group h3 {
+  font-size: 0.99rem;
+  margin: 0 0 0.2rem;
+}
+.cv-classic .collaboration-grid { gap: 0.8rem 2rem; }
+@media (max-width: 620px) {
+  .cv-classic .timeline-row { grid-template-columns: 1fr; gap: 0.2rem; }
+}
