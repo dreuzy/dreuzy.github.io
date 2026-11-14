@@ -209,8 +209,7 @@ def main() -> int:
 
     story.append(section_title("Responsabilités scientifiques actuelles", styles))
     for item in [
-        "<b>OneWater - Eau Bien Commun</b> : co-responsable du défi « Empreinte Eau » et d’un projet ciblé du PEPR national.",
-        "<b>IRIS-E</b> : co-responsable du WP2 « Recherches interdisciplinaires et co-construites ».",
+        "<b>OneWater - Eau Bien Commun</b> : co-animation du Défi 2 « Empreinte eau » avec Hélène Fenet et coordination scientifique du PC4 avec Hélène Budzinski.",
         "<b>Chaire Eaux & Territoires</b> : co-titulaire avec Luc Aquilina, Fondation Université de Rennes.",
         "<b>ANDRA</b> : membre du conseil scientifique depuis 2025.",
         "<b>OREME</b> : président du conseil depuis 2025.",
@@ -240,7 +239,8 @@ def main() -> int:
 
     story.append(section_title("Structuration de la recherche", styles))
     for year, text in [
-        ("Depuis 2021", "Contribution au montage de OneWater et d’IRIS-E, avec un accent sur l’interdisciplinarité et la co-construction."),
+        ("Jusqu’en 2026", "<b>IRIS-E</b> : co-responsabilité du WP2 « Recherches interdisciplinaires et co-construites » avec Jean-Marc Roussel (INRAE)."),
+        ("Depuis 2021", "Contribution au montage de OneWater, avec un accent sur l’interdisciplinarité et la co-construction."),
         ("2018-2021", "Portage du CPER GLAZ Environnement et développement d’une plateforme régionale d’observation."),
         ("2017-2021", "Direction de l’OSUR, aujourd’hui OSERen : plateformes, observatoires, projets interdisciplinaires et partenariats territoriaux."),
         ("2014-2017", "Création et animation de RISC-E et de l’Observatoire Virtuel de l’Environnement."),
