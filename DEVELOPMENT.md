@@ -53,7 +53,7 @@ La seconde exécution ne doit produire aucune différence supplémentaire.
 
 ## 3. Pages bilingues
 
-`mirror-map.json` contient 24 couples de pages. Les couples `a-propos` et `research-figures` sont des redirections techniques ; les anciennes adresses de la galerie mènent désormais à la section « Images et médiation ». Les 22 autres couples sont indexables.
+`mirror-map.json` contient 25 couples de pages. Les couples `a-propos` et `research-figures` sont des redirections techniques ; les anciennes adresses de la galerie mènent désormais à la section « Images et médiation ». Les 23 autres couples sont indexables.
 
 ### Modifier une page
 
@@ -260,8 +260,8 @@ Les codes `403`, `429` ou `999` renvoyés par certains sites externes à des rob
 
 ## 11. État de référence — septembre 2026
 
-- 49 fichiers HTML, dont 44 pages indexables, quatre redirections et une page 404 ;
-- 24 couples FR/EN ;
+- 51 fichiers HTML, dont 46 pages indexables, quatre redirections et une page 404 ;
+- 25 couples FR/EN ;
 - 114 articles publiés ;
 - 256 abstracts de colloques ;
 - 14 actes de colloques ;
