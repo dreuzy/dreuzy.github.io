@@ -61,6 +61,12 @@
       "navigation": true
     },
     {
+      "id": "result-pressures-impacts",
+      "fr": "resultat-pressions-impacts.html",
+      "en": "en/result-pressures-impacts.html",
+      "navigation": true
+    },
+    {
       "id": "research-figures",
       "fr": "galerie-recherche.html",
       "en": "en/research-figures.html",
