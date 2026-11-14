@@ -431,9 +431,9 @@ def update_cv(page: BeautifulSoup, lang: str) -> None:
                 cells = row.find_all("div", recursive=False)
                 replace_contents(
                     cells[1],
-                    "<strong>Directeur de recherche, CNRS</strong> — Université de Rennes"
+                    "Directeur de recherche, CNRS — Université de Rennes"
                     if lang == "fr"
-                    else "<strong>Research Director, CNRS</strong> — University of Rennes",
+                    else "Research Director, CNRS — University of Rennes",
                 )
     scientific = heading_section(page, r"^Responsabilités scientifiques actuelles$|^Current scientific responsibilities$|^Responsabilités scientifiques$|^Scientific responsibilities$")
     if scientific:
