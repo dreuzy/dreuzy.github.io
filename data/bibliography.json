@@ -93,8 +93,8 @@
             {
               "id": "articles-dans-des-revues-a-comite-de-lecture-articles-soumis-002",
               "html": {
-                "fr": "J.-R. de Dreuzy, S. Leray, J. Marçais (2026), PyAges: an extensible toolkit for lumped-parameter modeling of tracer-derived groundwater ages. <span class=\"smallcaps\">Geoscientific Model Development</span>, soumis.",
-                "en": "J.-R. de Dreuzy, S. Leray, J. Marçais (2026), PyAges: an extensible toolkit for lumped-parameter modeling of tracer-derived groundwater ages. <span class=\"smallcaps\">Geoscientific Model Development</span>, submitted."
+                "fr": "J.-R. de Dreuzy, S. Leray, J. Marçais (2026), <a href=\"https://doi.org/10.5194/egusphere-2026-5201\" rel=\"noopener\" target=\"_blank\">PyAges v1.0: an extensible Python toolkit for inferring groundwater transit-time distributions from environmental tracers</a>. <span class=\"smallcaps\">Geoscientific Model Development</span>, soumis ; prépublication EGUsphere, 12 octobre 2026.",
+                "en": "J.-R. de Dreuzy, S. Leray, J. Marçais (2026), <a href=\"https://doi.org/10.5194/egusphere-2026-5201\" rel=\"noopener\" target=\"_blank\">PyAges v1.0: an extensible Python toolkit for inferring groundwater transit-time distributions from environmental tracers</a>. <span class=\"smallcaps\">Geoscientific Model Development</span>, submitted; EGUsphere preprint, 12 October 2026."
               }
             },
             {
@@ -169,8 +169,8 @@
             {
               "id": "articles-dans-des-revues-a-comite-de-lecture-articles-publies-002",
               "html": {
-                "fr": "A. Gauvain, R. Abhervé, B. Boivin, C. Roques, M. Le Mesnil, A. Coche, T. Babey, J. Marçais, C. Bouchez, S. Leray, E. Marti, E. Bresciani, R. Figueroa, M. Pélissier, L. Guillaumot, T. Touzeau, I. Issolah, E. Maugan, R. S. Bagagnan, C. Vautier, J. Sallou, J. Bourcier, B. Combemale, P. Brunner, L. Longuevergne, L. Aquilina, J.-R. de Dreuzy (2026), <a href=\"https://hess.copernicus.org/articles/30/5571/2026/\" rel=\"noopener\" target=\"_blank\">Technical note: HydroModPy (v1.0) – a Python toolbox for deploying catchment-scale shallow groundwater models</a>. <span class=\"smallcaps\">Hydrology and Earth System Sciences</span>, 30, 5571.",
-                "en": "A. Gauvain, R. Abhervé, B. Boivin, C. Roques, M. Le Mesnil, A. Coche, T. Babey, J. Marçais, C. Bouchez, S. Leray, E. Marti, E. Bresciani, R. Figueroa, M. Pélissier, L. Guillaumot, T. Touzeau, I. Issolah, E. Maugan, R. S. Bagagnan, C. Vautier, J. Sallou, J. Bourcier, B. Combemale, P. Brunner, L. Longuevergne, L. Aquilina, J.-R. de Dreuzy (2026), <a href=\"https://hess.copernicus.org/articles/30/5571/2026/\" rel=\"noopener\" target=\"_blank\">Technical note: HydroModPy (v1.0) – a Python toolbox for deploying catchment-scale shallow groundwater models</a>. <span class=\"smallcaps\">Hydrology and Earth System Sciences</span>, 30, 5571."
+                "fr": "A. Gauvain, R. Abhervé, B. Boivin, A. Coche, M. Le Mesnil, T. Babey, E. Maugan, T. Touzeau, I. Issolah, C. Roques, C. Bouchez, J. Marçais, S. Leray, E. Marti, E. Bresciani, R. Figueroa, M. Pélissier, S. Carlier, L. Guillaumot, R. S. Bagagnan, C. Vautier, L. Longuevergne, J. Sallou, J. Bourcier, B. Combemale, P. Brunner, L. Aquilina, J.-R. de Dreuzy (2026), <a href=\"https://doi.org/10.5194/hess-30-5571-2026\" rel=\"noopener\" target=\"_blank\">Technical note: HydroModPy (v1.0) – a Python toolbox for deploying catchment-scale shallow groundwater models</a>. <span class=\"smallcaps\">Hydrology and Earth System Sciences</span>, 30, 5571–5592.",
+                "en": "A. Gauvain, R. Abhervé, B. Boivin, A. Coche, M. Le Mesnil, T. Babey, E. Maugan, T. Touzeau, I. Issolah, C. Roques, C. Bouchez, J. Marçais, S. Leray, E. Marti, E. Bresciani, R. Figueroa, M. Pélissier, S. Carlier, L. Guillaumot, R. S. Bagagnan, C. Vautier, L. Longuevergne, J. Sallou, J. Bourcier, B. Combemale, P. Brunner, L. Aquilina, J.-R. de Dreuzy (2026), <a href=\"https://doi.org/10.5194/hess-30-5571-2026\" rel=\"noopener\" target=\"_blank\">Technical note: HydroModPy (v1.0) – a Python toolbox for deploying catchment-scale shallow groundwater models</a>. <span class=\"smallcaps\">Hydrology and Earth System Sciences</span>, 30, 5571–5592."
               }
             },
             {
