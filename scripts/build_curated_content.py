@@ -199,13 +199,7 @@ def update_projects(page: BeautifulSoup, lang: str) -> None:
             if lang == "fr"
             else "Structuring programmes and other current projects"
         )
-        if not page.find(id="iris-e"):
-            markup = (
-                '<div class="secondary-project" id="iris-e"><a class="project-external-link" href="https://iris-e.univ-rennes.fr/" rel="noopener" target="_blank"><strong>IRIS-E</strong></a> — programme en cours<br/><em>Interdisciplinary Research &amp; Innovative Solutions for Environmental transition</em><br/><strong>Responsabilité</strong> — co-responsable du WP2 « Recherches interdisciplinaires et co-construites »<br/>Programme de recherche et d’innovation de l’Université de Rennes destiné à soutenir des recherches interdisciplinaires construites avec les acteurs de la transition socio-environnementale.</div>'
-                if lang == "fr"
-                else '<div class="secondary-project" id="iris-e"><a class="project-external-link" href="https://iris-e.univ-rennes.fr/" rel="noopener" target="_blank"><strong>IRIS-E</strong></a> — ongoing programme<br/><em>Interdisciplinary Research &amp; Innovative Solutions for Environmental transition</em><br/><strong>Role</strong> — co-lead of WP2, “Interdisciplinary and co-designed research”<br/>The University of Rennes research and innovation programme supports interdisciplinary research co-designed with stakeholders in the socio-environmental transition.</div>'
-            )
-            current.find("h2").insert_after(soup_fragment(markup).div)
+        # IRIS-E now belongs to the former-projects section, not to current projects.
 
 
 def update_team(page: BeautifulSoup, lang: str) -> None:
@@ -445,12 +439,12 @@ def update_cv(page: BeautifulSoup, lang: str) -> None:
     if scientific:
         entries = scientific.find_all("div", class_="people-entry", recursive=False)
         futureflow_link = scientific.find("a", href="futureflow.html")
-        if futureflow_link and len(entries) >= 4:
+        if futureflow_link and len(entries) >= 3:
             futureflow_entry = futureflow_link.find_parent("div", class_="people-entry")
-            if futureflow_entry in entries and entries.index(futureflow_entry) != 3:
+            if futureflow_entry in entries and entries.index(futureflow_entry) != 2:
                 futureflow_entry.extract()
                 remaining = [entry for entry in entries if entry is not futureflow_entry]
-                remaining[2].insert_after(futureflow_entry)
+                remaining[1].insert_after(futureflow_entry)
     structuring = heading_section(page, r"Responsabilités et structuration scientifique|Responsibilities and research structuring|Previous responsibilities and research structuring")
     if structuring:
         structuring.find("h2").string = (
@@ -485,7 +479,7 @@ def update_cv(page: BeautifulSoup, lang: str) -> None:
         previous.decompose()
     download = main.select_one(".download-cv")
     if download and not download.select_one(".cv-updated"):
-        label = "Mis à jour le 20 septembre 2026" if lang == "fr" else "Updated 20 September 2026"
+        label = "Mis à jour le 14 novembre 2026" if lang == "fr" else "Updated 14 November 2026"
         append_fragment(download, f'<span class="cv-updated">{label}</span>')
     collab_section = heading_section(page, r"Collaborations scientifiques antérieures|Past scientific collaborations")
     if collab_section:
@@ -558,11 +552,13 @@ PAGES = [
     ("resultat-modeles-europe.html", "fr"),
     ("resultat-climat-ressources.html", "fr"),
     ("resultat-milieux-fractures.html", "fr"),
+    ("resultat-pressions-impacts.html", "fr"),
     ("en/result-streams-subsurface.html", "en"),
     ("en/result-transit-reactivity.html", "en"),
     ("en/result-models-europe.html", "en"),
     ("en/result-climate-water-resources.html", "en"),
     ("en/result-fractured-media.html", "en"),
+    ("en/result-pressures-impacts.html", "en"),
 ]
 
 
