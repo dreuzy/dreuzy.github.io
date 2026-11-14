@@ -424,7 +424,7 @@ def update_cv(page: BeautifulSoup, lang: str) -> None:
     for paragraph in list(main.find_all("p")):
         if "Sciences pour l’Environnement" in paragraph.get_text() or "Environmental Sciences Department" in paragraph.get_text():
             paragraph.decompose()
-    current = heading_section(page, r"Positions principales|Current positions")
+    current = heading_section(page, r"Fonctions actuelles|Current appointments|Positions principales|Current positions")
     if current:
         for row in current.select(".timeline-row"):
             if "2013" in row.select_one(".timeline-year").get_text():
@@ -435,7 +435,7 @@ def update_cv(page: BeautifulSoup, lang: str) -> None:
                     if lang == "fr"
                     else "<strong>Research Director, CNRS</strong> — University of Rennes",
                 )
-    scientific = heading_section(page, r"^Responsabilités scientifiques$|^Scientific responsibilities$")
+    scientific = heading_section(page, r"^Responsabilités scientifiques actuelles$|^Current scientific responsibilities$|^Responsabilités scientifiques$|^Scientific responsibilities$")
     if scientific:
         entries = scientific.find_all("div", class_="people-entry", recursive=False)
         futureflow_link = scientific.find("a", href="futureflow.html")
@@ -471,7 +471,7 @@ def update_cv(page: BeautifulSoup, lang: str) -> None:
             if structuring.find(attrs={"data-curated-role": str(index)}):
                 continue
             append_fragment(structuring, f'<div class="timeline-row" data-curated-role="{index}"><div class="timeline-year">{year}</div><div>{text}</div></div>')
-    previous_positions = heading_section(page, r"^Positions antérieures$|^Previous positions$")
+    previous_positions = heading_section(page, r"^Fonctions antérieures$|^Previous appointments$|^Positions antérieures$|^Previous positions$")
     if previous_positions and structuring:
         structuring.insert_before(previous_positions.extract())
     previous = heading_section(page, r"Responsabilités antérieures|Selected previous responsibilities")
