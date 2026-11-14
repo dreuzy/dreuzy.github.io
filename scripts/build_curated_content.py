@@ -144,9 +144,9 @@ def update_results_hub(page: BeautifulSoup, lang: str) -> None:
     lead = page.select_one("main p.lead")
     if lead:
         lead.string = (
-            "Sélection de six questions qui ont structuré mes recherches. Chaque entrée présente la démarche suivie, les principaux résultats et les contributions associées."
+            "Sélection de six thèmes qui ont structuré mes recherches. Chaque entrée présente la démarche suivie, les principaux résultats et les contributions associées."
             if lang == "fr"
-            else "A selection of six questions that have shaped my research. Each entry presents the approach, main results and associated contributions."
+            else "A selection of six themes that have shaped my research. Each entry presents the approach, main results and associated contributions."
         )
     note = page.select_one(".results-intro-note")
     if note:
